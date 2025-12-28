@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>متصفح نيون - منصات التواصل الاجتماعي</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --bg: #0f0c29;
+      --panel: #070707;
+      --accent: #39FF14;
+      --accent-2: #00ff88;
+      --muted: rgba(255,255,255,0.08);
+      --glass: rgba(255,255,255,0.03);
+      --danger: #ff3e3e;
+      --radius: 12px;
+      --facebook: #1877F2;
+      --whatsapp: #25D366;
+      --telegram: #0088cc;
+      --instagram: #E4405F;
+      --twitter: #1DA1F2;
+      --tiktok: #000000;
+      --snapchat: #FFFC00;
+      --youtube: #FF0000;
+      --linkedin: #0A66C2;
+      --pinterest: #BD081C;
+      --reddit: #FF4500;
+      --discord: #5865F2;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #0f0c29;
+      background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+      color: white;
+      min-height: 100vh;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    /* canvas ماتريكس */
+    #matrix {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      display: block;
+    }
+
+    /* الواجهة الكاملة */
+    .app {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 260px 1fr;
+    }
+
+    /* شريط جانبي */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(10,10,10,0.85), rgba(5,5,5,0.9));
+      border-right: 1px solid rgba(57,255,20,0.06);
+      padding: 20px;
+      width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-blob {
+      width: 46px;
+      height: 46px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 700;
+      box-shadow: 0 6px 20px rgba(0,255,136,0.08);
+    }
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .nav {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .nav button {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 15px;
+      text-align: right;
+      transition: all 0.3s ease;
+    }
+    .nav button:hover {
+      background: rgba(57,255,20,0.04);
+      transform: translateX(-5px);
+    }
+    .nav button.active {
+      background: linear-gradient(90deg, rgba(57,255,20,0.06), rgba(0,255,136,0.02));
+      box-shadow: inset 0 0 30px rgba(0,255,136,0.02);
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    /* اللوحة اليمنى */
+    .main {
+      padding: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    /* بطاقة رئيسية */
+    .card {
+      width: 100%;
+      max-width: 980px;
+      background: linear-gradient(180deg, rgba(10,10,10,0.6), rgba(8,8,8,0.55));
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      border: 1px solid rgba(57,255,20,0.06);
+      backdrop-filter: blur(4px);
+      position: relative;
+    }
+
+    /* لوجو كتابة */
+    .typing {
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      width: 16ch;
+      white-space: nowrap;
+      overflow: hidden;
+      border-left: 3px solid var(--accent);
+      padding-right: 6px;
+      margin-bottom: 14px;
+      color: transparent;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      animation: typing 2.6s steps(16) 1 forwards, blink 0.6s step-end infinite;
+    }
+    @keyframes typing { from { width: 0 } to { width: 16ch } }
+    @keyframes blink { 50% { border-color: transparent } }
+
+    /* شريط البحث الكبير */
+    .search-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      position: relative;
+    }
+    .search-row input {
+      flex: 1;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(57,255,20,0.08);
+      background: rgba(0,0,0,0.6);
+      color: var(--accent);
+      outline: none;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+    .search-row input:focus {
+      box-shadow: 0 0 15px rgba(57,255,20,0.3);
+      border-color: var(--accent);
+    }
+    .search-row .btn {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #000;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0,255,136,0.08);
+      transition: all 0.3s ease;
+    }
+    .search-row .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(0,255,136,0.15);
+    }
+
+    /* روابط سريعة */
+    .quick {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+    }
+    .ql {
+      background: var(--glass);
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(57,255,20,0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform .18s ease, background .18s;
+      position: relative;
+      overflow: hidden;
+    }
+    .ql::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .ql:hover::before {
+      opacity: 1;
+    }
+    .ql:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+    .ql i {
+      font-size: 24px;
+      color: var(--accent);
+      z-index: 1;
+      transition: all 0.3s ease;
+    }
+    .ql span {
+      font-size: 14px;
+      color: rgba(255,255,255,0.9);
+      z-index: 1;
+    }
+
+    /* ألوان خاصة بكل منصة */
+    .ql.facebook { border-color: rgba(24, 119, 242, 0.4); }
+    .ql.facebook:hover { box-shadow: 0 10px 20px rgba(24, 119, 242, 0.3); }
+    .ql.facebook i { color: var(--facebook); }
+
+    .ql.whatsapp { border-color: rgba(37, 211, 102, 0.4); }
+    .ql.whatsapp:hover { box-shadow: 0 10px 20px rgba(37, 211, 102, 0.3); }
+    .ql.whatsapp i { color: var(--whatsapp); }
+
+    .ql.telegram { border-color: rgba(0, 136, 204, 0.4); }
+    .ql.telegram:hover { box-shadow: 0 10px 20px rgba(0, 136, 204, 0.3); }
+    .ql.telegram i { color: var(--telegram); }
+
+    .ql.instagram { border-color: rgba(228, 64, 95, 0.4); }
+    .ql.instagram:hover { box-shadow: 0 10px 20px rgba(228, 64, 95, 0.3); }
+    .ql.instagram i { 
+      background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .ql.twitter { border-color: rgba(29, 161, 242, 0.4); }
+    .ql.twitter:hover { box-shadow: 0 10px 20px rgba(29, 161, 242, 0.3); }
+    .ql.twitter i { color: var(--twitter); }
+
+    .ql.tiktok { border-color: rgba(0, 0, 0, 0.4); }
+    .ql.tiktok:hover { box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); }
+    .ql.tiktok i { 
+      background: linear-gradient(45deg, #000000, #25F4EE, #FE2C55);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .ql.snapchat { border-color: rgba(255, 252, 0, 0.4); }
+    .ql.snapchat:hover { box-shadow: 0 10px 20px rgba(255, 252, 0, 0.3); }
+    .ql.snapchat i { color: var(--snapchat); }
+
+    .ql.youtube { border-color: rgba(255, 0, 0, 0.4); }
+    .ql.youtube:hover { box-shadow: 0 10px 20px rgba(255, 0, 0, 0.3); }
+    .ql.youtube i { color: var(--youtube); }
+
+    .ql.linkedin { border-color: rgba(10, 102, 194, 0.4); }
+    .ql.linkedin:hover { box-shadow: 0 10px 20px rgba(10, 102, 194, 0.3); }
+    .ql.linkedin i { color: var(--linkedin); }
+
+    .ql.pinterest { border-color: rgba(189, 8, 28, 0.4); }
+    .ql.pinterest:hover { box-shadow: 0 10px 20px rgba(189, 8, 28, 0.3); }
+    .ql.pinterest i { color: var(--pinterest); }
+
+    .ql.reddit { border-color: rgba(255, 69, 0, 0.4); }
+    .ql.reddit:hover { box-shadow: 0 10px 20px rgba(255, 69, 0, 0.3); }
+    .ql.reddit i { color: var(--reddit); }
+
+    .ql.discord { border-color: rgba(88, 101, 242, 0.4); }
+    .ql.discord:hover { box-shadow: 0 10px 20px rgba(88, 101, 242, 0.3); }
+    .ql.discord i { color: var(--discord); }
+
+    /* إعدادات */
+    .settings {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .row label {
+      flex: 1;
+      text-align: right;
+    }
+    .switch {
+      width: 44px;
+      height: 24px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+    }
+    .knob {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--accent);
+      transition: left .18s;
+    }
+
+    /* الفوتر */
+    .footer {
+      text-align: center;
+      color: rgba(255,255,255,0.4);
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    /* متصفح البروكسي */
+    .browser-container {
+      width: 100%;
+      background: rgba(10, 8, 20, 0.7);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(106, 0, 255, 0.6),
+                  0 0 40px rgba(255, 0, 170, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(106, 0, 255, 0.4);
+    }
+
+    .proxy-note {
+      background: rgba(0, 30, 60, 0.6);
+      padding: 12px;
+      border-radius: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      color: #00e5ff;
+      border: 1px solid rgba(0, 200, 255, 0.4);
+    }
+
+    .url-bar {
+      display: flex;
+      margin-bottom: 25px;
+    }
+
+    .url-bar input {
+      flex: 1;
+      padding: 14px 20px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 50px 0 0 50px;
+      background: rgba(20, 15, 40, 0.8);
+      color: white;
+      outline: none;
+      box-shadow: inset 0 0 10px rgba(106, 0, 255, 0.5);
+    }
+
+    .url-bar button {
+      padding: 14px 25px;
+      background: linear-gradient(135deg, #00e5ff, #8a2be2);
+      color: white;
+      border: none;
+      border-radius: 0 50px 50px 0;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.7);
+    }
+
+    .url-bar button:hover {
+      background: linear-gradient(135deg, #8a2be2, #00e5ff);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.9);
+    }
+
+    .browser-controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .browser-controls button {
+      background: rgba(30, 20, 60, 0.7);
+      color: white;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      border-radius: 50px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .browser-controls button:hover {
+      background: rgba(0, 229, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    }
+
+    .browser-frame {
+      width: 100%;
+      height: 600px;
+      border: none;
+      border-radius: 12px;
+      background: #000;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .loading-indicator {
+      display: none;
+      text-align: center;
+      padding: 10px;
+      color: #00e5ff;
+    }
+
+    .loading-indicator.active {
+      display: block;
+    }
+
+    .error-message {
+      display: none;
+      background: rgba(255, 0, 0, 0.2);
+      color: #ff6b6b;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      margin-top: 10px;
+      border: 1px solid rgba(255, 0, 0, 0.4);
+    }
+
+    .error-message.active {
+      display: block;
+    }
+
+    .proxy-selector {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+
+    .proxy-selector select {
+      background: rgba(20, 15, 40, 0.8);
+      color: white;
+      border: 1px solid rgba(0, 229, 255, 0.4);
+      border-radius: 50px;
+      padding: 8px 15px;
+      outline: none;
+    }
+
+    /* أقسام منصات التواصل */
+    .social-section {
+      margin-top: 20px;
+    }
+    .section-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: var(--accent);
+      text-align: center;
+      text-shadow: 0 0 10px var(--accent);
+    }
+
+    /* أزرار صغيرة */
+    .btn-small {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(57,255,20,0.1);
+      color: var(--accent);
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s ease;
+    }
+    .btn-small:hover {
+      background: rgba(57,255,20,0.15);
+      transform: translateY(-2px);
+    }
+
+    /* responsive */
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: auto;
+        top: 0;
+        display: flex;
+        flex-direction: row;
+        overflow: auto;
+        padding: 12px;
+        gap: 8px;
+        height: 64px;
+        align-items: center;
+        z-index: 4;
+      }
+      .main {
+        padding: 18px;
+        margin-top: 64px;
+      }
+      .card {
+        padding: 16px;
+      }
+      .typing {
+        font-size: 28px;
+        width: 12ch;
+      }
+      .browser-frame {
+        height: 400px;
+      }
+      .quick {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .search-row input {
+        padding: 12px 14px;
+      }
+      .btn {
+        padding: 10px 14px;
+      }
+      .quick {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      }
+      .browser-controls {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- canvas للماتريكس -->
+  <canvas id="matrix"></canvas>
+
+  <div class="app" id="app">
+    <aside class="sidebar" aria-label="الشريط الجانبي">
+      <div class="brand">
+        <div class="logo-blob">NZ</div>
+        <div>
+          <h1>متصفح نيون</h1>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5)">منصات التواصل الاجتماعي</div>
+        </div>
+      </div>
+
+      <nav class="nav" role="navigation" aria-label="القائمة">
+        <button id="nav-home" class="active"><i class="fas fa-home"></i> الرئيسية</button>
+        <button id="nav-browser"><i class="fas fa-globe"></i> متصفح البروكسي</button>
+        <button id="nav-social"><i class="fas fa-share-alt"></i> منصات التواصل</button>
+        <button id="nav-settings"><i class="fas fa-cog"></i> الإعدادات</button>
+      </nav>
+
+      <div class="spacer"></div>
+
+      <div style="font-size:13px;color:rgba(255,255,255,0.45)">
+        الإصدار 3.0<br>2025 &copy; متصفح نيون
+      </div>
+    </aside>
+
+    <main class="main" role="main">
+      <!-- بطاقة رئيسية -->
+      <section class="card" id="homeView">
+        <div class="typing">SNIPER46441</div>
+
+        <div class="search-row" style="margin-top:8px">
+          <input id="urlInput" placeholder="اكتب رابط مباشرة أو كلمات للبحث..." aria-label="بحث" list="searchSuggestions" />
+          <datalist id="searchSuggestions"></datalist>
+          <button class="btn search-btn" id="searchBtn"><i class="fas fa-search"></i> ابحث</button>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;justify-content:center">
+          <button class="btn-small" onclick="openSearch('google','urlInput')" title="بحث Google"><i class="fab fa-google"></i></button>
+          <button class="btn-small" onclick="openSearch('duck','urlInput')" title="DuckDuckGo"><i class="fas fa-search"></i></button>
+          <button class="btn-small" onclick="openSearch('youtube','urlInput')" title="YouTube"><i class="fab fa-youtube"></i></button>
+          <button class="btn-small" onclick="openSearch('wiki','urlInput')" title="ويكيبيديا"><i class="fas fa-book"></i></button>
+        </div>
+
+        <div class="social-section">
+          <div class="section-title">المنصات الاجتماعية الرئيسية</div>
+          <div class="quick" id="quickLinks">
+            <div class="ql facebook" onclick="openLink('https://www.facebook.com/share/17deRz94vd/')"><i class="fab fa-facebook"></i><span>Facebook</span></div>
+            <div class="ql instagram" onclick="openLink('https://www.instagram.com/sniper_46441?igsh=MTl0bGY3cmg4dXp6eg==')"><i class="fab fa-instagram"></i><span>Instagram</span></div>
+            <div class="ql twitter" onclick="openLink('https://twitter.com')"><i class="fab fa-twitter"></i><span>تويتر</span></div>
+            <div class="ql tiktok" onclick="openLink('https://www.tiktok.com/@omarfif46441?is_from_webapp=1&sender_device=pc')"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
+            <div class="ql whatsapp" onclick="openLink('https://wa.me/+201005559385?text=S46441')"><i class="fab fa-whatsapp"></i><span>WhatsApp</span></div>
+            <div class="ql telegram" onclick="openLink('t.me/SNIPER46441')"><i class="fab fa-telegram"></i><span>Telegram</span></div>
+          </div>
+        </div>
+
+        <div class="social-section">
+          <div class="section-title">منصات أخرى</div>
+          <div class="quick" id="secondaryLinks">
+            <div class="ql youtube" onclick="openLink('https://youtube.com')"><i class="fab fa-youtube"></i><span>يوتيوب</span></div>
+            <div class="ql snapchat" onclick="openLink('https://snapchat.com')"><i class="fab fa-snapchat"></i><span>سناب شات</span></div>
+            <div class="ql linkedin" onclick="openLink('https://linkedin.com')"><i class="fab fa-linkedin"></i><span>لينكد إن</span></div>
+            <div class="ql pinterest" onclick="openLink('https://pinterest.com')"><i class="fab fa-pinterest"></i><span>بينتريست</span></div>
+            <div class="ql reddit" onclick="openLink('https://reddit.com')"><i class="fab fa-reddit"></i><span>ريديت</span></div>
+            <div class="ql discord" onclick="openLink('https://discord.com')"><i class="fab fa-discord"></i><span>ديسكورد</span></div>
+          </div>
+        </div>
+
+        <div class="footer">تنبيه: هذا متصفح تجريبي. استخدم VPN وكن حذرًا عند إدخال معلومات حساسة.</div>
+      </section>
+
+      <!-- متصفح البروكسي -->
+      <section class="card" id="browserView" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0;color:var(--accent)">متصفح البروكسي الآمن</h2>
+          <button onclick="document.getElementById('nav-home').click()" class="btn" style="background:transparent;border:1px solid rgba(57,255,20,0.06);color:var(--accent)">العودة</button>
+        </div>
+
+        <div class="proxy-note">
+          <i class="fas fa-shield-alt"></i> جميع المواقع تُفتح عبر وكيل ويب لحماية خصوصيتك وتجاوز الحجب
+        </div>
+
+        <div class="proxy-selector">
+          <select id="proxySelector">
+            <option value="https://www.croxyproxy.com/go.php?u=">CroxyProxy (افتراضي)</option>
+            <option value="https://www.proxysite.com/includes/process.php?action=update&u=">ProxySite</option>
+            <option value="https://www.hidemyass-freeproxy.com/proxy/en-ww/aHR0cDovLw==?u=">HideMyAss</option>
+          </select>
+        </div>
+
+        <div class="url-bar">
+          <input type="text" id="proxyUrlInput" placeholder="أدخل رابط الموقع (مثل: youtube.com)" />
+          <button id="goBtn"><i class="fas fa-arrow-right"></i> افتح عبر بروكسي</button>
+        </div>
+
+        <div class="browser-controls">
+          <button id="backBtn"><i class="fas fa-arrow-right"></i> رجوع</button>
+          <button id="forwardBtn"><i class="fas fa-arrow-left"></i> تقدم</button>
+          <button id="refreshBtn"><i class="fas fa-redo"></i> تحديث</button>
+          <button id="homeBtn"><i class="fas fa-home"></i> الصفحة الرئيسية</button>
+        </div>
+
+        <div class="loading-indicator" id="loadingIndicator">
+          <i class="fas fa-spinner fa-spin"></i> جاري تحميل الموقع...
+        </div>
+
+        <div class="error-message" id="errorMessage">
+          <i class="fas fa-exclamation-triangle"></i> فشل تحميل الموقع عبر البروكسي. جرّب موقعًا آخر أو بروكسي مختلف.
+        </div>
+
+        <iframe id="browserFrame" class="browser-frame" src="about:blank" title="Web Proxy Browser"></iframe>
+      </section>
+
+      <!-- منصات التواصل الاجتماعي -->
+      <section class="card" id="socialView" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0;color:var(--accent)">جميع منصات التواصل الاجتماعي</h2>
+          <button onclick="document.getElementById('nav-home').click()" class="btn" style="background:transparent;border:1px solid rgba(57,255,20,0.06);color:var(--accent)">العودة</button>
+        </div>
+
+        <div class="social-section">
+          <div class="section-title">المنصات الأساسية</div>
+          <div class="quick">
+            <div class="ql facebook" onclick="openLink('https://facebook.com')"><i class="fab fa-facebook"></i><span>فيسبوك</span></div>
+            <div class="ql instagram" onclick="openLink('https://instagram.com')"><i class="fab fa-instagram"></i><span>انستجرام</span></div>
+            <div class="ql twitter" onclick="openLink('https://twitter.com')"><i class="fab fa-twitter"></i><span>تويتر</span></div>
+            <div class="ql tiktok" onclick="openLink('https://tiktok.com')"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
+            <div class="ql whatsapp" onclick="openLink('https://web.whatsapp.com')"><i class="fab fa-whatsapp"></i><span>واتساب ويب</span></div>
+            <div class="ql telegram" onclick="openLink('https://web.telegram.org')"><i class="fab fa-telegram"></i><span>تلجرام ويب</span></div>
+          </div>
+        </div>
+
+        <div class="social-section">
+          <div class="section-title">منصات الفيديو</div>
+          <div class="quick">
+            <div class="ql youtube" onclick="openLink('https://youtube.com')"><i class="fab fa-youtube"></i><span>يوتيوب</span></div>
+            <div class="ql tiktok" onclick="openLink('https://tiktok.com')"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
+            <div class="ql instagram" onclick="openLink('https://instagram.com')"><i class="fab fa-instagram"></i><span>انستجرام</span></div>
+            <div class="ql twitter" onclick="openLink('https://twitter.com')"><i class="fab fa-twitter"></i><span>تويتر</span></div>
+          </div>
+        </div>
+
+        <div class="social-section">
+          <div class="section-title">منصات التواصل المهني</div>
+          <div class="quick">
+            <div class="ql linkedin" onclick="openLink('https://linkedin.com')"><i class="fab fa-linkedin"></i><span>لينكد إن</span></div>
+            <div class="ql twitter" onclick="openLink('https://twitter.com')"><i class="fab fa-twitter"></i><span>تويتر</span></div>
+            <div class="ql facebook" onclick="openLink('https://facebook.com')"><i class="fab fa-facebook"></i><span>فيسبوك</span></div>
+          </div>
+        </div>
+
+        <div class="social-section">
+          <div class="section-title">منصات أخرى</div>
+          <div class="quick">
+            <div class="ql snapchat" onclick="openLink('https://snapchat.com')"><i class="fab fa-snapchat"></i><span>سناب شات</span></div>
+            <div class="ql pinterest" onclick="openLink('https://pinterest.com')"><i class="fab fa-pinterest"></i><span>بينتريست</span></div>
+            <div class="ql reddit" onclick="openLink('https://reddit.com')"><i class="fab fa-reddit"></i><span>ريديت</span></div>
+            <div class="ql discord" onclick="openLink('https://discord.com')"><i class="fab fa-discord"></i><span>ديسكورد</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- الإعدادات -->
+      <section class="card" id="settingsView" style="display:none">
+        <h2 style="margin:0;color:var(--accent)">الإعدادات</h2>
+
+        <div class="settings" style="margin-top:12px">
+          <div class="row">
+            <label>عرض تأثير الماتريكس</label>
+            <div class="switch" id="toggleMatrix"><div class="knob"></div></div>
+          </div>
+
+          <div class="row">
+            <label>فتح الروابط في تبويب جديد (افتراضي)</label>
+            <div class="switch" id="toggleNewTab"><div class="knob"></div></div>
+          </div>
+
+          <div class="row">
+            <label>تذكر آخر بحث</label>
+            <div class="switch" id="toggleRemember"><div class="knob"></div></div>
+          </div>
+          
+          <div class="row">
+            <label>VPN افتراضي (تجريبي)</label>
+            <div class="switch" id="toggleVPN"><div class="knob"></div></div>
+          </div>
+
+          <div id="vpnStatus" style="margin-top:8px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.05);display:none">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <div style="font-weight:700">اتصال VPN نشط</div>
+                <div style="color:rgba(255,255,255,0.6);font-size:13px">موقع افتراضي: <span id="vpnLocation">سنغافورة</span></div>
+              </div>
+              <button class="btn-small" onclick="changeVPNLocation()">تغيير الموقع</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;color:rgba(255,255,255,0.6)">الإعدادات تُحفظ محليًا (localStorage).</div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    /***********************
+     * Matrix background
+     ***********************/
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    let cw = canvas.width = innerWidth;
+    let ch = canvas.height = innerHeight;
+    const fontSize = 16;
+    let columns = Math.floor(cw / fontSize);
+    let drops = [];
+    let matrixEnabled = true;
+
+    const matrixChars = "01NEONBROWSER█▓▒░<>/\\|()[]{}+-=~*";
+
+    function initDrops() {
+      columns = Math.floor(cw / fontSize);
+      drops = Array.from({length: columns}).map(()=>Math.floor(Math.random()*ch/fontSize));
+    }
+    initDrops();
+
+    function drawMatrix() {
+      if(!matrixEnabled) {
+        ctx.clearRect(0,0,cw,ch);
+        return;
+      }
+      ctx.fillStyle = "rgba(0,0,0,0.06)";
+      ctx.fillRect(0,0,cw,ch);
+      ctx.font = fontSize + "px monospace";
+      ctx.fillStyle = "#39FF14";
+      for(let i=0;i<drops.length;i++){
+        const text = matrixChars.charAt(Math.floor(Math.random()*matrixChars.length));
+        ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+        if(drops[i]*fontSize > ch && Math.random() > 0.975) drops[i]=0;
+        drops[i]++;
+      }
+    }
+    let matrixInterval = setInterval(drawMatrix, 40);
+
+    addEventListener('resize', ()=>{
+      cw = canvas.width = innerWidth;
+      ch = canvas.height = innerHeight;
+      initDrops();
+    });
+
+    /***********************
+     * Navigation logic
+     ***********************/
+    const views = {
+      home: document.getElementById('homeView'),
+      browser: document.getElementById('browserView'),
+      social: document.getElementById('socialView'),
+      settings: document.getElementById('settingsView')
+    };
+
+    function showView(name){
+      Object.values(views).forEach(v => v.style.display = 'none');
+      views[name].style.display = 'block';
+      document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+      document.getElementById('nav-'+name).classList.add('active');
+    }
+
+    document.getElementById('nav-home').addEventListener('click', ()=>showView('home'));
+    document.getElementById('nav-browser').addEventListener('click', ()=>showView('browser'));
+    document.getElementById('nav-social').addEventListener('click', ()=>showView('social'));
+    document.getElementById('nav-settings').addEventListener('click', ()=>showView('settings'));
+
+    /***********************
+     * Proxy Browser Logic
+     ***********************/
+    let currentProxy = "https://www.croxyproxy.com/go.php?u=";
+    const browserFrame = document.getElementById('browserFrame');
+    const proxyUrlInput = document.getElementById('proxyUrlInput');
+    const goBtn = document.getElementById('goBtn');
+    const backBtn = document.getElementById('backBtn');
+    const forwardBtn = document.getElementById('forwardBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const homeBtn = document.getElementById('homeBtn');
+    const proxySelector = document.getElementById('proxySelector');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const errorMessage = document.getElementById('errorMessage');
+
+    // تعيين البروكسي المختار
+    proxySelector.addEventListener('change', () => {
+      currentProxy = proxySelector.value;
+    });
+
+    // تشفير الرابط
+    function encodeUrl(url) {
+      // تأكد من وجود https://
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://' + url;
+      }
+      return currentProxy + encodeURIComponent(url);
+    }
+
+    // فتح الرابط عبر البروكسي
+    function openViaProxy(url) {
+      if (!url.trim()) return;
+      
+      loadingIndicator.classList.add('active');
+      errorMessage.classList.remove('active');
+      
+      try {
+        const proxiedUrl = encodeUrl(url);
+        browserFrame.src = proxiedUrl;
+      } catch (error) {
+        console.error('Error opening URL:', error);
+        showError();
+      }
+    }
+
+    // عرض رسالة الخطأ
+    function showError() {
+      errorMessage.classList.add('active');
+      loadingIndicator.classList.remove('active');
+    }
+
+    // أحداث أزرار متصفح البروكسي
+    goBtn.addEventListener('click', () => {
+      openViaProxy(proxyUrlInput.value);
+    });
+
+    proxyUrlInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') openViaProxy(proxyUrlInput.value);
+    });
+
+    backBtn.addEventListener('click', () => {
+      try {
+        browserFrame.contentWindow.history.back();
+      } catch (error) {
+        console.error('Cannot go back:', error);
+      }
+    });
+
+    forwardBtn.addEventListener('click', () => {
+      try {
+        browserFrame.contentWindow.history.forward();
+      } catch (error) {
+        console.error('Cannot go forward:', error);
+      }
+    });
+
+    refreshBtn.addEventListener('click', () => {
+      browserFrame.src = browserFrame.src;
+    });
+
+    homeBtn.addEventListener('click', () => {
+      browserFrame.src = 'about:blank';
+      proxyUrlInput.value = '';
+      errorMessage.classList.remove('active');
+    });
+
+    // أحداث الإطار
+    browserFrame.addEventListener('load', () => {
+      loadingIndicator.classList.remove('active');
+    });
+
+    browserFrame.addEventListener('error', () => {
+      showError();
+    });
+
+    /***********************
+     * Open links & search
+     ***********************/
+    // محركات البحث المتاحة
+    const SEARCH_ENGINES = {
+      google: {
+        name: 'Google',
+        icon: 'fab fa-google',
+        url: 'https://www.google.com/search?q='
+      },
+      duck: {
+        name: 'DuckDuckGo',
+        icon: 'fas fa-search',
+        url: 'https://duckduckgo.com/?q='
+      },
+      youtube: {
+        name: 'YouTube',
+        icon: 'fab fa-youtube',
+        url: 'https://www.youtube.com/results?search_query='
+      },
+      wiki: {
+        name: 'ويكيبيديا',
+        icon: 'fas fa-book',
+        url: 'https://ar.wikipedia.org/w/index.php?search='
+      }
+    };
+
+    // preference: open in new tab?
+    const settings = {
+      newTab: true,
+      rememberSearch: true,
+      matrixOn: true,
+      vpnEnabled: false
+    };
+
+    // load saved settings
+    try {
+      const s = JSON.parse(localStorage.getItem('hz_settings') || '{}');
+      Object.assign(settings, s);
+    } catch(e){}
+
+    // apply matrix setting
+    function applyMatrixSetting(){
+      matrixEnabled = settings.matrixOn;
+      const knob = document.querySelector('#toggleMatrix .knob');
+      if(settings.matrixOn) knob.style.left = '23px'; else knob.style.left = '3px';
+    }
+
+    // apply newTab setting
+    function applyNewTabSetting(){
+      const knob = document.querySelector('#toggleNewTab .knob');
+      if(settings.newTab) knob.style.left = '23px'; else knob.style.left = '3px';
+    }
+
+    // apply remember setting
+    function applyRememberSetting(){
+      const knob = document.querySelector('#toggleRemember .knob');
+      if(settings.rememberSearch) knob.style.left = '23px'; else knob.style.left = '3px';
+      if(settings.rememberSearch){
+        const last = localStorage.getItem('hz_last_search');
+        if(last) document.getElementById('urlInput').value = last;
+      } else {
+        localStorage.removeItem('hz_last_search');
+      }
+    }
+
+    // apply VPN setting
+    function updateVPNUI(){
+      const vpnToggle = document.getElementById('toggleVPN');
+      const vpnStatus = document.getElementById('vpnStatus');
+      const knob = vpnToggle.querySelector('.knob');
+      
+      if(settings.vpnEnabled){
+        knob.style.left = '23px';
+        vpnStatus.style.display = 'block';
+        const randomLocation = VPN_LOCATIONS[Math.floor(Math.random() * VPN_LOCATIONS.length)];
+        document.getElementById('vpnLocation').textContent = randomLocation;
+      } else {
+        knob.style.left = '3px';
+        vpnStatus.style.display = 'none';
+      }
+    }
+
+    applyMatrixSetting();
+    applyNewTabSetting();
+    applyRememberSetting();
+    updateVPNUI();
+
+    // مواقع VPN المتاحة
+    const VPN_LOCATIONS = [
+      'سنغافورة', 'هولندا', 'الولايات المتحدة', 'ألمانيا', 
+      'اليابان', 'كندا', 'بريطانيا', 'فرنسا', 'السويد'
+    ];
+
+    // toggle switches
+    document.getElementById('toggleMatrix').addEventListener('click', ()=>{
+      settings.matrixOn = !settings.matrixOn;
+      saveSettings();
+      applyMatrixSetting();
+      showNotification(settings.matrixOn ? 'تم تفعيل تأثير الماتريكس' : 'تم تعطيل تأثير الماتريكس', 'info');
+    });
+    document.getElementById('toggleNewTab').addEventListener('click', ()=>{
+      settings.newTab = !settings.newTab;
+      saveSettings();
+      applyNewTabSetting();
+      showNotification(settings.newTab ? 'فتح الروابط في تبويب جديد' : 'فتح الروابط في نفس النافذة', 'info');
+    });
+    document.getElementById('toggleRemember').addEventListener('click', ()=>{
+      settings.rememberSearch = !settings.rememberSearch;
+      saveSettings();
+      applyRememberSetting();
+      showNotification(settings.rememberSearch ? 'سيتم تذكر آخر بحث' : 'لن يتم تذكر آخر بحث', 'info');
+    });
+    document.getElementById('toggleVPN').addEventListener('click', toggleVPN);
+
+    function toggleVPN(){
+      settings.vpnEnabled = !settings.vpnEnabled;
+      saveSettings();
+      updateVPNUI();
+      
+      if(settings.vpnEnabled){
+        showNotification('تم تشغيل VPN بنجاح', 'success');
+      } else {
+        showNotification('تم إيقاف VPN', 'info');
+      }
+    }
+
+    function changeVPNLocation(){
+      if(settings.vpnEnabled){
+        const randomLocation = VPN_LOCATIONS[Math.floor(Math.random() * VPN_LOCATIONS.length)];
+        document.getElementById('vpnLocation').textContent = randomLocation;
+        showNotification(`تم تغيير موقع VPN إلى ${randomLocation}`, 'info');
+      } else {
+        showNotification('الـVPN غير مفعل', 'error');
+      }
+    }
+
+    function isSafeUrl(url){
+      try {
+        const parsed = new URL(url);
+        const badProtocols = ['javascript:', 'data:', 'vbscript:', 'file:'];
+        if(badProtocols.includes(parsed.protocol.toLowerCase())) return false;
+        return true;
+      } catch(e){
+        return false;
+      }
+    }
+
+    function openLink(url){
+      if(!isSafeUrl(url)){
+        showNotification('رابط غير آمن تم حظره', 'error');
+        return false;
+      }
+      
+      if(settings.vpnEnabled){
+        showNotification(`يتم التصفح عبر VPN (${document.getElementById('vpnLocation').textContent})`, 'info', 1600);
+      }
+      
+      if(settings.newTab){
+        window.open(url, '_blank', 'noopener,noreferrer');
+      } else {
+        location.href = url;
+      }
+      
+      return true;
+    }
+
+    function navigate(){
+      const v = document.getElementById('urlInput').value.trim();
+      if(!v) return;
+      let url = v;
+      if(!/^https?:\/\//i.test(url)){
+        if(url.includes(' ') || !url.includes('.')) {
+          url = SEARCH_ENGINES.google.url + encodeURIComponent(url);
+        } else {
+          url = 'https://' + url;
+        }
+      }
+      if(settings.newTab) window.open(url,'_blank','noopener,noreferrer'); else location.href = url;
+      if(settings.rememberSearch) localStorage.setItem('hz_last_search', v);
+    }
+    document.getElementById('searchBtn').addEventListener('click', navigate);
+    document.getElementById('urlInput').addEventListener('keydown', e=>{ if(e.key==='Enter') navigate(); });
+
+    function openSearch(engineId, inputId){
+      const q = document.getElementById(inputId).value.trim();
+      if(!q) return;
+      
+      const engine = SEARCH_ENGINES[engineId] || SEARCH_ENGINES.google;
+      const url = engine.url + encodeURIComponent(q);
+      openLink(url);
+      
+      if(settings.rememberSearch){
+        localStorage.setItem('hz_last_search', q);
+      }
+    }
+
+    /***********************
+     * Notifications System
+     ***********************/
+    function showNotification(message, type = 'info', duration = 3000){
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.innerHTML = `
+        <div style="display:flex;gap:8px;align-items:center">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+          <div>${message}</div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background:none;border:none;color:inherit">
+          <i class="fas fa-times"></i>
+        </button>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+      }, duration);
+    }
+
+    /***********************
+     * Save settings
+     ***********************/
+    function saveSettings(){
+      localStorage.setItem('hz_settings', JSON.stringify(settings));
+    }
+
+    /***********************
+     * Initialize App
+     ***********************/
+    // first-run: show home
+    showView('home');
+
+    // keep saving settings on unload
+    addEventListener('beforeunload', ()=>saveSettings());
+  </script>
+
+</body>
+</html>
