@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S46441 cyberpunk calculator </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0a0a1a;
+            color: #00f3ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* خلفية Cyberpunk مع تأثيرات */
+        .cyber-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(0, 243, 255, 0.05);
+        }
+
+        .grid-line.horizontal {
+            width: 100%;
+            height: 1px;
+        }
+
+        .grid-line.vertical {
+            width: 1px;
+            height: 100%;
+        }
+
+        .floating-shape {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(155, 0, 255, 0.3), transparent);
+            filter: blur(20px);
+            animation: float 15s infinite linear;
+        }
+
+        .floating-shape:nth-child(2n) {
+            background: radial-gradient(circle, rgba(0, 243, 255, 0.2), transparent);
+            animation-direction: reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 100px) rotate(360deg); }
+        }
+
+        /* الحاوية الرئيسية */
+        .container {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            z-index: 1;
+        }
+
+        /* العنوان */
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .title {
+            font-size: 2.2rem;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #00f3ff;
+            text-shadow: 0 0 5px #00f3ff;
+            letter-spacing: 1px;
+        }
+
+        .neon-border {
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, #ff00ff, #00f3ff, #ff00ff);
+            margin-top: 10px;
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.7);
+        }
+
+        /* شاشة الآلة الحاسبة */
+        .calculator-screen {
+            background-color: rgba(0, 20, 30, 0.9);
+            border: 2px solid #00f3ff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4),
+                        inset 0 0 15px rgba(0, 243, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen-content {
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        .previous-operation {
+            color: rgba(0, 243, 255, 0.7);
+            font-size: 1.2rem;
+            min-height: 27px;
+            word-break: break-all;
+            text-align: left;
+            width: 100%;
+        }
+
+        .current-operation {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: bold;
+            word-break: break-all;
+            text-align: left;
+            width: 100%;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+
+        .screen-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 243, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 243, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+        }
+
+        /* أزرار الآلة الحاسبة */
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .calculator-button {
+            background-color: rgba(10, 15, 35, 0.9);
+            border: none;
+            border-radius: 10px;
+            color: #00f3ff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 18px 0;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .calculator-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 243, 255, 0.4);
+        }
+
+        .calculator-button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0, 243, 255, 0.4);
+        }
+
+        .button-glow {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: radial-gradient(circle, rgba(0, 243, 255, 0.3), transparent 70%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .calculator-button:hover .button-glow {
+            opacity: 1;
+        }
+
+        .operator {
+            background-color: rgba(155, 0, 255, 0.3);
+            color: #ff00ff;
+            text-shadow: 0 0 5px #ff00ff;
+        }
+
+        .equals {
+            background-color: rgba(255, 0, 128, 0.3);
+            color: #ff0080;
+            text-shadow: 0 0 5px #ff0080;
+        }
+
+        .clear, .delete {
+            background-color: rgba(255, 100, 0, 0.3);
+            color: #ff6400;
+            text-shadow: 0 0 5px #ff6400;
+            font-size: 1.3rem;
+        }
+
+        /* زر الصفر يأخذ مساحة عمودين */
+        .span-two {
+            grid-column: span 2;
+        }
+
+        /* مؤشر الطاقة */
+        .power-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: #00f3ff;
+        }
+
+        .power-led {
+            width: 12px;
+            height: 12px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            margin-left: 10px;
+            box-shadow: 0 0 10px #00ff00;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* التذييل */
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.8rem;
+            color: rgba(0, 243, 255, 0.7);
+        }
+
+        /* تأثيرات الاستجابة */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+                max-width: 95%;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .calculator-button {
+                padding: 15px 0;
+                font-size: 1.3rem;
+            }
+            
+            .current-operation {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- خلفية Cyberpunk الديناميكية -->
+    <div class="cyber-bg" id="cyberBg"></div>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="container">
+        <!-- العنوان -->
+        <div class="header">
+            <h1 class="title">CYBER CALC S46441</h1>
+            <p class="subtitle">Calculator</p>
+            <div class="neon-border"></div>
+        </div>
+
+        <!-- شاشة الآلة الحاسبة -->
+        <div class="calculator-screen">
+            <div class="screen-grid"></div>
+            <div class="screen-content">
+                <div class="previous-operation" id="previousOperation"></div>
+                <div class="current-operation" id="currentOperation">0</div>
+            </div>
+        </div>
+
+        <!-- أزرار الآلة الحاسبة - النسخة النهائية -->
+        <div class="calculator-buttons">
+            <!-- الصف الأول - العمليات الأساسية -->
+            <button class="calculator-button clear" data-action="clear">
+                <span class="button-glow"></span>
+                AC
+            </button>
+            <button class="calculator-button delete" data-action="delete">
+                <span class="button-glow"></span>
+                DEL
+            </button>
+            <button class="calculator-button operator" data-operator="%">
+                <span class="button-glow"></span>
+                %
+            </button>
+            <button class="calculator-button operator" data-operator="÷">
+                <span class="button-glow"></span>
+                ÷
+            </button>
+
+            <!-- الصف الثاني - الأرقام 7، 8، 9 -->
+            <button class="calculator-button" data-number="7">
+                <span class="button-glow"></span>
+                7
+            </button>
+            <button class="calculator-button" data-number="8">
+                <span class="button-glow"></span>
+                8
+            </button>
+            <button class="calculator-button" data-number="9">
+                <span class="button-glow"></span>
+                9
+            </button>
+            <button class="calculator-button operator" data-operator="×">
+                <span class="button-glow"></span>
+                ×
+            </button>
+
+            <!-- الصف الثالث - الأرقام 4، 5، 6 -->
+            <button class="calculator-button" data-number="4">
+                <span class="button-glow"></span>
+                4
+            </button>
+            <button class="calculator-button" data-number="5">
+                <span class="button-glow"></span>
+                5
+            </button>
+            <button class="calculator-button" data-number="6">
+                <span class="button-glow"></span>
+                6
+            </button>
+            <button class="calculator-button operator" data-operator="-">
+                <span class="button-glow"></span>
+                -
+            </button>
+
+            <!-- الصف الرابع - الأرقام 1، 2، 3 -->
+            <button class="calculator-button" data-number="1">
+                <span class="button-glow"></span>
+                1
+            </button>
+            <button class="calculator-button" data-number="2">
+                <span class="button-glow"></span>
+                2
+            </button>
+            <button class="calculator-button" data-number="3">
+                <span class="button-glow"></span>
+                3
+            </button>
+            <button class="calculator-button operator" data-operator="+">
+                <span class="button-glow"></span>
+                +
+            </button>
+
+            <!-- الصف الخامس - 0، النقطة، يساوي -->
+            <button class="calculator-button span-two" data-number="0">
+                <span class="button-glow"></span>
+                0
+            </button>
+            <button class="calculator-button" data-number=".">
+                <span class="button-glow"></span>
+                .
+            </button>
+            <button class="calculator-button equals" data-action="equals">
+                <span class="button-glow"></span>
+                =
+            </button>
+        </div>
+
+        <!-- مؤشر الطاقة -->
+        <div class="power-indicator">
+            <span>system is activated</span>
+            <div class="power-led"></div>
+        </div>
+
+        <!-- التذييل -->
+        <div class="footer">
+            <p>CYBER CALC S46441 © | Calculator</p>
+        </div>
+    </div>
+
+    <script>
+        // إنشاء خلفية Cyberpunk ديناميكية
+        function createCyberBackground() {
+            const cyberBg = document.getElementById('cyberBg');
+            
+            // إنشاء خطوط الشبكة
+            for (let i = 0; i < 30; i++) {
+                const horizontalLine = document.createElement('div');
+                horizontalLine.className = 'grid-line horizontal';
+                horizontalLine.style.top = `${(i * 5)}%`;
+                cyberBg.appendChild(horizontalLine);
+                
+                const verticalLine = document.createElement('div');
+                verticalLine.className = 'grid-line vertical';
+                verticalLine.style.left = `${(i * 5)}%`;
+                cyberBg.appendChild(verticalLine);
+            }
+            
+            // إنشاء أشكال عائمة
+            for (let i = 0; i < 15; i++) {
+                const shape = document.createElement('div');
+                shape.className = 'floating-shape';
+                shape.style.width = `${Math.random() * 100 + 50}px`;
+                shape.style.height = shape.style.width;
+                shape.style.left = `${Math.random() * 100}%`;
+                shape.style.top = `${Math.random() * 100}%`;
+                shape.style.animationDuration = `${Math.random() * 20 + 10}s`;
+                cyberBg.appendChild(shape);
+            }
+        }
+
+        // منطق الآلة الحاسبة
+        class Calculator {
+            constructor() {
+                this.previousOperand = '';
+                this.currentOperand = '0';
+                this.operation = undefined;
+                this.waitingForNewOperand = false;
+                
+                this.updateDisplay();
+                this.setupEventListeners();
+            }
+            
+            clear() {
+                this.previousOperand = '';
+                this.currentOperand = '0';
+                this.operation = undefined;
+                this.waitingForNewOperand = false;
+            }
+            
+            delete() {
+                if (this.currentOperand.length === 1) {
+                    this.currentOperand = '0';
+                } else {
+                    this.currentOperand = this.currentOperand.slice(0, -1);
+                }
+            }
+            
+            appendNumber(number) {
+                if (this.waitingForNewOperand) {
+                    this.currentOperand = number;
+                    this.waitingForNewOperand = false;
+                    return;
+                }
+                
+                if (number === '.' && this.currentOperand.includes('.')) return;
+                
+                if (this.currentOperand === '0' && number !== '.') {
+                    this.currentOperand = number;
+                } else {
+                    this.currentOperand += number;
+                }
+            }
+            
+            chooseOperation(operation) {
+                if (this.currentOperand === '') return;
+                
+                // معالجة النسبة المئوية كعملية خاصة
+                if (operation === '%') {
+                    const current = parseFloat(this.currentOperand);
+                    if (!isNaN(current)) {
+                        this.currentOperand = (current / 100).toString();
+                        this.updateDisplay();
+                    }
+                    return;
+                }
+                
+                if (this.previousOperand !== '') {
+                    this.compute();
+                }
+                
+                this.operation = operation;
+                this.previousOperand = this.currentOperand;
+                this.waitingForNewOperand = true;
+            }
+            
+            compute() {
+                let computation;
+                const prev = parseFloat(this.previousOperand);
+                const current = parseFloat(this.currentOperand);
+                
+                if (isNaN(prev) || isNaN(current)) return;
+                
+                switch (this.operation) {
+                    case '+':
+                        computation = prev + current;
+                        break;
+                    case '-':
+                        computation = prev - current;
+                        break;
+                    case '×':
+                        computation = prev * current;
+                        break;
+                    case '÷':
+                        if (current === 0) {
+                            alert("خطأ: لا يمكن القسمة على صفر!");
+                            return;
+                        }
+                        computation = prev / current;
+                        break;
+                    default:
+                        return;
+                }
+                
+                // تقريب النتيجة لتجنب مشاكل الفاصلة العائمة
+                if (computation.toString().includes('.')) {
+                    computation = Math.round(computation * 100000000) / 100000000;
+                }
+                
+                this.currentOperand = computation.toString();
+                this.operation = undefined;
+                this.previousOperand = '';
+                this.waitingForNewOperand = true;
+            }
+            
+            getDisplayNumber(number) {
+                if (number === '') return '';
+                
+                const stringNumber = number.toString();
+                const integerDigits = parseFloat(stringNumber.split('.')[0]);
+                const decimalDigits = stringNumber.split('.')[1];
+                
+                let integerDisplay;
+                
+                if (isNaN(integerDigits)) {
+                    integerDisplay = '';
+                } else {
+                    integerDisplay = integerDigits.toLocaleString('en', {
+                        maximumFractionDigits: 0
+                    });
+                }
+                
+                if (decimalDigits != null) {
+                    return `${integerDisplay}.${decimalDigits}`;
+                } else {
+                    return integerDisplay;
+                }
+            }
+            
+            updateDisplay() {
+                const currentOperationElement = document.getElementById('currentOperation');
+                const previousOperationElement = document.getElementById('previousOperation');
+                
+                currentOperationElement.textContent = this.getDisplayNumber(this.currentOperand);
+                
+                if (this.operation != null) {
+                    previousOperationElement.textContent = 
+                        `${this.getDisplayNumber(this.previousOperand)} ${this.operation}`;
+                } else {
+                    previousOperationElement.textContent = '';
+                }
+                
+                // تأثيرات بصرية عند التحديث
+                currentOperationElement.style.transform = 'scale(1.05)';
+                setTimeout(() => {
+                    currentOperationElement.style.transform = 'scale(1)';
+                }, 100);
+            }
+            
+            setupEventListeners() {
+                // أزرار الأرقام
+                document.querySelectorAll('[data-number]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        this.appendNumber(button.getAttribute('data-number'));
+                        this.updateDisplay();
+                        
+                        // تأثير صوتي مرئي
+                        button.style.backgroundColor = '#0a2a3a';
+                        setTimeout(() => {
+                            button.style.backgroundColor = '';
+                        }, 150);
+                    });
+                });
+                
+                // أزرار العمليات
+                document.querySelectorAll('[data-operator]').forEach(button => {
+                    button.addEventListener('click', () => {
+                        this.chooseOperation(button.getAttribute('data-operator'));
+                        this.updateDisplay();
+                        
+                        // تأثير صوتي مرئي
+                        button.style.backgroundColor = '#2a0a3a';
+                        setTimeout(() => {
+                            button.style.backgroundColor = '';
+                        }, 150);
+                    });
+                });
+                
+                // زر المساواة
+                document.querySelector('[data-action="equals"]').addEventListener('click', () => {
+                    this.compute();
+                    this.updateDisplay();
+                    
+                    // تأثير صوتي مرئي
+                    const equalsButton = document.querySelector('[data-action="equals"]');
+                    equalsButton.style.backgroundColor = '#3a0a2a';
+                    setTimeout(() => {
+                        equalsButton.style.backgroundColor = '';
+                    }, 300);
+                });
+                
+                // زر مسح الكل (AC)
+                document.querySelector('[data-action="clear"]').addEventListener('click', () => {
+                    this.clear();
+                    this.updateDisplay();
+                    
+                    // تأثير صوتي مرئي
+                    const clearButton = document.querySelector('[data-action="clear"]');
+                    clearButton.style.backgroundColor = '#3a2a0a';
+                    setTimeout(() => {
+                        clearButton.style.backgroundColor = '';
+                    }, 300);
+                });
+                
+                // زر الحذف (DEL)
+                document.querySelector('[data-action="delete"]').addEventListener('click', () => {
+                    this.delete();
+                    this.updateDisplay();
+                    
+                    // تأثير صوتي مرئي
+                    const deleteButton = document.querySelector('[data-action="delete"]');
+                    deleteButton.style.backgroundColor = '#3a2a0a';
+                    setTimeout(() => {
+                        deleteButton.style.backgroundColor = '';
+                    }, 150);
+                });
+                
+                // دعم لوحة المفاتيح
+                document.addEventListener('keydown', (event) => {
+                    const key = event.key;
+                    
+                    if ((key >= '0' && key <= '9') || key === '.') {
+                        this.appendNumber(key);
+                        this.updateDisplay();
+                    } else if (key === '+' || key === '-' || key === '*' || key === '/') {
+                        let operation;
+                        switch (key) {
+                            case '+': operation = '+'; break;
+                            case '-': operation = '-'; break;
+                            case '*': operation = '×'; break;
+                            case '/': operation = '÷'; break;
+                        }
+                        this.chooseOperation(operation);
+                        this.updateDisplay();
+                    } else if (key === 'Enter' || key === '=') {
+                        event.preventDefault();
+                        this.compute();
+                        this.updateDisplay();
+                    } else if (key === 'Escape' || key === 'Delete') {
+                        this.clear();
+                        this.updateDisplay();
+                    } else if (key === 'Backspace') {
+                        this.delete();
+                        this.updateDisplay();
+                    } else if (key === '%') {
+                        this.chooseOperation('%');
+                        this.updateDisplay();
+                    }
+                });
+            }
+        }
+
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', () => {
+            createCyberBackground();
+            const calculator = new Calculator();
+            
+            // إضافة تأثيرات إضافية للخلفية
+            setInterval(() => {
+                const shapes = document.querySelectorAll('.floating-shape');
+                shapes.forEach(shape => {
+                    shape.style.left = `${Math.random() * 100}%`;
+                    shape.style.top = `${Math.random() * 100}%`;
+                });
+            }, 15000);
+            
+            // رسالة ترحيب في وحدة التحكم
+            console.log('%c CYBER CALC S46441 %c\nCalculator\nالترتيب مصحح وأزرار AC وDEL جاهزة!', 
+                'background: #0a0a1a; color: #ff00ff; padding: 5px 15px; font-size: 18px; border: 1px solid #00f3ff;', 
+                'color: #00f3ff; font-size: 14px;');
+        });
+    </script>
+</body>
+</html>
