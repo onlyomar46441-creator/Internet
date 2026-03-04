@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { background: #fff; color: #1a1a1a; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .wrapper { text-align: center; width: 320px; }
+        .btn { background: #1a73e8; color: #fff; border: none; padding: 16px; border-radius: 12px; cursor: pointer; font-size: 1rem; width: 100%; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .btn.secondary { background: #000; }
+        .msg { margin-top: 15px; font-size: 0.9rem; color: #5f6368; min-height: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <button id="mainBtn" class="btn"></button>
+        <div id="msg" class="msg"></div>
+    </div>
+
+    <script>
+        const btn = document.getElementById('mainBtn');
+        const msg = document.getElementById('msg');
+
+        function updateUI() {
+            const credentialId = localStorage.getItem('credId');
+            btn.innerText = !credentialId ? "تفعيل التحقق بخطوتين" : "تأكيد الهوية";
+            if (!credentialId) btn.classList.add('secondary'); else btn.classList.remove('secondary');
+        }
+
+        btn.onclick = async () => {
+            const savedId = localStorage.getItem('credId');
+            const challenge = window.crypto.getRandomValues(new Uint8Array(32));
+
+            try {
+                if (!savedId) {
+               
+                    const options = {
+                        publicKey: {
+                            challenge,
+                            rp: { name: "Security", id: window.location.hostname },
+                            user: { id: Uint8Array.from("1", c => c.charCodeAt(0)), name: "user", displayName: "User" },
+                            pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                            authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
+                        }
+                    };
+                    const credential = await navigator.credentials.create(options);
+                    
+              
+                    const id = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+                    localStorage.setItem('credId', id);
+                    
+                    msg.innerText = "تم الحفظ بنجاح";
+                } else {
+             
+                    const rawId = Uint8Array.from(atob(savedId), c => c.charCodeAt(0));
+                    const options = {
+                        publicKey: {
+                            challenge,
+                            allowCredentials: [{ id: rawId, type: 'public-key' }],
+                            userVerification: "required"
+                        }
+                    };
+                    await navigator.credentials.get(options);
+                    msg.innerText = "تم التحقق من الهوية";
+                }
+                updateUI();
+            } catch (e) {
+                msg.innerText = "فشل الإجراء أو تم الإلغاء";
+                console.error(e);
+            }
+        };
+
+        updateUI();
+    </script>
+</body>
+</html>
