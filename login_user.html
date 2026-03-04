@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electric Login</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0b111b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .card {
+            position: relative;
+            width: 100%;
+            max-width: 320px;
+            min-height: 480px;
+            background-color: #1a232e;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 15px;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(#00f2ff, #0061ff, transparent 40%);
+            animation: rotate 1.5s linear infinite;
+            z-index: 0;
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: #1a232e;
+            border-radius: 13px;
+            z-index: 0;
+        }
+
+        .content {
+            z-index: 1;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .content h2 {
+            font-size: clamp(1.5rem, 4vw, 1.8rem);
+            margin-bottom: 2rem;
+            position: relative;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .content h2::after {
+            content: '';
+            width: 50px;
+            height: 2px;
+            background: #4deeea;
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px #4deeea;
+        }
+
+        .input-box {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .input-box input {
+            width: 100%;
+            max-width: 100%;
+            padding: 12px;
+            background: #0b111b;
+            border: 1px solid rgba(77, 238, 234, 0.2);
+            border-radius: 8px;
+            color: white;
+            outline: none;
+            font-size: 0.9rem;
+            -webkit-appearance: none;
+        }
+
+        .input-box input:focus {
+            border-color: #4deeea;
+            box-shadow: 0 0 10px rgba(77, 238, 234, 0.2);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #4deeea;
+            border: none;
+            border-radius: 8px;
+            color: #1a232e;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        button:hover {
+            box-shadow: 0 0 5px #4deeea;
+            transform: scale(1.01);
+        }
+
+        .dev {
+            margin-top: 30px;
+            font-size: 0.7rem;
+            color: #a0aab8;
+            letter-spacing: 1px;
+            word-wrap: break-word;
+            padding: 0 5px;
+        }
+
+        .dev a {
+            color: #4deeea;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-block;
+            max-width: 100%;
+            overflow-wrap: break-word;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media screen and (max-width: 350px) {
+            .card {
+                padding: 15px;
+                min-height: 450px;
+            }
+            
+            .content {
+                padding: 5px;
+            }
+            
+            .input-box input {
+                padding: 10px;
+            }
+            
+            button {
+                padding: 10px;
+            }
+        }
+
+        @media screen and (max-height: 500px) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="content">
+            <h2>LOGIN</h2>
+            <div class="input-box">
+                <input type="text" placeholder="Username">
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="Password">
+            </div>
+            <button>Sign In</button>
+            <div class="dev">
+                DEVELOPED BY: <a href="https://t.me/sniper46441">@sniper46441</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
