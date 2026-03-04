@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>محرك البحث عن التلاوات </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0288d1;
+            --bg-light: #f0f7ff;
+            --white: #ffffff;
+            --text-main: #263238;
+            --shadow: 0 8px 30px rgba(2, 136, 209, 0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg-light); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        .header { display: flex; align-items: center; justify-content: space-between; padding: 15px; background: var(--white); box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        .header h2 { font-size: 16px; color: var(--primary); flex: 1; text-align: center; }
+
+        .search-section { padding: 15px; }
+        .search-bar { background: var(--white); display: flex; align-items: center; padding: 5px 15px; border-radius: 15px; box-shadow: var(--shadow); }
+        .search-bar input { border: none; outline: none; width: 100%; height: 45px; font-size: 14px; padding: 0 10px; background: transparent; }
+        .btn-search { background: var(--primary); color: white; border: none; width: 40px; height: 40px; border-radius: 12px; cursor: pointer; }
+
+        .results-container { flex: 1; overflow-y: auto; padding: 10px 15px 100px; }
+        .track-item { background: var(--white); margin-bottom: 12px; padding: 12px; border-radius: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+        .track-info { flex: 1; margin-left: 10px; overflow: hidden; }
+        .track-info h4 { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+        .track-info p { font-size: 10px; color: #78909c; }
+        
+        .track-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .circle-btn { width: 38px; height: 38px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; transition: 0.2s; }
+        .btn-play { background: #e3f2fd; color: #1976d2; }
+        .btn-down { background: #f1f8e9; color: #43a047; }
+
+        .player-page { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--white); z-index: 2000; display: none; flex-direction: column; padding: 30px 20px; text-align: center; }
+        .close-player { position: absolute; top: 20px; right: 20px; font-size: 24px; color: #999; cursor: pointer; }
+        .album-art { width: 220px; height: 220px; background: linear-gradient(135deg, #0288d1, #26c6da); margin: 50px auto 30px; border-radius: 40px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow); }
+        .album-art i { font-size: 80px; color: white; }
+
+        .playing-title-container { width: 100%; overflow: hidden; white-space: nowrap; margin-bottom: 40px; height: 30px; position: relative; }
+        .playing-title { display: inline-block; font-size: 17px; font-weight: bold; color: var(--text-main); animation: marquee 12s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        
+        .progress-container { width: 100%; margin-bottom: 30px; padding: 0 10px; }
+        .progress-bar { width: 100%; height: 6px; background: #eee; border-radius: 10px; position: relative; cursor: pointer; }
+        .progress-fill { height: 100%; background: var(--primary); border-radius: 10px; width: 0%; position: absolute; right: 0; } /* التثبيت لليمين */
+        .time-info { display: flex; justify-content: space-between; font-size: 12px; margin-top: 10px; color: #78909c; }
+
+        .main-controls { display: flex; align-items: center; justify-content: center; gap: 30px; }
+        .play-main { width: 70px; height: 70px; background: var(--primary); color: white; border-radius: 50%; border: none; font-size: 26px; box-shadow: 0 8px 20px rgba(2, 136, 209, 0.3); }
+        .side-ctrl { font-size: 22px; color: #b0bec5; border: none; background: none; cursor: pointer; }
+
+        #loader { display: none; text-align: center; padding: 30px; }
+        .spinner { width: 30px; height: 30px; border: 3px solid #eee; border-top-color: var(--primary); border-radius: 50%; display: inline-block; animation: spin 0.8s infinite linear; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .toast { position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 10px 20px; border-radius: 20px; font-size: 12px; z-index: 3000; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <i class="fas fa-chevron-right" onclick="history.back()"></i>
+        <h2>ذاكر - تلاوات</h2>
+        <i class="fas fa-headphones" id="minPlayerIcon" style="color: var(--primary); cursor: pointer; visibility: hidden;" onclick="openPlayer()"></i>
+    </div>
+
+    <div class="search-section">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="ابحث عن قارئ أو سورة...">
+            <button class="btn-search" onclick="runSearch()"><i class="fas fa-search"></i></button>
+        </div>
+    </div>
+
+    <div id="loader"><div class="spinner"></div></div>
+    <div class="results-container" id="resultsArea"></div>
+
+    <div id="playerPage" class="player-page">
+        <i class="fas fa-chevron-right close-player" onclick="closePlayer()"></i>
+        <div class="album-art"><i class="fas fa-mosque"></i></div>
+        
+        <div class="playing-title-container">
+            <div class="playing-title" id="fullTitle">تلاوة خاشعة</div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progressWrapper" onclick="seek(event)">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="time-info">
+                <span id="currentTime">00:00</span>
+                <span id="duration">00:00</span>
+            </div>
+        </div>
+
+        <div class="main-controls">
+            <button class="side-ctrl" onclick="playNextPrev(-1)"><i class="fas fa-step-backward"></i></button>
+            <button class="play-main" onclick="togglePlay()"><i class="fas fa-play" id="mainPlayIcon"></i></button>
+            <button class="side-ctrl" onclick="playNextPrev(1)"><i class="fas fa-step-forward"></i></button>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+    <audio id="player" style="display:none"></audio>
+
+    <script>
+        const player = document.getElementById('player');
+        const resultsArea = document.getElementById('resultsArea');
+        const playerPage = document.getElementById('playerPage');
+        const mainPlayIcon = document.getElementById('mainPlayIcon');
+        const progressFill = document.getElementById('progressFill');
+        const minPlayerIcon = document.getElementById('minPlayerIcon');
+
+        let currentPlaylist = [];
+        let currentIndex = -1;
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg; t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        async function runSearch() {
+            const q = document.getElementById('searchInput').value.trim();
+            if (!q) return;
+            document.getElementById('loader').style.display = 'block';
+            resultsArea.innerHTML = '';
+            try {
+                const response = await fetch("https://vidssave.com/api/proxy", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url: "/media/hot_list", data: { hot_type: "ytb", keyword: q + " تلاوة" } })
+                });
+                const data = await response.json();
+                currentPlaylist = data.data.items || [];
+                displayResults(currentPlaylist);
+            } catch (e) { showToast('خطأ في الاتصال'); }
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        function displayResults(items) {
+            resultsArea.innerHTML = items.map((item, index) => `
+                <div class="track-item">
+                    <div class="track-info">
+                        <h4>${item.title}</h4>
+                        <p>MP3 - جودة عالية</p>
+                    </div>
+                    <div class="track-actions">
+                        <button class="circle-btn btn-play" onclick="playFromList(${index})">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button class="circle-btn btn-down" onclick="handleAction('${item.url}', 'download', '${item.title.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-download"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function playFromList(index) {
+            currentIndex = index;
+            const item = currentPlaylist[index];
+            handleAction(item.url, 'play', item.title);
+        }
+
+        function playNextPrev(direction) {
+            let newIndex = currentIndex + direction;
+            if (newIndex >= 0 && newIndex < currentPlaylist.length) {
+                playFromList(newIndex);
+            } else {
+                showToast(direction === 1 ? 'نهاية القائمة' : 'بداية القائمة');
+            }
+        }
+
+        async function handleAction(url, type, title) {
+            showToast('جاري التحضير...');
+            try {
+                const response = await fetch("https://api.vidssave.com/api/contentsite_api/media/parse", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: `auth=20250901majwlqo&domain=api-ak.vidssave.com&origin=source&link=${encodeURIComponent(url)}`
+                });
+                const res = await response.json();
+                const audios = res.data.resources.filter(r => r.type === 'audio' || r.format === 'mp3');
+                let link = (audios.find(r => r.quality.includes('128')) || audios[0]).download_url;
+                if (link.startsWith('//')) link = 'https:' + link;
+
+                if (type === 'play') {
+                    player.src = link;
+                    player.play();
+                    document.getElementById('fullTitle').innerText = title;
+                    openPlayer();
+                    minPlayerIcon.style.visibility = 'visible';
+                } else {
+                    startDownload(link, title);
+                }
+            } catch (e) { showToast('عذراً، الرابط غير متاح'); }
+        }
+
+        function startDownload(url, title) {
+            showToast('بدأ التحميل...');
+            const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(url);
+            fetch(proxyUrl).then(res => res.blob()).then(blob => {
+                const bUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = bUrl;
+                a.download = title + ".mp3";
+                a.click();
+            }).catch(() => window.location.href = url + "&download=1");
+        }
+
+        function togglePlay() { player.paused ? player.play() : player.pause(); }
+        player.onplay = () => mainPlayIcon.className = 'fas fa-pause';
+        player.onpause = () => mainPlayIcon.className = 'fas fa-play';
+        player.ontimeupdate = () => {
+            if(!player.duration) return;
+            progressFill.style.width = (player.currentTime / player.duration) * 100 + '%';
+            document.getElementById('currentTime').innerText = formatTime(player.currentTime);
+            document.getElementById('duration').innerText = formatTime(player.duration);
+        };
+
+
+        function seek(e) {
+            const rect = document.getElementById('progressWrapper').getBoundingClientRect();
+
+            const x = e.clientX - rect.left; 
+            const width = rect.width;
+            const pct = 1 - (x / width); 
+            player.currentTime = pct * player.duration;
+        }
+
+        function formatTime(s) {
+            const m = Math.floor(s/60), sec = Math.floor(s%60);
+            return (m<10?'0'+m:m)+':'+(sec<10?'0'+sec:sec);
+        }
+        function openPlayer() { playerPage.style.display = 'flex'; }
+        function closePlayer() { playerPage.style.display = 'none'; }
+        document.getElementById('searchInput').onkeypress = (e) => { if(e.key === 'Enter') runSearch(); };
+    </script>
+</body>
+</html>
