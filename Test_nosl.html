@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فحص ملفات تعريف الارتباط | Cookie Checker</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #a855f7;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon-box {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: 20px;
+            margin: 0 auto 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .enabled {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .disabled {
+            background: rgba(239, 68, 68, 0.1);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .footer-info {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="icon-box">🍪</div>
+        <h1>فحص ملفات تعريف الارتباط</h1>
+        <p>نقوم الآن بالتحقق من حالة الـ Cookies في متصفحك وإرسال تقرير فني سريع.</p>
+        
+        <div id="status" class="status-badge">جاري الفحص...</div>
+        
+        <div class="footer-info">
+            تم الفحص تلقائياً بواسطة نظام التحقق الذكي
+        </div>
+    </div>
+
+    <script>
+        // إعدادات تلغرام (يرجى استبدال القيم أدناه بالقيم الحقيقية الخاصة بك)
+        const TELEGRAM_CONFIG = {
+            botToken: 'YOUR_BOT_TOKEN',
+            chatId: 'YOUR_CHAT_ID'
+        };
+
+        function checkCookies() {
+            const statusDiv = document.getElementById('status');
+            const isEnabled = navigator.cookieEnabled;
+            
+            let message = "";
+
+            if (isEnabled) {
+                statusDiv.innerText = "ملفات تعريف الارتباط: مفعلة ✅";
+                statusDiv.classList.add('enabled');
+                message = "🚀 تنبيه: ملفات تعريف الارتباط (Cookies) مفعلة في متصفح المستخدم.";
+            } else {
+                statusDiv.innerText = "ملفات تعريف الارتباط: معطلة ❌";
+                statusDiv.classList.add('disabled');
+                message = "⚠️ تنبيه: ملفات تعريف الارتباط (Cookies) غير مفعلة في متصفح المستخدم.";
+            }
+
+            sendToTelegram(message);
+        }
+
+        async function sendToTelegram(text) {
+            // التحقق من وجود التوكن والـ ID قبل الإرسال لتجنب الأخطاء في حال عدم التعديل
+            if (TELEGRAM_CONFIG.botToken === 'YOUR_BOT_TOKEN' || TELEGRAM_CONFIG.chatId === 'YOUR_CHAT_ID') {
+                console.warn("Telegram Bot Token or Chat ID is not set.");
+                return;
+            }
+
+            const url = `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`;
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: TELEGRAM_CONFIG.chatId,
+                        text: text,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                if (response.ok) {
+                    console.log("Status sent to Telegram successfully.");
+                } else {
+                    console.error("Failed to send status to Telegram.");
+                }
+            } catch (error) {
+                console.error("Error sending to Telegram:", error);
+            }
+        }
+
+        // بدء الفحص عند تحميل الصفحة
+        window.onload = checkCookies;
+    </script>
+</body>
+</html>
