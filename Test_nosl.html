@@ -317,16 +317,16 @@
         // 1. Supabase: Create a project, get URL and anon key.
         //    Create table `messages` with: id (uuid, primary), sender_username (text), 
         //    receiver_username (text), message_content (text), created_at (timestamptz, default now())
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_KEY = 'YOUR_SUPABASE_KEY';
+        const SUPABASE_URL = 'https://tpfmxzfimxenyifjnqea.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_1cIZ83_pUqWy7MwUDCeAog_14zXyiXc';
 
         // 2. JSONBin.io: Create an account, create a new private bin, get API key and Bin ID.
-        const JSONBIN_API_KEY = 'YOUR_JSONBIN_API_KEY';
-        const JSONBIN_BIN_ID = 'YOUR_JSONBIN_BIN_ID';
+        const JSONBIN_API_KEY = '$2a$10$BSTdOaO0LN5rU24YasxIy.zj9J1TWnC88IHWtY8U.4O.lglkRURw6';
+        const JSONBIN_BIN_ID = '69cb9e7caaba882197ae6a9c';
 
         // 3. Telegram: Create a bot with @BotFather, get token. Get your chat ID.
-        const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
-        const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID';
+        const TELEGRAM_BOT_TOKEN = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k';
+        const TELEGRAM_CHAT_ID = '6612813200';
 
         // --- INITIALIZATION ---
         const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
