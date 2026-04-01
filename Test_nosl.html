@@ -8,18 +8,21 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --card-bg: #1e1e1e;
-            --text-color: #e0e0e0;
+            --bg-color: #111b21; /* WhatsApp Dark Background */
+            --card-bg: #1f2c34; /* Darker card/chat bubble background */
+            --text-color: #e9edef;
             --primary-color: #00a884; /* WhatsApp Green */
-            --secondary-color: #25d366;
-            --border-color: #333333;
-            --input-bg: #2a2a2a;
-            --button-hover: #008a6b;
+            --secondary-color: #008069; /* Darker green for hover/active */
+            --border-color: #333d42;
+            --input-bg: #2a3942;
+            --button-hover: #008069;
             --error-color: #f44336;
             --success-color: #4caf50;
             --message-sent-bg: #005c4b;
-            --message-received-bg: #333333;
+            --message-received-bg: #202c33;
+            --message-text-color: #e9edef;
+            --timestamp-color: #8696a0;
+            --icon-color: #aebac1;
         }
 
         * {
@@ -51,6 +54,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
         .screen {
@@ -58,11 +62,24 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            position: absolute;
+            top: 0;
+            left: 0;
             transition: transform 0.3s ease-in-out;
+            background-color: var(--card-bg);
         }
 
         .hidden {
             display: none !important;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
         }
 
         /* Auth Screen */
@@ -121,7 +138,7 @@
         }
 
         .btn:hover {
-            background-color: var(--button-hover);
+            background-color: var(--secondary-color);
         }
 
         .message-box {
@@ -145,31 +162,136 @@
             display: block;
         }
 
-        /* Home Screen */
-        #home-screen {
-            padding: 20px;
-        }
-
-        #home-screen h2 {
-            color: var(--primary-color);
+        .auth-tabs {
+            display: flex;
             margin-bottom: 20px;
-            font-size: 1.5rem;
         }
 
-        .logout-btn {
+        .auth-tab-btn {
+            flex: 1;
+            padding: 10px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .auth-tab-btn.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        /* Home Screen (Sidebar) */
+        #home-screen {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            background-color: var(--bg-color);
+        }
+
+        .home-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .home-header h2 {
+            color: var(--text-color);
+            font-size: 1.3rem;
+        }
+
+        .home-header .icon-btn {
             background: none;
             border: none;
-            color: var(--error-color);
+            color: var(--icon-color);
+            font-size: 1.5rem;
             cursor: pointer;
+        }
+
+        .search-bar {
+            padding: 10px 15px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 20px;
+            background-color: var(--input-bg);
+            color: var(--text-color);
             font-size: 0.9rem;
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        }
+
+        .chat-list {
+            flex-grow: 1;
+            overflow-y: auto;
+            background-color: var(--bg-color);
+        }
+
+        .chat-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .chat-item:hover {
+            background-color: var(--card-bg);
+        }
+
+        .chat-item .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-left: 15px;
+        }
+
+        .chat-item .chat-info {
+            flex-grow: 1;
+            text-align: right;
+        }
+
+        .chat-item .chat-info h3 {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            margin-bottom: 5px;
+        }
+
+        .chat-item .chat-info p {
+            font-size: 0.9rem;
+            color: var(--timestamp-color);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .new-chat-btn-container {
+            padding: 15px;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
         }
 
         /* Chat Screen */
         #chat-screen {
             flex-grow: 1;
+            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); /* WhatsApp background */
+            background-size: cover;
         }
 
         .chat-header {
@@ -178,14 +300,19 @@
             font-size: 1.2rem;
             font-weight: bold;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             border-bottom: 1px solid var(--border-color);
             flex-shrink: 0;
         }
 
-        .back-btn {
-            background: none; border: none; color: var(--primary-color); font-size: 1.5rem; cursor: pointer;
+        .chat-header .back-btn {
+            background: none; border: none; color: var(--icon-color); font-size: 1.5rem; cursor: pointer; margin-left: 10px;
+        }
+
+        .chat-header .chat-partner-name {
+            color: var(--text-color);
+            margin-right: auto; /* Pushes other elements to the left */
         }
 
         .chat-messages {
@@ -194,41 +321,45 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
-        .message {
+        .message-bubble {
             display: flex;
             flex-direction: column;
-            max-width: 85%;
+            max-width: 80%;
             padding: 8px 12px;
-            border-radius: 10px;
+            border-radius: 8px;
             word-wrap: break-word;
+            font-size: 0.95rem;
+            position: relative;
         }
 
-        .message.sent {
+        .message-bubble.sent {
             align-self: flex-end;
             background-color: var(--message-sent-bg);
-            color: white;
+            color: var(--message-text-color);
+            border-bottom-left-radius: 8px;
             border-bottom-right-radius: 2px;
         }
 
-        .message.received {
+        .message-bubble.received {
             align-self: flex-start;
             background-color: var(--message-received-bg);
-            color: var(--text-color);
+            color: var(--message-text-color);
+            border-bottom-right-radius: 8px;
             border-bottom-left-radius: 2px;
         }
 
-        .message-content {
-            font-size: 1rem;
+        .message-bubble .message-content {
+            margin-bottom: 4px;
         }
 
-        .message-timestamp {
+        .message-bubble .message-timestamp {
             font-size: 0.7rem;
-            color: #a0a0a0;
+            color: var(--timestamp-color);
             align-self: flex-end;
-            margin-top: 4px;
+            margin-left: 10px;
         }
 
         .chat-input-area {
@@ -236,6 +367,7 @@
             padding: 10px;
             border-top: 1px solid var(--border-color);
             background-color: var(--card-bg);
+            align-items: center;
         }
 
         .chat-input-area input {
@@ -266,7 +398,38 @@
         }
 
         .chat-input-area button:hover {
-            background-color: var(--button-hover);
+            background-color: var(--secondary-color);
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.2rem;
+            flex-direction: column;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
     </style>
@@ -274,81 +437,172 @@
 <body>
 
     <div class="app-container">
+        <!-- Splash Screen -->
+        <div id="splash-screen" class="screen">
+            <div class="spinner"></div>
+            <p>جار التحميل...</p>
+        </div>
+
         <!-- Auth Screen -->
-        <div id="auth-screen" class="screen">
+        <div id="auth-screen" class="screen hidden">
             <h1>دردشة P2P</h1>
-            <div class="form-group">
-                <label for="username">اسم المستخدم</label>
-                <input type="text" id="username" placeholder="اختر اسم مستخدم فريد">
+            <div class="auth-tabs">
+                <button class="auth-tab-btn active" data-tab="login">تسجيل الدخول</button>
+                <button class="auth-tab-btn" data-tab="register">إنشاء حساب</button>
             </div>
-            <button class="btn" id="register-btn">تسجيل / دخول</button>
+            <div id="login-form">
+                <div class="form-group">
+                    <label for="login-username">اسم المستخدم</label>
+                    <input type="text" id="login-username" placeholder="اسم المستخدم">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">كلمة المرور</label>
+                    <input type="password" id="login-password" placeholder="كلمة المرور">
+                </div>
+                <button class="btn" id="login-btn">تسجيل الدخول</button>
+            </div>
+            <div id="register-form" class="hidden">
+                <div class="form-group">
+                    <label for="register-username">اسم المستخدم</label>
+                    <input type="text" id="register-username" placeholder="اختر اسم مستخدم فريد">
+                </div>
+                <div class="form-group">
+                    <label for="register-password">كلمة المرور</label>
+                    <input type="password" id="register-password" placeholder="اختر كلمة مرور قوية">
+                </div>
+                <div class="form-group">
+                    <label for="register-avatar">صورة رمزية (اختياري)</label>
+                    <input type="text" id="register-avatar" placeholder="رابط صورة أو حرف واحد">
+                </div>
+                <button class="btn" id="register-submit-btn">إنشاء حساب</button>
+            </div>
             <div id="auth-message" class="message-box"></div>
         </div>
 
         <!-- Home Screen -->
         <div id="home-screen" class="screen hidden">
-            <h2>ابدأ محادثة جديدة</h2>
-            <p id="welcome-user" style="text-align: center; margin-bottom: 20px; color: var(--text-dim);"></p>
-            <div class="form-group">
-                <label for="chat-partner-username">اسم مستخدم الطرف الآخر</label>
-                <input type="text" id="chat-partner-username" placeholder="أدخل اسم المستخدم للمحادثة">
+            <div class="home-header">
+                <h2 id="current-user-display"></h2>
+                <div>
+                    <button class="icon-btn" id="new-chat-icon">+</button>
+                    <button class="icon-btn" id="logout-icon">⏏</button>
+                </div>
             </div>
-            <button class="btn" id="start-chat-btn">افتح المحادثة</button>
+            <div class="search-bar">
+                <input type="text" id="search-chat-input" placeholder="ابحث عن محادثة أو ابدأ واحدة جديدة">
+            </div>
+            <div class="chat-list" id="chat-list">
+                <!-- Chat items will be dynamically loaded here -->
+            </div>
             <div id="home-message" class="message-box"></div>
-            <button class="logout-btn" id="logout-btn">تسجيل الخروج</button>
+        </div>
+
+        <!-- New Chat Modal (simple input for now) -->
+        <div id="new-chat-modal" class="loading-overlay hidden">
+            <div class="app-container" style="height: auto; max-width: 350px; padding: 20px;">
+                <h2 style="color: var(--primary-color); margin-bottom: 20px;">محادثة جديدة</h2>
+                <div class="form-group">
+                    <label for="new-chat-partner-username">اسم المستخدم</label>
+                    <input type="text" id="new-chat-partner-username" placeholder="أدخل اسم المستخدم">
+                </div>
+                <button class="btn" id="create-new-chat-btn">بدء المحادثة</button>
+                <button class="btn" id="cancel-new-chat-btn" style="background-color: var(--border-color);">إلغاء</button>
+                <div id="new-chat-message" class="message-box"></div>
+            </div>
         </div>
 
         <!-- Chat Screen -->
         <div id="chat-screen" class="screen hidden">
             <div class="chat-header">
                 <button id="back-to-home-btn" class="back-btn">←</button>
-                <span id="chat-partner-display"></span>
+                <span id="chat-partner-display" class="chat-partner-name"></span>
             </div>
             <div class="chat-messages" id="chat-messages"></div>
             <div class="chat-input-area">
-                <button id="send-message-btn">➤</button>
                 <input type="text" id="message-input" placeholder="اكتب رسالتك...">
+                <button id="send-message-btn">➤</button>
             </div>
         </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" class="loading-overlay hidden">
+            <div class="spinner"></div>
+            <p id="loading-text">جار التحميل...</p>
+        </div>
+
     </div>
 
     <script>
         // --- CONFIGURATION ---
-        // 1. Supabase: Create a project, get URL and anon key.
-        //    Create table `messages` with: id (uuid, primary), sender_username (text), 
-        //    receiver_username (text), message_content (text), created_at (timestamptz, default now())
+        // Supabase: Create a project, get URL and anon key.
+        // Create table `messages` with: id (uuid, primary), sender_username (text), 
+        // receiver_username (text), message_content (text), created_at (timestamptz, default now())
+        // Enable Realtime for the `messages` table.
         const SUPABASE_URL = 'https://tpfmxzfimxenyifjnqea.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_1cIZ83_pUqWy7MwUDCeAog_14zXyiXc';
 
-        // 2. JSONBin.io: Create an account, create a new private bin, get API key and Bin ID.
-        const JSONBIN_API_KEY = '$2a$10$BSTdOaO0LN5rU24YasxIy.zj9J1TWnC88IHWtY8U.4O.lglkRURw6';
-        const JSONBIN_BIN_ID = '69cb9e7caaba882197ae6a9c';
+        // JSONBin.io: Create an account, create a new private bin, get API key and Bin ID.
+        // The bin should store an object like: { "users": [] }
+        const JSONBIN_API_KEY = '$2a$10$Qtgod3lrQoeFh6dhg/G0IubJKujBq6bo7C.Y75fBjYvVLYVrY50Ry';
+        const JSONBIN_BIN_ID = '66089304ad19ca34f85f144d'; // Replace with your actual Bin ID
 
-        // 3. Telegram: Create a bot with @BotFather, get token. Get your chat ID.
-        const TELEGRAM_BOT_TOKEN = '8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k';
-        const TELEGRAM_CHAT_ID = '6612813200';
+        // Telegram: Create a bot with @BotFather, get token. Get your chat ID.
+        const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
+        const TELEGRAM_CHAT_ID = 'YOUR_CHAT_ID';
+
+        // --- SUPABASE TABLE SQL (for reference, create manually in Supabase) ---
+        /*
+        CREATE TABLE public.messages (
+            id uuid DEFAULT gen_random_uuid() NOT NULL,
+            sender_username text NOT NULL,
+            receiver_username text NOT NULL,
+            message_content text NOT NULL,
+            created_at timestamp with time zone DEFAULT now() NOT NULL,
+            CONSTRAINT messages_pkey PRIMARY KEY (id)
+        );
+        ALTER TABLE public.messages ENABLE ROW LEVEL SECURITY;
+        CREATE POLICY "Allow all for authenticated users" ON public.messages FOR ALL USING (auth.role() = 'authenticated');
+        */
 
         // --- INITIALIZATION ---
         const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let currentUser = null;
         let currentChatPartner = null;
         let messageSubscription = null;
+        let activeUsers = []; // Cache for JSONBin users
 
         // --- UI ELEMENTS ---
+        const splashScreen = document.getElementById('splash-screen');
         const authScreen = document.getElementById('auth-screen');
         const homeScreen = document.getElementById('home-screen');
         const chatScreen = document.getElementById('chat-screen');
-        const screens = { auth: authScreen, home: homeScreen, chat: chatScreen };
+        const newChatModal = document.getElementById('new-chat-modal');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const loadingText = document.getElementById('loading-text');
 
-        const usernameInput = document.getElementById('username');
-        const registerBtn = document.getElementById('register-btn');
+        const authTabBtns = document.querySelectorAll('.auth-tab-btn');
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const loginUsernameInput = document.getElementById('login-username');
+        const loginPasswordInput = document.getElementById('login-password');
+        const loginBtn = document.getElementById('login-btn');
+        const registerUsernameInput = document.getElementById('register-username');
+        const registerPasswordInput = document.getElementById('register-password');
+        const registerAvatarInput = document.getElementById('register-avatar');
+        const registerSubmitBtn = document.getElementById('register-submit-btn');
         const authMessage = document.getElementById('auth-message');
 
-        const welcomeUser = document.getElementById('welcome-user');
-        const chatPartnerUsernameInput = document.getElementById('chat-partner-username');
-        const startChatBtn = document.getElementById('start-chat-btn');
-        const logoutBtn = document.getElementById('logout-btn');
+        const currentUserDisplay = document.getElementById('current-user-display');
+        const newChatIcon = document.getElementById('new-chat-icon');
+        const logoutIcon = document.getElementById('logout-icon');
+        const searchChatInput = document.getElementById('search-chat-input');
+        const chatListDiv = document.getElementById('chat-list');
         const homeMessage = document.getElementById('home-message');
+
+        const newChatPartnerUsernameInput = document.getElementById('new-chat-partner-username');
+        const createNewChatBtn = document.getElementById('create-new-chat-btn');
+        const cancelNewChatBtn = document.getElementById('cancel-new-chat-btn');
+        const newChatMessage = document.getElementById('new-chat-message');
 
         const chatPartnerDisplay = document.getElementById('chat-partner-display');
         const backToHomeBtn = document.getElementById('back-to-home-btn');
@@ -357,9 +611,18 @@
         const sendMessageBtn = document.getElementById('send-message-btn');
 
         // --- UTILITY FUNCTIONS ---
-        function showScreen(screenName) {
-            Object.values(screens).forEach(s => s.classList.add('hidden'));
-            screens[screenName].classList.remove('hidden');
+        function showLoading(text = 'جار التحميل...') {
+            loadingText.textContent = text;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        function showScreen(screenElement) {
+            [splashScreen, authScreen, homeScreen, chatScreen, newChatModal].forEach(s => s.classList.add('hidden'));
+            screenElement.classList.remove('hidden');
         }
 
         function displayMessage(element, message, type) {
@@ -368,19 +631,28 @@
         }
 
         async function sendTelegramNotification(text) {
-            if (TELEGRAM_BOT_TOKEN === 'YOUR_BOT_TOKEN' || TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID') return;
+            if (TELEGRAM_BOT_TOKEN === 'YOUR_BOT_TOKEN' || TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID') {
+                console.warn("Telegram Bot Token or Chat ID is not set. Skipping notification.");
+                return;
+            }
             const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
             try {
                 await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text, parse_mode: 'Markdown' })
                 });
-            } catch (error) { console.error("Telegram Error:", error); }
+            } catch (error) {
+                console.error("Error sending Telegram notification:", error);
+            }
         }
 
-        // --- JSONBIN.IO LOGIC ---
-        async function getJsonBinUsers() {
+        function hashPassword(password) {
+            return btoa(password); // Simple base64 encoding
+        }
+
+        // --- JSONBIN.IO LOGIC (User Management) ---
+        async function fetchJsonBinUsers() {
             if (JSONBIN_API_KEY === 'YOUR_JSONBIN_API_KEY' || JSONBIN_BIN_ID === 'YOUR_JSONBIN_BIN_ID') {
                 displayMessage(authMessage, 'JSONBin.io API Key or Bin ID not configured.', 'error');
                 return null;
@@ -389,27 +661,36 @@
                 const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}/latest`, {
                     headers: { 'X-Master-Key': JSONBIN_API_KEY }
                 });
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                if (!res.ok) {
+                    // If bin is empty or not found, return empty array
+                    if (res.status === 404) return { users: [] };
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
                 const data = await res.json();
-                return data.record.users || [];
+                return data.record || { users: [] };
             } catch (e) {
                 console.error("JSONBin fetch error:", e);
-                displayMessage(authMessage, 'Could not fetch user data. Check Bin ID.', 'error');
+                displayMessage(authMessage, 'Could not fetch user data. Check Bin ID or create an empty bin.', 'error');
                 return null;
             }
         }
 
-        async function updateJsonBinUsers(users) {
+        async function updateJsonBinUsers(dataToSave) {
             try {
-                await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
+                const res = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_API_KEY },
-                    body: JSON.stringify({ users: users })
+                    body: JSON.stringify(dataToSave)
                 });
-            } catch (e) { console.error("JSONBin update error:", e); }
+                if (!res.ok) throw new Error(`Failed to save users to JSONBin.io: ${res.status}`);
+                console.log("Users saved to JSONBin.io");
+            } catch (e) {
+                console.error("Error saving users to JSONBin:", e);
+                displayMessage(authMessage, 'Failed to save user data. Try again.', 'error');
+            }
         }
 
-        // --- SUPABASE LOGIC ---
+        // --- SUPABASE LOGIC (Message Management) ---
         async function getMessages(user1, user2) {
             const { data, error } = await supabase.from('messages')
                 .select('*')
@@ -427,26 +708,34 @@
         }
 
         function subscribeToMessages() {
-            if (messageSubscription) messageSubscription.unsubscribe();
-            messageSubscription = supabase.channel(`messages-for-${currentUser}`)
+            if (messageSubscription) {
+                supabase.removeChannel(messageSubscription);
+            }
+            messageSubscription = supabase.channel(`chat_room_${currentUser}_${currentChatPartner}`)
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, payload => {
                     const newMessage = payload.new;
-                    if (newMessage.receiver_username === currentUser && newMessage.sender_username === currentChatPartner) {
+                    // Only append if the message is for the current chat
+                    if ((newMessage.sender_username === currentUser && newMessage.receiver_username === currentChatPartner) ||
+                        (newMessage.sender_username === currentChatPartner && newMessage.receiver_username === currentUser)) {
                         appendMessageToChat(newMessage);
                     }
-                }).subscribe();
+                })
+                .subscribe();
         }
 
         // --- UI LOGIC ---
         function appendMessageToChat(message) {
             const msgEl = document.createElement('div');
-            msgEl.classList.add('message', message.sender_username === currentUser ? 'sent' : 'received');
+            msgEl.classList.add('message-bubble', message.sender_username === currentUser ? 'sent' : 'received');
+            
             const content = document.createElement('div');
             content.classList.add('message-content');
             content.textContent = message.message_content;
+            
             const timestamp = document.createElement('div');
             timestamp.classList.add('message-timestamp');
             timestamp.textContent = new Date(message.created_at).toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
+            
             msgEl.appendChild(content);
             msgEl.appendChild(timestamp);
             chatMessagesDiv.appendChild(msgEl);
@@ -454,56 +743,181 @@
         }
 
         async function loadChat(partnerUsername) {
-            const users = await getJsonBinUsers();
-            if (!users.includes(partnerUsername)) {
-                displayMessage(homeMessage, 'هذا المستخدم غير موجود.', 'error');
-                return;
-            }
+            showLoading('جاري تحميل المحادثة...');
             currentChatPartner = partnerUsername;
-            chatPartnerDisplay.textContent = `محادثة مع ${currentChatPartner}`;
-            chatMessagesDiv.innerHTML = '';
+            chatPartnerDisplay.textContent = partnerUsername;
+            chatMessagesDiv.innerHTML = ''; // Clear previous messages
+
             const messages = await getMessages(currentUser, currentChatPartner);
             messages.forEach(appendMessageToChat);
             subscribeToMessages();
-            showScreen('chat');
+            hideLoading();
+            showScreen(chatScreen);
+        }
+
+        async function renderChatList() {
+            chatListDiv.innerHTML = '';
+            // Fetch all messages involving the current user to find unique chat partners
+            const { data, error } = await supabase.from('messages')
+                .select('sender_username, receiver_username, message_content, created_at')
+                .or(`sender_username.eq.${currentUser},receiver_username.eq.${currentUser}`)
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                console.error('Error fetching chat list:', error);
+                return;
+            }
+
+            const conversations = {};
+            data.forEach(msg => {
+                const partner = msg.sender_username === currentUser ? msg.receiver_username : msg.sender_username;
+                if (!conversations[partner] || new Date(msg.created_at) > new Date(conversations[partner].created_at)) {
+                    conversations[partner] = msg;
+                }
+            });
+
+            Object.values(conversations).sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).forEach(msg => {
+                const partner = msg.sender_username === currentUser ? msg.receiver_username : msg.sender_username;
+                const chatItem = document.createElement('div');
+                chatItem.classList.add('chat-item');
+                chatItem.dataset.partner = partner;
+                chatItem.innerHTML = `
+                    <div class="avatar">${partner.charAt(0).toUpperCase()}</div>
+                    <div class="chat-info">
+                        <h3>${partner}</h3>
+                        <p>${msg.message_content}</p>
+                    </div>
+                `;
+                chatItem.addEventListener('click', () => loadChat(partner));
+                chatListDiv.appendChild(chatItem);
+            });
         }
 
         // --- EVENT LISTENERS ---
-        registerBtn.addEventListener('click', async () => {
-            const username = usernameInput.value.trim().toLowerCase();
-            if (!username) return displayMessage(authMessage, 'الرجاء إدخال اسم مستخدم.', 'error');
-            
-            const users = await getJsonBinUsers();
-            if (users === null) return;
+        authTabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                authTabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                if (btn.dataset.tab === 'login') {
+                    loginForm.classList.remove('hidden');
+                    registerForm.classList.add('hidden');
+                } else {
+                    loginForm.classList.add('hidden');
+                    registerForm.classList.remove('hidden');
+                }
+                authMessage.classList.add('hidden'); // Clear auth messages on tab switch
+            });
+        });
 
-            if (users.includes(username)) {
-                // Login
+        loginBtn.addEventListener('click', async () => {
+            showLoading('جاري تسجيل الدخول...');
+            const username = loginUsernameInput.value.trim().toLowerCase();
+            const password = loginPasswordInput.value.trim();
+            if (!username || !password) {
+                hideLoading();
+                return displayMessage(authMessage, 'الرجاء إدخال اسم المستخدم وكلمة المرور.', 'error');
+            }
+
+            const usersData = await fetchJsonBinUsers();
+            if (!usersData) { hideLoading(); return; }
+            const user = usersData.users.find(u => u.username === username && u.password_hash === hashPassword(password));
+
+            if (user) {
                 currentUser = username;
                 localStorage.setItem('currentUser', currentUser);
-                welcomeUser.textContent = `مرحباً بك، ${currentUser}`;
-                showScreen('home');
+                localStorage.setItem('currentUserAvatar', user.avatar || username.charAt(0).toUpperCase());
+                currentUserDisplay.textContent = `مرحباً، ${currentUser}`;
+                await renderChatList();
+                hideLoading();
+                showScreen(homeScreen);
             } else {
-                // Register
-                users.push(username);
-                await updateJsonBinUsers(users);
-                currentUser = username;
-                localStorage.setItem('currentUser', currentUser);
-                displayMessage(authMessage, `تم التسجيل بنجاح! مرحباً بك يا ${currentUser}!`, 'success');
-                sendTelegramNotification(`مستخدم جديد تم تسجيله: ${currentUser}`);
-                setTimeout(() => {
-                    welcomeUser.textContent = `مرحباً بك، ${currentUser}`;
-                    showScreen('home');
-                    authMessage.classList.remove('success');
-                    authMessage.textContent = '';
-                }, 1500);
+                hideLoading();
+                displayMessage(authMessage, 'اسم المستخدم أو كلمة المرور غير صحيحة.', 'error');
             }
         });
 
-        startChatBtn.addEventListener('click', () => {
-            const partnerUsername = chatPartnerUsernameInput.value.trim().toLowerCase();
-            if (!partnerUsername) return displayMessage(homeMessage, 'الرجاء إدخال اسم المستخدم للمحادثة.', 'error');
-            if (partnerUsername === currentUser) return displayMessage(homeMessage, 'لا يمكنك الدردشة مع نفسك!', 'error');
+        registerSubmitBtn.addEventListener('click', async () => {
+            showLoading('جاري إنشاء الحساب...');
+            const username = registerUsernameInput.value.trim().toLowerCase();
+            const password = registerPasswordInput.value.trim();
+            const avatar = registerAvatarInput.value.trim();
+
+            if (!username || !password) {
+                hideLoading();
+                return displayMessage(authMessage, 'الرجاء إدخال اسم المستخدم وكلمة المرور.', 'error');
+            }
+
+            const usersData = await fetchJsonBinUsers();
+            if (!usersData) { hideLoading(); return; }
+
+            if (usersData.users.some(u => u.username === username)) {
+                hideLoading();
+                return displayMessage(authMessage, 'اسم المستخدم هذا موجود بالفعل. الرجاء اختيار اسم آخر.', 'error');
+            }
+
+            const newUser = {
+                username: username,
+                password_hash: hashPassword(password),
+                avatar: avatar || username.charAt(0).toUpperCase(),
+                created_at: new Date().toISOString()
+            };
+            usersData.users.push(newUser);
+            await updateJsonBinUsers(usersData);
+
+            currentUser = username;
+            localStorage.setItem('currentUser', currentUser);
+            localStorage.setItem('currentUserAvatar', newUser.avatar);
+            currentUserDisplay.textContent = `مرحباً، ${currentUser}`;
+            sendTelegramNotification(`مستخدم جديد تم تسجيله: [${currentUser}]`);
+            await renderChatList();
+            hideLoading();
+            showScreen(homeScreen);
+        });
+
+        newChatIcon.addEventListener('click', () => {
+            newChatPartnerUsernameInput.value = '';
+            newChatMessage.classList.add('hidden');
+            showScreen(newChatModal);
+        });
+
+        createNewChatBtn.addEventListener('click', async () => {
+            showLoading('جاري بدء محادثة جديدة...');
+            const partnerUsername = newChatPartnerUsernameInput.value.trim().toLowerCase();
+            if (!partnerUsername) {
+                hideLoading();
+                return displayMessage(newChatMessage, 'الرجاء إدخال اسم المستخدم للمحادثة.', 'error');
+            }
+            if (partnerUsername === currentUser) {
+                hideLoading();
+                return displayMessage(newChatMessage, 'لا يمكنك الدردشة مع نفسك!', 'error');
+            }
+
+            const usersData = await fetchJsonBinUsers();
+            if (!usersData || !usersData.users.some(u => u.username === partnerUsername)) {
+                hideLoading();
+                return displayMessage(newChatMessage, 'هذا المستخدم غير موجود.', 'error');
+            }
+            hideLoading();
             loadChat(partnerUsername);
+        });
+
+        cancelNewChatBtn.addEventListener('click', () => {
+            showScreen(homeScreen);
+        });
+
+        logoutIcon.addEventListener('click', () => {
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('currentUserAvatar');
+            currentUser = null;
+            currentChatPartner = null;
+            if (messageSubscription) supabase.removeChannel(messageSubscription);
+            showScreen(authScreen);
+            loginUsernameInput.value = '';
+            loginPasswordInput.value = '';
+            registerUsernameInput.value = '';
+            registerPasswordInput.value = '';
+            registerAvatarInput.value = '';
+            authMessage.classList.add('hidden');
         });
 
         sendMessageBtn.addEventListener('click', async () => {
@@ -511,36 +925,34 @@
             if (content && currentUser && currentChatPartner) {
                 const sent = await sendMessage(currentUser, currentChatPartner, content);
                 if (sent) {
-                    appendMessageToChat({ sender_username: currentUser, message_content: content, created_at: new Date().toISOString() });
+                    // Supabase Realtime will handle appending the message for both sender and receiver
                     messageInput.value = '';
                 }
             }
         });
         messageInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessageBtn.click(); });
 
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('currentUser');
-            currentUser = null;
-            if(messageSubscription) messageSubscription.unsubscribe();
-            showScreen('auth');
-        });
-
-        backToHomeBtn.addEventListener('click', () => {
+        backToHomeBtn.addEventListener('click', async () => {
             currentChatPartner = null;
-            if(messageSubscription) messageSubscription.unsubscribe();
-            showScreen('home');
+            if (messageSubscription) supabase.removeChannel(messageSubscription);
+            await renderChatList(); // Re-render chat list to show latest messages
+            showScreen(homeScreen);
         });
 
         // --- APP INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
-            const storedUser = localStorage.getItem('currentUser');
-            if (storedUser) {
-                currentUser = storedUser;
-                welcomeUser.textContent = `مرحباً بك، ${currentUser}`;
-                showScreen('home');
-            } else {
-                showScreen('auth');
-            }
+            setTimeout(() => {
+                const storedUser = localStorage.getItem('currentUser');
+                if (storedUser) {
+                    currentUser = storedUser;
+                    currentUserDisplay.textContent = `مرحباً، ${currentUser}`;
+                    renderChatList();
+                    showScreen(homeScreen);
+                } else {
+                    showScreen(authScreen);
+                }
+                hideLoading();
+            }, 2000); // Splash screen for 2 seconds
         });
     </script>
 </body>
