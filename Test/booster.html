@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>بوابة اللاعبين المحترفين للبواسترز | Adsa Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .booster-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 768px) {
+      .booster-stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .stat-box {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .stat-box:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .stat-box-title {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .stat-box-val {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--purple);
+      font-family: var(--font-en);
+    }
+
+    /* Auction & Tasks */
+    .auction-list, .my-tasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .auction-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.2s;
+    }
+    .auction-card:hover {
+      border-color: var(--purple);
+    }
+    .auction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    .auction-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .auction-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .auction-meta span {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .auction-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .bid-input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .bid-input {
+      width: 100px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-family: var(--font-en);
+      font-weight: 700;
+      text-align: center;
+    }
+
+    /* Chat */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 1150px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+    .chat-box {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      background: var(--bg-card);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 400px;
+    }
+    .chat-header {
+      padding: 14px 20px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      font-weight: 800;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-msg {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+    .chat-msg.sent {
+      background: var(--purple);
+      color: #000;
+      align-self: flex-end;
+      border-bottom-right-radius: 0;
+    }
+    .chat-msg.received {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+    }
+    .chat-msg.system {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      color: var(--orange);
+      max-width: 100%;
+      align-self: center;
+      text-align: center;
+      font-size: 0.8rem;
+      border-radius: var(--radius-sm);
+    }
+    .chat-footer {
+      padding: 14px 20px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+    }
+    .chat-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text-primary);
+      font-family: var(--font-en);
+    }
+
+    /*   overlay */
+    .booster-login-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-primary);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .booster-login-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 40px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+    }
+    .booster-login-card h2 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+    .booster-login-card p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      margin-bottom: 24px;
+    }
+    .booster-login-card input {
+      width: 100%;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-family: var(--font-en);
+      font-size: 0.95rem;
+      box-sizing: border-box;
+    }
+    .booster-login-card .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--purple), #6D28D9);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform 0.2s;
+    }
+    .booster-login-card .login-btn:hover {
+      transform: scale(1.02);
+    }
+    .login-error {
+      color: var(--red);
+      font-size: 0.85rem;
+      margin-top: 12px;
+      display: none;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 50px;
+      color: var(--text-muted);
+    }
+    .empty-state .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN OVERLAY (shown if not logged in as booster) -->
+<div class="booster-login-overlay" id="loginOverlay">
+  <div class="booster-login-card">
+    <div style="font-size: 3rem; margin-bottom: 16px;">🎮</div>
+    <h2>تسجيل دخول البوستر</h2>
+    <p>يرجى إدخال بيانات حساب اللاعب المحترف الخاص بك للوصول للوحة التحكم.</p>
+    <input type="text" id="loginUsername" placeholder="اسم المستخدم أو البريد الإلكتروني" autocomplete="username" />
+    <input type="password" id="loginPassword" placeholder="كلمة المرور" autocomplete="current-password" />
+    <button class="login-btn" onclick="doLogin()">
+      <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+    </button>
+    <div class="login-error" id="loginError"></div>
+    <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted);">
+      لست بوستر بعد؟ <a href="services.html" style="color: var(--purple); font-weight: 700;">انضم إلينا</a>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper" id="mainApp" style="display:none">
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:10px">
+        <img src="logo.png" alt="Adsa Game Logo" class="logo-img">
+        <span class="logo-vexa">ADSA</span>
+        <span class="logo-zone">GAME</span>
+      </a>
+      <div class="nav-right">
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Theme" title="Toggle Theme">
+          <i class="fas fa-moon icon-dark"></i>
+          <i class="fas fa-sun icon-light"></i>
+        </button>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+    <a href="index.html">الرئيسية</a>
+    <a href="services.html">الخدمات</a>
+    <a href="booster_rules.html">القوانين</a>
+    <a href="#" onclick="logout()">الخروج</a>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-user-info" style="padding: 20px; border-bottom: 1px solid var(--border); text-align: center; margin-bottom: 16px;">
+        <div style="font-size: 2.2rem; margin-bottom: 8px;">👤</div>
+        <div id="sidebarUsername" style="font-weight: 900; font-size: 1.1rem; color: var(--text-primary);">Booster</div>
+        <div style="font-size: 0.72rem; color: var(--green); font-weight: 700; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; background: rgba(16, 185, 129, 0.1); padding: 3px 10px; border-radius: 99px;">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--green); display:inline-block;"></span> لاعب محترف متصل
+        </div>
+      </div>
+      <button class="sidebar-btn active" data-target="auction" id="sideAuction">
+        <i class="fas fa-gavel"></i>
+        <span>مزاد الطلبات المفتوحة</span>
+      </button>
+      <button class="sidebar-btn" data-target="tasks" id="sideTasks">
+        <i class="fas fa-tasks"></i>
+        <span>طلباتي النشطة</span>
+      </button>
+      <button class="sidebar-btn" onclick="location.href='booster_rules.html'" id="side">
+        <i class="fas fa-book-open"></i>
+        <span>قوانين العمل للبواسترز</span>
+      </button>
+      <button class="sidebar-btn" onclick="logout()" id="sideLogout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="dashboard-main">
+
+      <!-- STATS -->
+      <div class="booster-stats-grid">
+        <div class="stat-box">
+          <div class="stat-box-title">💰 أرباح المحفظة</div>
+          <div class="stat-box-val" id="boosterBalance">$0.00</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-title">🏆 الطلبات المكتملة</div>
+          <div class="stat-box-val" id="boosterTasks">0</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-title">⭐ التقييم العام</div>
+          <div class="stat-box-val" id="boosterRating">5.0 / 5</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-title">👑 رتبة اللاعب</div>
+          <div class="stat-box-val" style="color: var(--yellow);">لاعب محترف</div>
+        </div>
+      </div>
+
+      <!-- AUCTION SECTION -->
+      <div id="section-auction" class="service-tab-content">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1>⚖️ مزاد الطلبات المتاحة</h1>
+            <p>هنا يمكنك تصفح طلبات العملاء المتاحة للرفع، وتأكيد المزايدة عليها للبدء بالعمل.</p>
+          </div>
+        </div>
+        <div class="auction-list" id="auctionList">
+          <div class="empty-state">
+            <div class="empty-icon">⏳</div>
+            <p>جاري تحميل مزاد الطلبات المتاحة...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE TASKS SECTION -->
+      <div id="section-tasks" class="service-tab-content" style="display:none">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1>📊 طلبات الرفع النشطة الخاصة بي</h1>
+            <p>إدارة وتحديث تقدم طلبات الرفع التي تعمل عليها حالياً والتواصل مع الدعم والعميل.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="my-tasks-list" id="myTasksList">
+            <div class="empty-state">
+              <div class="empty-icon"></div>
+              <p>No active tasks. Go to the auction and place a bid!</p>
+            </div>
+          </div>
+
+          <!-- Chat Panel -->
+          <div class="order-side-panel" id="activeChatColumn" style="display: none; position: sticky; top: 90px;">
+            <div class="chat-box">
+              <div class="chat-header">
+                <span id="chatWithTitle">   </span>
+                <span id="chatOrderTag" style="font-size: 0.75rem; color: var(--purple); font-family: var(--font-en);"></span>
+              </div>
+              <div class="chat-messages" id="chatMessages"></div>
+              <div class="chat-footer">
+                <input type="text" class="chat-input" id="chatInput" placeholder="   ..." onkeydown="if(event.key==='Enter') sendChatMessage()">
+                <button class="btn-primary" onclick="sendChatMessage()" style="padding: 10px 16px;"><i class="fas fa-paper-plane"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom" style="padding-top:0">
+        <span>© 2026 Adsa Game.   .</span>
+        <span style="color:var(--purple);font-weight:700;font-family:var(--font-en)">adsagame.com</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div id="globalToast" class="toast"></div>
+
+<!-- Load main.js ONCE at the end -->
+<script src="js/main.js"></script>
+<script>
+  let currentUser = null;
+  let activeChatOrderId = null;
+  let chatPollInterval = null;
+
+  // =====================
+  // LOGIN
+  // =====================
+  async function doLogin() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const errorEl = document.getElementById('loginError');
+
+    if (!username || !password) {
+      errorEl.textContent = 'Please enter username and password';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ loginInput: username, password })
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        errorEl.textContent = data.error || '  failed';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      if (data.user.role !== 'booster') {
+        errorEl.textContent = 'Access denied. This portal is for approved boosters only.';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      // Save and init
+      localStorage.setItem('vx-user', JSON.stringify(data.user));
+      currentUser = data.user;
+      initDashboard();
+    } catch (e) {
+      errorEl.textContent = 'Connection error. Please try again.';
+      errorEl.style.display = 'block';
+    }
+  }
+
+  // Enter key on password field
+  document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  // =====================
+  // AUTH CHECK
+  // =====================
+  function checkAuth() {
+    const userStr = localStorage.getItem('vx-user');
+    if (!userStr) {
+      showLoginOverlay();
+      return;
+    }
+    currentUser = JSON.parse(userStr);
+    if (currentUser.role !== 'booster') {
+      showLoginOverlay();
+      return;
+    }
+    initDashboard();
+  }
+
+  function showLoginOverlay() {
+    document.getElementById('loginOverlay').style.display = 'flex';
+    document.getElementById('mainApp').style.display = 'none';
+  }
+
+  function initDashboard() {
+    document.getElementById('loginOverlay').style.display = 'none';
+    document.getElementById('mainApp').style.display = '';
+    document.getElementById('sidebarUsername').textContent = currentUser.username;
+    fetchUserStats();
+    switchTab('auction');
+  }
+
+  // =====================
+  // STATS
+  // =====================
+  async function fetchUserStats() {
+    try {
+      const res = await fetch(`/api/auth/user/${currentUser.id}`);
+      const data = await res.json();
+      if (res.ok) {
+        currentUser.balance = data.balance;
+        currentUser.completed_tasks = data.completed_tasks;
+        currentUser.rating = data.rating;
+        localStorage.setItem('vx-user', JSON.stringify(currentUser));
+
+        document.getElementById('boosterBalance').textContent = `$${data.balance.toFixed(2)}`;
+        document.getElementById('boosterTasks').textContent = data.completed_tasks;
+        document.getElementById('boosterRating').textContent = `${data.rating.toFixed(1)} / 5`;
+      }
+    } catch (e) {
+      console.error('Error fetching stats', e);
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('vx-user');
+    showLoginOverlay();
+  }
+
+  // =====================
+  // TABS
+  // =====================
+  const sidebarButtons = document.querySelectorAll('.dashboard-sidebar button[data-target]');
+  const serviceTabs = {
+    auction: document.getElementById('section-auction'),
+    tasks: document.getElementById('section-tasks')
+  };
+
+  function switchTab(target) {
+    if (!serviceTabs[target]) return;
+
+    Object.entries(serviceTabs).forEach(([key, element]) => {
+      if (element) element.style.display = key === target ? '' : 'none';
+    });
+
+    sidebarButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === target);
+    });
+
+    if (target === 'auction') {
+      loadAuctions();
+      clearInterval(chatPollInterval);
+      document.getElementById('activeChatColumn').style.display = 'none';
+      activeChatOrderId = null;
+    } else if (target === 'tasks') {
+      loadMyTasks();
+    }
+  }
+
+  sidebarButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.target) switchTab(btn.dataset.target);
+    });
+  });
+
+  // =====================
+  // AUCTION
+  // =====================
+  async function loadAuctions() {
+    const listEl = document.getElementById('auctionList');
+    try {
+      const res = await fetch('/api/admin/stats');
+      const stats = await res.json();
+      if (!res.ok) return;
+
+      const auctions = stats.orders.filter(o => o.status === 'auction');
+      if (auctions.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"></div>
+            <p>No orders available right now. Check back soon!</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = auctions.map(o => {
+        const lowestBid = o.bids && o.bids.length > 0 ? o.bids[0].price : o.price;
+        const totalBidsCount = o.bids ? o.bids.length : 0;
+
+        return `
+          <div class="auction-card">
+            <div class="auction-header">
+              <span class="auction-title">${getServiceLabel(o.serviceType)}</span>
+              <span class="card-badge badge-hot" style="font-family:var(--font-en)">ID: ${o.id}</span>
+            </div>
+            <div class="auction-meta">
+              <div>Client: <span>${o.clientUsername}</span></div>
+              <div>Base Price: <span style="color:var(--purple);">$${o.price.toFixed(2)}</span></div>
+              <div>Lowest Bid: <span style="color:var(--green); font-size:1.1rem;">$${lowestBid.toFixed(2)}</span></div>
+              <div>Total Bids: <span style="color:var(--yellow);">${totalBidsCount}</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-secondary); background:rgba(255,255,255,0.01); border:1px solid var(--border); padding:10px 14px; border-radius:var(--radius-sm)">
+              <strong>Details:</strong> ${formatOrderDetails(o.details)}
+              ${o.tip > 0 ? `<br><strong style="color:var(--yellow)"> Tip: $${o.tip.toFixed(2)} (Bonus for you!)</strong>` : ''}
+            </div>
+
+            <div class="auction-actions">
+              <div class="bid-input-wrap">
+                <label style="font-size:0.85rem; font-weight:700;">Your Bid ($):</label>
+                <input type="number" class="bid-input" id="bidInput-${o.id}" value="${(lowestBid - 0.5).toFixed(2)}" min="0.5" step="0.5">
+              </div>
+              <button class="btn-primary" onclick="submitBid('${o.id}')" style="padding:10px 24px;">
+                <i class="fas fa-paper-plane"></i> Submit Bid
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+    } catch (e) {
+      listEl.innerHTML = `<div style="color:var(--red);text-align:center;padding:40px;">Error loading data from server</div>`;
+    }
+  }
+
+  // =====================
+  // HELPERS
+  // =====================
+  function getServiceLabel(type) {
+    if (type === 'trophy') return ' Trophy Boost';
+    if (type === 'ranked') return ' Ranked Push';
+    if (type === 'prestige') return ' Prestige';
+    if (type === 'events') return '⚡ Events';
+    return type;
+  }
+
+  function formatOrderDetails(details) {
+    if (!details) return 'No details';
+    if (typeof details === 'string') return details;
+    let parts = [];
+    if (details.fromCups !== undefined) {
+      parts.push(`From: ${details.fromCups.toLocaleString()}  → To: ${details.toCups.toLocaleString()} `);
+      if (details.brawlerCount) parts.push(`s: ${details.brawlerCount}`);
+      if (details.brawler) parts.push(`Brawler: ${details.brawler}`);
+      if (details.preferreds && details.preferreds.length > 0) {
+        parts.push(`Preferred: ${details.preferreds.join(', ')}`);
+      }
+    } else {
+      if (details.brawler) parts.push(`Brawler: ${details.brawler}`);
+      if (details.fromRank) parts.push(`From: ${details.fromRank} → To: ${details.toRank}`);
+      if (details.tier) parts.push(`Tier: ${details.tier}`);
+    }
+    if (details.rangeFrom !== undefined) parts.push(`Cups: ${details.rangeFrom} → ${details.rangeTo}`);
+    if (details.powerLevel) parts.push(`Power: ${details.powerLevel}`);
+    if (details.gadget !== undefined) parts.push(`Gadget: ${details.gadget ? 'Yes' : 'No'}`);
+    if (details.starPower !== undefined) parts.push(`Star Power: ${details.starPower ? 'Yes' : 'No'}`);
+    if (details.discordStream) parts.push('Discord Stream: Yes');
+    if (details.speed && details.speed !== 'normal') parts.push(`Speed: ${details.speed}`);
+    return parts.join(' | ') || JSON.stringify(details);
+  }
+
+  // =====================
+  // BIDDING
+  // =====================
+  async function submitBid(orderId) {
+    const input = document.getElementById(`bidInput-${orderId}`);
+    if (!input) return;
+    const bidPrice = parseFloat(input.value);
+    if (!bidPrice || bidPrice <= 0) {
+      showToast('Please enter a valid bid amount', '⚠️');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/orders/bid', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          boosterId: currentUser.id,
+          bidPrice
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message, '✅');
+        loadAuctions();
+      } else {
+        showToast(data.error, '❌');
+      }
+    } catch (e) {
+      showToast('Connection error, please try again', '❌');
+    }
+  }
+
+  // =====================
+  // MY TASKS
+  // =====================
+  async function loadMyTasks() {
+    const listEl = document.getElementById('myTasksList');
+    try {
+      const res = await fetch('/api/admin/stats');
+      const stats = await res.json();
+      if (!res.ok) return;
+
+      const myTasks = stats.orders.filter(o => o.boosterId === currentUser.id);
+      if (myTasks.length === 0) {
+        listEl.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon"></div>
+            <p>No active tasks yet. Go bid on an order!</p>
+          </div>
+        `;
+        return;
+      }
+
+      listEl.innerHTML = myTasks.map(o => {
+        const hasDeadline = !!o.deadline;
+        let timerHtml = '';
+
+        if (hasDeadline && o.status === 'active') {
+          timerHtml = `<div style="margin-top:10px; font-weight:700; color:var(--orange)">⏰ Deadline: <span id="timer-${o.id}" class="deadline-countdown" data-time="${o.deadline}">--:--:--</span></div>`;
+        }
+
+        return `
+          <div class="auction-card" style="border-color:${o.status === 'completed' ? 'var(--green)' : 'var(--border)'}">
+            <div class="auction-header">
+              <span class="auction-title">${getServiceLabel(o.serviceType)}</span>
+              <span class="card-badge" style="background:var(--purple); color:#000; font-family:var(--font-en)">${o.status.toUpperCase()}</span>
+            </div>
+            <div class="auction-meta">
+              <div>Client: <span>${o.clientUsername}</span></div>
+              <div>Agreed Price: <span style="color:var(--green); font-size:1.1rem;">$${(o.acceptedPrice || o.price).toFixed(2)}</span></div>
+              ${o.tip > 0 ? `<div>Tip: <span style="color:var(--yellow); font-size:1.1rem;">$${o.tip.toFixed(2)}</span></div>` : ''}
+              <div>Date: <span>${new Date(o.created_at).toLocaleDateString()}</span></div>
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-secondary); background:rgba(255,255,255,0.01); border:1px solid var(--border); padding:10px 14px; border-radius:var(--radius-sm)">
+              <strong>Details:</strong> ${formatOrderDetails(o.details)}
+            </div>
+
+            ${timerHtml}
+
+            <div style="display:flex; gap:12px; margin-top:10px; flex-wrap:wrap">
+              ${o.status === 'active' && !hasDeadline ? `
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <label style="font-size:0.8rem; font-weight:700; white-space:nowrap">Deadline (days):</label>
+                  <input type="number" class="bid-input" id="days-${o.id}" value="3" min="1" max="30" style="width:60px">
+                  <button class="btn-yellow" onclick="setDeadline('${o.id}')" style="padding:8px 16px; font-size:0.8rem">Confirm & Start</button>
+                </div>
+              ` : ''}
+
+              <button class="btn-secondary" onclick="openChat('${o.id}', '${o.clientUsername}')" style="padding:8px 16px; font-size:0.8rem">
+                <i class="fas fa-comments"></i> Chat with Client
+              </button>
+
+              ${o.status === 'active' ? `
+                <button class="btn-primary" onclick="completeTask('${o.id}')" style="padding:8px 16px; font-size:0.8rem; background:linear-gradient(135deg,var(--green),#047857)">
+                  <i class="fas fa-check"></i> Complete Task & Get Paid
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      startTaskTimers();
+
+    } catch (e) {
+      listEl.innerHTML = `<div style="color:var(--red);text-align:center;padding:40px;">Error loading data from server</div>`;
+    }
+  }
+
+  // =====================
+  // DEADLINE
+  // =====================
+  async function setDeadline(orderId) {
+    const input = document.getElementById(`days-${orderId}`);
+    if (!input) return;
+    const days = parseInt(input.value);
+    if (!days || days <= 0) {
+      showToast('Please enter valid number of days', '⚠️');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/orders/set-deadline', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, boosterId: currentUser.id, days })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message, '✅');
+        loadMyTasks();
+      } else {
+        showToast(data.error, '❌');
+      }
+    } catch (e) {
+      showToast('Connection error, please try again', '❌');
+    }
+  }
+
+  // =====================
+  // COMPLETE TASK
+  // =====================
+  async function completeTask(orderId) {
+    if (!confirm('Are you sure you want to mark this task as completed? The client will be notified.')) return;
+    try {
+      const res = await fetch('/api/orders/complete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, boosterId: currentUser.id })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message, '');
+        fetchUserStats();
+        loadMyTasks();
+      } else {
+        showToast(data.error, '❌');
+      }
+    } catch (e) {
+      showToast('Connection error, please try again', '❌');
+    }
+  }
+
+  // =====================
+  // TIMERS
+  // =====================
+  function startTaskTimers() {
+    document.querySelectorAll('.deadline-countdown').forEach(el => {
+      const targetTime = new Date(el.dataset.time).getTime();
+      const interval = setInterval(() => {
+        const diff = targetTime - Date.now();
+        if (diff <= 0) {
+          el.textContent = 'Expired!';
+          el.style.color = 'var(--red)';
+          clearInterval(interval);
+          return;
+        }
+        const d = Math.floor(diff / 86400000);
+        const h = Math.floor((diff % 86400000) / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        let display = '';
+        if (d > 0) display += `${d}d `;
+        display += `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        el.textContent = display;
+      }, 1000);
+    });
+  }
+
+  // =====================
+  // CHAT
+  // =====================
+  function openChat(orderId, clientName) {
+    activeChatOrderId = orderId;
+    document.getElementById('activeChatColumn').style.display = 'block';
+    document.getElementById('chatWithTitle').textContent = ` Chat with: ${clientName}`;
+    document.getElementById('chatOrderTag').textContent = `ORDER: ${orderId}`;
+
+    fetchChatMessages();
+    clearInterval(chatPollInterval);
+    chatPollInterval = setInterval(fetchChatMessages, 3000);
+  }
+
+  async function fetchChatMessages() {
+    if (!activeChatOrderId) return;
+    try {
+      const res = await fetch(`/api/chat/${activeChatOrderId}`);
+      const messages = await res.json();
+      if (!res.ok) return;
+
+      const container = document.getElementById('chatMessages');
+      const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
+
+      container.innerHTML = messages.map(m => {
+        let senderType = 'received';
+        if (m.sender === 'SYSTEM') senderType = 'system';
+        else if (m.sender === currentUser.username) senderType = 'sent';
+
+        return `
+          <div class="chat-msg ${senderType}">
+            ${m.sender !== 'SYSTEM' && m.sender !== currentUser.username ? `<strong style="font-size:0.7rem; display:block; margin-bottom:2px; color:var(--yellow)">${m.sender}</strong>` : ''}
+            ${m.message}
+            <div style="font-size:0.6rem; color:var(--text-muted); text-align:right; margin-top:4px">${new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+          </div>
+        `;
+      }).join('');
+
+      if (shouldScroll) container.scrollTop = container.scrollHeight;
+    } catch (e) {
+      console.error('Error fetching chat', e);
+    }
+  }
+
+  async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const msg = input.value.trim();
+    if (!msg || !activeChatOrderId) return;
+
+    input.value = '';
+    try {
+      const res = await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: activeChatOrderId,
+          sender: currentUser.username,
+          message: msg
+        })
+      });
+      if (res.ok) fetchChatMessages();
+    } catch (e) {
+      console.error('Error sending message', e);
+    }
+  }
+
+  // =====================
+  // INIT
+  // =====================
+  checkAuth();
+</script>
+</body>
+</html>
