@@ -1,0 +1,7 @@
+# ===== API Keys =====
+
+# Groq API Key (مجاني - اجلبه من https://console.groq.com/keys)
+GROQ_API_KEY=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
+
+# Gemini API Key (مجاني - اجلبه من https://aistudio.google.com/apikey)
+GEMINI_API_KEY=AQ.Ab8RN6Io-Jio8I6RdxxP-YYyKfKrx8EYQuDf4nOTkwhscecIEw
