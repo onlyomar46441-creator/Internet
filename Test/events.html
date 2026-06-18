@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الفعاليات الحية | Adsa Game</title>
+  <meta name="description" content="الفعاليات الحية في Brawl Stars - نغطي جميع الفعاليات والبطولات الحصرية مع ضمان الفوز بأفضل الأسعار." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .page-hero { text-align:center; padding:60px 28px 40px; }
+    .page-hero h1 { font-size:clamp(1.8rem,4vw,3rem); font-weight:900; margin-bottom:12px; }
+    .page-hero p { color:var(--text-secondary); max-width:560px; margin:0 auto; }
+
+    .events-hero-badge {
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(59, 130, 246, 0.1);
+      border:1px solid rgba(59, 130, 246, 0.3);
+      color:var(--purple);
+      padding:7px 18px;border-radius:999px;
+      font-size:0.82rem;font-weight:700;margin-bottom:20px;
+    }
+    .live-dot { width:7px;height:7px;border-radius:50%;background:var(--red);animation:pulse-dot 1s infinite; }
+
+    .featured-event {
+      max-width:1280px;margin:0 auto 60px;padding:0 28px;
+    }
+    .featured-card {
+      background:var(--bg-secondary);
+      border:1px solid rgba(59, 130, 246, 0.25);
+      border-radius:var(--radius-xl);
+      padding:44px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:40px;
+      align-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .featured-card::before {
+      content:'';position:absolute;inset:0;
+      background:radial-gradient(ellipse 60% 80% at 0% 50%,rgba(59, 130, 246, 0.08),transparent 60%);
+    }
+    .featured-card::after {
+      content:'مميز';
+      position:absolute;top:20px;left:24px;
+      background:rgba(59, 130, 246, 0.15);
+      color:var(--purple);
+      font-size:0.7rem;font-weight:900;
+      padding:4px 12px;border-radius:999px;
+      border:1px solid rgba(59, 130, 246, 0.3);
+      letter-spacing:1px;
+    }
+    .featured-title {font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;margin-bottom:14px;}
+    .featured-desc {color:var(--text-secondary);line-height:1.7;margin-bottom:22px;max-width:560px;}
+    .featured-meta {display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;}
+    .meta-item {
+      display:flex;align-items:center;gap:6px;
+      font-size:0.82rem;font-weight:700;color:var(--text-secondary);
+    }
+    .meta-item span {color:var(--text-primary);}
+    .featured-price-box {
+      background:rgba(59, 130, 246, 0.08);
+      border:1px solid rgba(59, 130, 246, 0.2);
+      border-radius:var(--radius-lg);
+      padding:30px 36px;
+      text-align:center;
+      min-width:200px;
+      position:relative;z-index:1;
+    }
+    .featured-price {font-family:var(--font-en);font-size:3rem;font-weight:900;color:var(--purple);line-height:1;}
+    .featured-price-label {font-size:0.8rem;color:var(--text-muted);margin-top:6px;}
+    .featured-guarantee {
+      display:flex;align-items:center;gap:6px;
+      background:rgba(59, 130, 246, 0.08);border:1px solid rgba(59, 130, 246, 0.2);
+      border-radius:var(--radius-sm);padding:8px 14px;
+      font-size:0.8rem;font-weight:700;color:var(--green);
+      margin-top:12px;
+    }
+
+    .countdown-bar {
+      max-width:1280px;margin:0 auto 60px;padding:0 28px;
+    }
+    .countdown-box {
+      background:var(--bg-card);border:1px solid var(--border);
+      border-radius:var(--radius-lg);padding:24px 36px;
+      display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;
+    }
+    .countdown-label {font-size:0.9rem;color:var(--text-secondary);font-weight:700;}
+    .countdown-timer {
+      display:flex;gap:16px;align-items:center;
+      font-family:var(--font-en);
+    }
+    .ct-unit {text-align:center;}
+    .ct-num {font-size:2rem;font-weight:900;color:var(--purple);line-height:1;}
+    .ct-label {font-size:0.65rem;color:var(--text-muted);font-weight:700;text-transform:uppercase;}
+    .ct-sep {font-size:1.8rem;font-weight:900;color:var(--border);padding-bottom:10px;}
+
+    .events-list-section {max-width:1280px;margin:0 auto 60px;padding:0 28px;}
+
+    .event-card-enhanced {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      padding:28px;
+      transition:var(--transition);
+      position:relative;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns:auto 1fr auto;
+      gap:20px;
+      align-items:center;
+    }
+    .event-card-enhanced:hover {transform:translateY(-3px);border-color:var(--purple);box-shadow:0 10px 35px rgba(59, 130, 246, 0.1);}
+    .event-card-enhanced::before {
+      content:'';position:absolute;top:0;right:0;left:0;height:2px;
+      background:linear-gradient(90deg,var(--purple),var(--yellow));
+      opacity:0;transition:var(--transition);
+    }
+    .event-card-enhanced:hover::before {opacity:1;}
+    .event-icon {
+      width:64px;height:64px;border-radius:var(--radius-md);
+      background:rgba(59, 130, 246, 0.1);
+      display:flex;align-items:center;justify-content:center;
+      font-size:2rem;flex-shrink:0;
+    }
+    .event-info-title {font-size:1.15rem;font-weight:800;margin-bottom:6px;}
+    .event-info-desc {font-size:0.85rem;color:var(--text-secondary);line-height:1.6;margin-bottom:10px;}
+    .event-tags {display:flex;gap:8px;flex-wrap:wrap;}
+    .event-tag {
+      font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:999px;
+      font-family:var(--font-en);
+    }
+    .tag-guaranteed {background:rgba(16,185,129,0.12);color:var(--green);border:1px solid rgba(16,185,129,0.25);}
+    .tag-team {background:rgba(59,130,246,0.12);color:var(--blue);border:1px solid rgba(59,130,246,0.25);}
+    .tag-fast {background:rgba(16,185,129,0.12);color:var(--purple);border:1px solid rgba(16,185,129,0.25);}
+    .tag-new {background:rgba(16,185,129,0.12);color:var(--purple);border:1px solid rgba(16,185,129,0.25);}
+
+    .event-price-action {text-align:center;flex-shrink:0;}
+    .event-big-price {font-family:var(--font-en);font-size:1.8rem;font-weight:900;color:var(--purple);}
+    .event-per {font-size:0.72rem;color:var(--text-muted);font-weight:600;}
+
+    .unique-section {
+      max-width:1280px;margin:0 auto 60px;padding:0 28px;
+    }
+    .unique-box {
+      background:linear-gradient(135deg,rgba(59, 130, 246, 0.08),rgba(255, 215, 0, 0.05));
+      border:1px solid rgba(59, 130, 246, 0.2);
+      border-radius:var(--radius-xl);
+      padding:44px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:40px;
+      align-items:center;
+    }
+    .unique-title {font-size:clamp(1.4rem,3vw,2rem);font-weight:900;margin-bottom:14px;}
+    .unique-points {list-style:none;display:flex;flex-direction:column;gap:10px;}
+    .unique-points li {
+      display:flex;align-items:flex-start;gap:10px;
+      font-size:0.9rem;color:var(--text-secondary);
+    }
+    .unique-points li::before {content:'✅';flex-shrink:0;}
+    .unique-right {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      padding:28px;
+    }
+    .ur-title {font-weight:800;margin-bottom:16px;font-size:1rem;}
+    .ur-item {
+      display:flex;justify-content:space-between;align-items:center;
+      padding:10px 0;
+      border-bottom:1px solid var(--border);
+      font-size:0.88rem;
+    }
+    .ur-item:last-child {border:none;}
+    .ur-label {color:var(--text-secondary);}
+    .ur-val {font-weight:700;font-family:var(--font-en);color:var(--orange);}
+
+    @media(max-width:768px) {
+      .featured-card {grid-template-columns:1fr;}
+      .featured-price-box {text-align:right;}
+      .unique-box {grid-template-columns:1fr;}
+      .event-card-enhanced {grid-template-columns:auto 1fr;grid-template-rows:auto auto;}
+      .event-price-action {grid-column:1/-1;text-align:right;display:flex;align-items:center;justify-content:space-between;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:10px">
+        <img src="logo.png" alt="Adsa Game Logo" class="logo-img">
+        <span class="logo-vexa">ADSA</span><span class="logo-zone">GAME</span>
+      </a>
+      <nav><ul class="nav-links">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="services.html">الخدمات</a></li>
+        <li><a href="events.html" class="active">الفعاليات 🔥</a></li>
+        <li><a href="contact.html">تواصل معنا</a></li>
+      </ul></nav>
+      <div class="nav-right">
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Theme" title="Toggle Theme">
+          <i class="fas fa-moon icon-dark"></i>
+          <i class="fas fa-sun icon-light"></i>
+        </button>
+        <button class="lang-btn" id="langBtn" style="display:none"></button>
+        <a href="services.html" class="btn-order">اطلب الآن</a>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+    <a href="index.html">الرئيسية</a>
+    <a href="services.html">الخدمات</a>
+    <a href="events.html">الفعاليات</a>
+    <a href="contact.html">تواصل معنا</a>
+  </div>
+
+  <!-- PAGE HERO -->
+  <div class="page-hero">
+    <div class="events-hero-badge">
+      <span class="live-dot"></span>
+      فعاليات حصرية ومميزة!
+    </div>
+    <h1>فعاليات Brawl Stars <span style="color:var(--purple);text-shadow:0 0 25px rgba(59,130,246,0.4)">الحية والنشطة</span> 🔥</h1>
+    <p>نحن نتابع كل حدث جديد في Brawl Stars ونضمن لك الفوز بأفضل الأسعار وتكتيكات فرق المحترفين</p>
+  </div>
+
+  <!-- FEATURED EVENT: PRESTIGE 2 -->
+  <div class="featured-event reveal">
+    <div class="featured-card" style="border-color:var(--yellow)">
+      <div style="position:relative;z-index:1">
+        <div class="featured-meta">
+          <div class="meta-item">👑 <span>عرض خاص</span></div>
+          <div class="meta-item">📅 <span id="eventDate">يحدد لاحقاً</span></div>
+          <div class="meta-item" style="color:var(--yellow)">⚡ <span style="color:var(--yellow)">فوز مضمون 100%</span></div>
+        </div>
+        <div class="featured-title">🔥 عرض الفلاش: <span style="color:var(--yellow)">2 برستيج 2</span> بسعر 1 فقط!</div>
+        <div class="featured-desc">
+          وفر 50% كاملة! احصل على خدمة ترقية برستيج 2 لبطلين من أبطال حسابك بسعر بطل واحد فقط لفترة محدودة.
+        </div>
+        <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
+          <a href="services.html?flash=prestige2" class="btn-yellow" id="boltOrderBtn" style="color:#000">
+            <i class="fas fa-bolt"></i> اطلب العرض الآن — $7.50
+          </a>
+          <a href="contact.html" class="btn-secondary" id="boltBtn">
+            <i class="fab fa-discord"></i> استفسر من الدعم
+          </a>
+        </div>
+      </div>
+      <div style="position:relative;z-index:1">
+        <div class="featured-price-box" style="border-color:var(--yellow); background:rgba(245, 158, 11, 0.08)">
+          <div class="featured-price" style="color:var(--yellow)">$7.50</div>
+          <div class="featured-price-label" style="text-decoration:line-through; font-size:0.75rem; color:var(--text-muted)">بدلاً من $15</div>
+          <div class="featured-price-label">2 برستيج 2</div>
+          <div class="featured-guarantee" style="color:var(--orange); border-color:var(--orange)">
+            <i class="fas fa-shield-alt"></i> وفر 50%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COUNTDOWN TIMER -->
+  <div class="countdown-bar reveal">
+    <div class="countdown-box">
+      <div>
+        <div class="countdown-label">⏰ ينتهي العرض خلال:</div>
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px">بعد انتهاء العداد سيعود السعر الأصلي ($15)</div>
+      </div>
+      <div class="countdown-timer">
+        <div class="ct-unit"><div class="ct-num" id="ct">00</div><div class="ct-label">أيام</div></div>
+        <div class="ct-sep">:</div>
+        <div class="ct-unit"><div class="ct-num" id="ctH">24</div><div class="ct-label">ساعات</div></div>
+        <div class="ct-sep">:</div>
+        <div class="ct-unit"><div class="ct-num" id="ctMins">00</div><div class="ct-label">دقائق</div></div>
+        <div class="ct-sep">:</div>
+        <div class="ct-unit"><div class="ct-num" id="ctSecs">00</div><div class="ct-label">ثواني</div></div>
+      </div>
+      <a href="services.html?flash=prestige2" class="btn-yellow" id="ctaTimerBtn" style="color:#000">
+        <i class="fas fa-bolt"></i> احصل على العرض الآن
+      </a>
+    </div>
+  </div>
+
+  <!-- EVENTS LIST -->
+  <div class="events-list-section">
+    <div class="section-header reveal">
+      <span class="section-tag">الفعاليات النشطة</span>
+      <h2 class="section-title">البطولات والفعاليات الحالية والقادمة</h2>
+      <p class="section-subtitle">اختر الفعالية التي ترغب بها ودع فريق المحترفين يتولى الفوز المضمون</p>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <!-- Event 1: Bolt -->
+      <div class="event-card-enhanced reveal animate-delay-1" id="eventBolt">
+        <div class="event-icon">⚡</div>
+        <div class="event-info-body">
+          <div class="event-info-title">حدث Bolt ⚡</div>
+          <div class="event-info-desc">خدمة مضمونة بالكامل لإنهاء جميع مستويات وتحديات حدث Bolt الجديد في Brawl Stars بأمان تام.</div>
+          <div class="event-tags">
+            <span class="event-tag tag-guaranteed">✅ فوز مضمون</span>
+            <span class="event-tag tag-team">👥 لعب مع محترفين</span>
+            <span class="event-tag tag-fast">⚡ تنفيذ سريع</span>
+            <span class="event-tag tag-new">🆕 جديد</span>
+          </div>
+        </div>
+        <div class="event-price-action">
+          <div>
+            <div class="event-big-price">$4.00</div>
+            <div class="event-per">/ للطلب الكامل</div>
+          </div>
+          <a href="contact.html" class="btn-primary" style="margin-top:10px;padding:10px 20px;font-size:0.85rem" id="boltBtn2">اطلب الآن</a>
+        </div>
+      </div>
+
+      <!-- Event 2: Upcoming -->
+      <div class="event-card-enhanced reveal animate-delay-2" id="eventUpcoming1">
+        <div class="event-icon" style="background:rgba(139,92,246,0.1)">🔮</div>
+        <div class="event-info-body">
+          <div class="event-info-title">البطولات الخاصة والفعاليات الجديدة القادمة</div>
+          <div class="event-info-desc">سنقوم بتغطية أي فعاليات جديدة تنزل في اللعبة مع الموسم الجديد، يمكنك الحجز المسبق الآن.</div>
+          <div class="event-tags">
+            <span class="event-tag tag-new">🆕 قريباً</span>
+            <span class="event-tag tag-team">👥 تكتيكات مخصصة</span>
+          </div>
+        </div>
+        <div class="event-price-action">
+          <div>
+            <div class="event-big-price" style="color:var(--purple)">$4.00</div>
+            <div class="event-per">/ للفعالية</div>
+          </div>
+          <a href="contact.html" class="btn-secondary" style="margin-top:10px;padding:10px 20px;font-size:0.85rem" id="upcomingBtn1">قريباً جداً</a>
+        </div>
+      </div>
+
+      <!-- Event 3: General -->
+      <div class="event-card-enhanced reveal animate-delay-3" id="eventGeneral">
+        <div class="event-icon" style="background:rgba(16,185,129,0.1)"><img src="trophy.png" alt="🏆" style="width:36px; height:36px; object-fit:contain;"></div>
+        <div class="event-info-body">
+          <div class="event-info-title">حدث تشكيل فريق مخصص (Custom Team Build)</div>
+          <div class="event-info-desc">خدمات لعب وتدريب وتنسيق فرق مخصصة لتخطي التحديات الصعبة في أوقات قياسية.</div>
+          <div class="event-tags">
+            <span class="event-tag tag-guaranteed">✅ جودة مضمونة</span>
+            <span class="event-tag" style="background:rgba(16,185,129,0.12);color:var(--green);border:1px solid rgba(16,185,129,0.25)">🎯 تدريب وتنسيق</span>
+          </div>
+        </div>
+        <div class="event-price-action">
+          <div>
+            <div class="event-big-price" style="color:var(--green)">تواصل معنا</div>
+            <div class="event-per">/ للتسعير</div>
+          </div>
+          <a href="contact.html" class="btn-secondary" style="margin-top:10px;padding:10px 20px;font-size:0.85rem;border-color:var(--green);color:var(--green)" id="customEventBtn">تواصل معنا</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHY UNIQUE -->
+  <div class="unique-section reveal">
+    <div class="unique-box">
+      <div>
+        <div class="section-tag" style="display:inline-block;margin-bottom:14px">القواعد</div>
+        <div class="unique-title">شروط وقوانين<br/><span style="color:var(--orange)">الاشتراك بالفعاليات</span></div>
+        <p style="color:var(--text-secondary);margin-bottom:20px;line-height:1.7">يرجى قراءة شروط المشاركة والتنسيق لضمان سلامة وسرعة العملية!</p>
+        <ul class="unique-points">
+          <li>يجب أن يكون لديك حساب مسجل في Adsa Game</li>
+          <li>يجب ألا يقل عدد كؤوس الحساب الإجمالي عن 10,000 كأس</li>
+          <li>الالتزام الكامل بجميع تعليمات الدعم واللاعب المحترف</li>
+          <li>العب بنزاهة واحترم الروح الرياضية</li>
+        </ul>
+      </div>
+      <div class="unique-right">
+        <div class="ur-title">📊 إحصائيات عامة للفعاليات</div>
+        <div class="ur-item">
+          <span class="ur-label">الفعاليات المكتملة</span>
+          <span class="ur-val">500+ فعالية</span>
+        </div>
+        <div class="ur-item">
+          <span class="ur-label">نسبة الفوز الإجمالية</span>
+          <span class="ur-val">99.8%</span>
+        </div>
+        <div class="ur-item">
+          <span class="ur-label">متوسط وقت التنفيذ</span>
+          <span class="ur-val">أقل من ساعتين</span>
+        </div>
+        <div class="ur-item">
+          <span class="ur-label">رضا العملاء</span>
+          <span class="ur-val">⭐ 4.9/5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2026 Adsa Game. جميع الحقوق محفوظة.</span>
+        <span style="color:var(--purple);font-weight:700;font-family:var(--font-en)">adsagame.com</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div id="globalToast" class="toast"></div>
+<script src="js/brawlers.js"></script>
+<script src="js/main.js"></script>
+<script>
+// Countdown timer
+function startCountdown() {
+  const stored = localStorage.getItem('vx-flash-end');
+  let target;
+  if (stored) {
+    target = new Date(parseInt(stored));
+    if (target <= Date.now()) {
+      target = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      localStorage.setItem('vx-flash-end', target.getTime());
+    }
+  } else {
+    target = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    localStorage.setItem('vx-flash-end', target.getTime());
+  }
+
+  function update() {
+    const diff = target - Date.now();
+    if (diff <= 0) {
+      document.getElementById('ct').textContent = '00';
+      document.getElementById('ctH').textContent = '00';
+      document.getElementById('ctMins').textContent = '00';
+      document.getElementById('ctSecs').textContent = '00';
+      const newTarget = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      localStorage.setItem('vx-flash-end', newTarget.getTime());
+      target = newTarget;
+      return;
+    }
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    document.getElementById('ct').textContent = String(d).padStart(2,'0');
+    document.getElementById('ctH').textContent = String(h).padStart(2,'0');
+    document.getElementById('ctMins').textContent = String(m).padStart(2,'0');
+    document.getElementById('ctSecs').textContent = String(s).padStart(2,'0');
+  }
+  update();
+  setInterval(update, 1000);
+
+  // Show today's date
+  const dateEl = document.getElementById('eventDate');
+  if (dateEl) {
+    dateEl.textContent = new Date().toLocaleDateString('ar-SA', {year:'numeric',month:'long',day:'numeric'});
+  }
+}
+startCountdown();
+</script>
+</body>
+</html>
