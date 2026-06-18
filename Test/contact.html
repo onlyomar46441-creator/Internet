@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تواصل معنا | Adsa Game</title>
+  <meta name="description" content="تواصل مع دعم Adsa Game الفني لمساعدتك في استفساراتك وحل مشكلاتك على مدار الساعة." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .page-hero{text-align:center;padding:60px 28px 40px;}
+    .page-hero h1{font-size:clamp(1.8rem,4vw,3rem);font-weight:900;margin-bottom:12px;}
+    .page-hero p{color:var(--text-secondary);max-width:520px;margin:0 auto;}
+
+    .contact-layout {
+      max-width:1280px;margin:0 auto 80px;padding:0 28px;
+      display:grid;grid-template-columns:1fr 420px;gap:30px;align-items:start;
+    }
+    @media(max-width:900px){.contact-layout{grid-template-columns:1fr;}}
+
+    /* Contact Form */
+    .contact-form-card {
+      background:var(--bg-secondary);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      overflow:hidden;
+    }
+    .form-header {
+      padding:28px 32px;
+      border-bottom:1px solid var(--border);
+      background:var(--bg-card);
+    }
+    .form-title{font-size:1.25rem;font-weight:900;margin-bottom:4px;}
+    .form-subtitle{font-size:0.85rem;color:var(--text-secondary);}
+    .contact-form{padding:32px;}
+    .form-group{margin-bottom:22px;}
+    .form-group label{
+      display:block;font-size:0.85rem;font-weight:700;
+      color:var(--text-secondary);margin-bottom:8px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width:100%;
+      background:rgba(255,255,255,0.04);
+      border:1.5px solid var(--border);
+      border-radius:var(--radius-sm);
+      padding:13px 16px;
+      color:var(--text-primary);
+      font-size:0.9rem;
+      font-family:var(--font-en);
+      transition:var(--transition);
+    }
+    .form-input:focus,.form-select:focus,.form-textarea:focus{
+      border-color:var(--purple);
+      background:rgba(59, 130, 246, 0.05);
+      box-shadow:0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .form-select option{background:#1a1a2e;color:var(--text-primary);}
+    .form-textarea{min-height:120px;resize:vertical;line-height:1.6;}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:600px){.form-row{grid-template-columns:1fr;}}
+    .form-hint{font-size:0.75rem;color:var(--text-muted);margin-top:5px;}
+
+    .service-selector {
+      display:grid;grid-template-columns:1fr 1fr;gap:10px;
+    }
+    .service-opt {
+      background:var(--bg-card);
+      border:1.5px solid var(--border);
+      border-radius:var(--radius-sm);
+      padding:12px 14px;
+      cursor:pointer;transition:var(--transition);
+      display:flex;align-items:center;gap:8px;
+      font-size:0.85rem;font-weight:700;color:var(--text-secondary);
+    }
+    .service-opt:hover,.service-opt.selected{
+      border-color:var(--purple);
+      background:rgba(59, 130, 246, 0.1);
+      color:var(--purple);
+    }
+
+    .btn-submit {
+      width:100%;background:linear-gradient(135deg,var(--purple),var(--gradient-end));
+      color:#06070d;padding:15px;border-radius:var(--radius-md);
+      font-weight:900;font-size:1rem;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+      transition:var(--transition);
+      box-shadow:0 8px 30px rgba(59, 130, 246, 0.35);
+    }
+    .btn-submit:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(59, 130, 246, 0.5);color:#06070d;}
+    .btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none;}
+
+    /* Info Panel */
+    .info-panel{display:flex;flex-direction:column;gap:18px;}
+    .info-card {
+      background:var(--bg-card);
+      border:1px solid var(--border);
+      border-radius:var(--radius-lg);
+      padding:24px;
+      transition:var(--transition);
+    }
+    .info-card:hover{border-color:rgba(59, 130, 246, 0.3);}
+    .info-card-title{font-size:0.9rem;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+    .contact-method {
+      display:flex;align-items:center;gap:14px;
+      padding:12px 0;border-bottom:1px solid var(--border);
+      transition:var(--transition);cursor:pointer;text-decoration:none;
+    }
+    .contact-method:last-child{border:none;padding-bottom:0;}
+    .contact-method:hover .cm-icon{transform:scale(1.1);}
+    .cm-icon {
+      width:44px;height:44px;border-radius:var(--radius-sm);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.2rem;flex-shrink:0;transition:var(--transition);
+    }
+    .cm-discord{background:rgba(88,101,242,0.15);color:#5865F2;}
+    .cm-whatsapp{background:rgba(37,211,102,0.12);color:#25D366;}
+    .cm-telegram{background:rgba(0,136,204,0.12);color:#0088CC;}
+    .cm-website{background:rgba(59, 130, 246, 0.12);color:var(--purple);}
+    .cm-name{font-size:0.9rem;font-weight:800;}
+    .cm-val{font-size:0.8rem;color:var(--text-muted);font-family:var(--font-en);}
+
+    /* FAQ */
+    .faq-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+    .faq-item{border-bottom:1px solid var(--border);}
+    .faq-item:last-child{border:none;}
+    .faq-q {
+      width:100%;background:none;text-align:right;
+      padding:18px 20px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      font-size:0.9rem;font-weight:700;color:var(--text-primary);
+      cursor:pointer;transition:var(--transition);
+      font-family:var(--font-en);
+    }
+    .faq-q:hover{color:var(--purple);}
+    .faq-q .faq-icon{transition:var(--transition);color:var(--text-muted);font-size:0.8rem;flex-shrink:0;}
+    .faq-item.open .faq-icon{transform:rotate(180deg);color:var(--purple);}
+    .faq-a{
+      display:none;
+      padding:0 20px 18px;
+      font-size:0.85rem;color:var(--text-secondary);line-height:1.7;
+    }
+    .faq-item.open .faq-a{display:block;}
+
+    /* Success state */
+    .success-msg {
+      display:none;
+      text-align:center;padding:40px;
+    }
+    .success-msg.show{display:block;}
+    .success-icon{font-size:3.5rem;margin-bottom:16px;}
+    .success-title{font-size:1.3rem;font-weight:900;margin-bottom:8px;}
+    .success-desc{color:var(--text-secondary);font-size:0.9rem;}
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:10px">
+        <img src="logo.png" alt="Adsa Game Logo" class="logo-img">
+        <span class="logo-vexa">ADSA</span><span class="logo-zone">GAME</span>
+      </a>
+      <nav><ul class="nav-links">
+        <li><a href="index.html">الرئيسية</a></li>
+        <li><a href="services.html">الخدمات</a></li>
+        <li><a href="events.html">الفعاليات 🔥</a></li>
+        <li><a href="contact.html" class="active">تواصل معنا</a></li>
+      </ul></nav>
+      <div class="nav-right">
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Theme" title="Toggle Theme">
+          <i class="fas fa-moon icon-dark"></i>
+          <i class="fas fa-sun icon-light"></i>
+        </button>
+        <button class="lang-btn" id="langBtn" style="display:none"></button>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+    <a href="index.html">الرئيسية</a>
+    <a href="services.html">الخدمات</a>
+    <a href="events.html">الفعاليات</a>
+    <a href="contact.html">تواصل معنا</a>
+  </div>
+
+  <div class="page-hero">
+    <div class="hero-badge" style="margin-bottom:20px">
+      <span class="pulse"></span>
+      <span>متاح للدعم 24/7</span>
+    </div>
+    <h1>تواصل <span class="highlight-purple">معنا</span></h1>
+    <p>فريق الدعم الفني والمبيعات متواجد لمساعدتك عبر جميع القنوات المتاحة</p>
+  </div>
+
+  <div class="contact-layout">
+    <div class="contact-form-card">
+      <div class="form-header">
+        <div class="form-title">نموذج الطلب السريع والتواصل</div>
+        <div class="form-subtitle">يرجى ملء النموذج أدناه وسيقوم الدعم الفني بالتواصل معك فوراً للتنسيق.</div>
+      </div>
+
+      <div class="contact-form">
+        <!-- SUCCESS STATE -->
+        <div id="contactSuccess" class="success-msg">
+          <div class="success-icon">✨</div>
+          <div class="success-title">تم إرسال طلبك بنجاح!</div>
+          <div class="success-desc">سيتواصل معك فريق الدعم الفني عبر وسيلة الاتصال المفضلة لديك خلال دقائق. شكراً لثقتك في Adsa Game!</div>
+        </div>
+
+        <!-- CONTACT FORM BODY -->
+        <form id="contactForm" onsubmit="handleContactSubmit(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label>الاسم الكامل</label>
+              <input type="text" id="contactName" class="form-input" placeholder="مثال: أحمد محمد" required>
+            </div>
+            <div class="form-group">
+              <label>اسمك داخل اللعبة 🎮</label>
+              <input type="text" id="contactGameName" class="form-input" placeholder="اسمك في Brawl Stars" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>تاج الحساب (Player Tag) #</label>
+              <input type="text" id="contactTag" class="form-input" placeholder="رقم المعاملة مثال: #XXXXXXXX" required>
+              <div class="form-hint">تاج حسابك في Brawl Stars (مثال: #99J2LL)</div>
+            </div>
+            <div class="form-group">
+              <label>الخدمة المطلوبة</label>
+              <select id="contactService" class="form-select">
+                <option value="trophy">رفع الكؤوس (Trophy Boost)</option>
+                <option value="ranked">رفع الرانك (Ranked Push)</option>
+                <option value="prestige">رفع البرستيج (Prestige Boost)</option>
+                <option value="events">رفع الفعاليات والبطولات (Events Boost)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>طريقة التواصل المفضلة</label>
+            <div class="service-selector">
+              <div class="service-opt selected" onclick="setContactMethod('discord', this)">
+                <i class="fab fa-discord"></i> ديسكورد (Discord)
+              </div>
+              <div class="service-opt" onclick="setContactMethod('whatsapp', this)">
+                <i class="fab fa-whatsapp"></i> واتساب (WhatsApp)
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>معلومات الاتصال (حساب الديسكورد أو رقم الواتساب بالرمز الدولي)</label>
+            <input type="text" id="contactHandle" class="form-input" placeholder="مثال: username#1234 أو +966xxxxxxxxx" required>
+          </div>
+
+          <div class="form-group">
+            <label>تفاصيل طلبك والتعليمات الإضافية</label>
+            <textarea id="contactDetails" class="form-textarea" placeholder="مثال: أريد رفع كؤوس حسابي من 45,000 إلى 50,000 كأس - سرعة تنفيذ فائقة..." required></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit">
+            <i class="fas fa-paper-plane"></i> إرسال الطلب الآن للبدء
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- INFO SIDEBAR -->
+    <div class="info-panel">
+      <div class="info-card">
+        <div class="info-card-title">
+          <i class="fas fa-headset" style="color:var(--purple)"></i>
+          <span>الدعم المباشر والشات</span>
+        </div>
+        <a href="#" class="contact-method" id="discordSupportLink">
+          <div class="cm-icon cm-discord"><i class="fab fa-discord"></i></div>
+          <div class="cm-info">
+            <div class="cm-name">سيرفر الديسكورد</div>
+            <div class="cm-val">discord.gg/adsagame</div>
+          </div>
+        </a>
+        <a href="#" class="contact-method" id="whatsappSupportLink">
+          <div class="cm-icon cm-whatsapp"><i class="fab fa-whatsapp"></i></div>
+          <div class="cm-info">
+            <div class="cm-name">دعم الواتساب المباشر</div>
+            <div class="cm-val">+20 120 651 0088</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- FAQ CARD -->
+      <div class="info-card">
+        <div class="info-card-title">
+          <i class="fas fa-question-circle" style="color:var(--purple)"></i>
+          <span>الأسئلة الشائعة (FAQ)</span>
+        </div>
+        <div class="faq-card">
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+              <span>كم يستغرق بدء الطلب؟</span>
+              <i class="fas fa-chevron-down faq-icon"></i>
+            </button>
+            <div class="faq-a">نبدأ العمل على حسابك خلال أقل من 15 دقيقة من تأكيد الدفع والتنسيق الفوري.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+              <span>هل حسابي آمن معكم؟</span>
+              <i class="fas fa-chevron-down faq-icon"></i>
+            </button>
+            <div class="faq-a">نعم بالكامل! نستخدم شبكات VPN آمنة مخصصة لدولة حسابك لتجنب أي إشارات تحذيرية أو حظر.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-q" onclick="toggleFaq(this)">
+              <span>ما هي طرق الدفع المتوفرة؟</span>
+              <i class="fas fa-chevron-down faq-icon"></i>
+            </button>
+            <div class="faq-a">ندعم الدفع الفوري عبر PayPal و Binance Pay و Orange Cash و Vodafone Cash وتطبيقات InstaPay.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom">
+        <span>© 2026 Adsa Game. جميع الحقوق محفوظة.</span>
+        <span style="color:var(--purple);font-weight:700;font-family:var(--font-en)">adsagame.com</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div id="globalToast" class="toast"></div>
+<script src="js/brawlers.js"></script>
+<script src="js/main.js"></script>
+<script>
+let selectedMethod = 'discord';
+
+function setContactMethod(method, el) {
+  selectedMethod = method;
+  document.querySelectorAll('.service-opt').forEach(opt => opt.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  item.classList.toggle('open');
+}
+
+async function handleContactSubmit(e) {
+  e.preventDefault();
+  const name = document.getElementById('contactName').value.trim();
+  const gameName = document.getElementById('contactGameName').value.trim();
+  const tag = document.getElementById('contactTag').value.trim();
+  const service = document.getElementById('contactService').value;
+  const handle = document.getElementById('contactHandle').value.trim();
+  const details = document.getElementById('contactDetails').value.trim();
+
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
+
+  try {
+    const res = await fetch('/api/orders/custom', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, gameName, tag, service, method: selectedMethod, handle, details
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) {
+      showToast(data.error || 'حدث خطأ أثناء إرسال الطلب', '❌');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب الآن للبدء';
+      return;
+    }
+
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('contactSuccess').classList.add('show');
+    showToast('تم استلام طلبك بنجاح! ✨', '✨');
+
+  } catch (err) {
+    showToast('خطأ في الاتصال بالخادم', '❌');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> إرسال الطلب الآن للبدء';
+  }
+}
+</script>
+</body>
+</html>
