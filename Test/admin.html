@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة الإدارة | Adsa Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .admin-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    @media (max-width: 992px) {
+      .admin-stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    @media (max-width: 576px) {
+      .admin-stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .stat-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle, rgba(16,185,129,0.05) 0%, transparent 70%);
+    }
+    .stat-num {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--purple);
+      font-family: var(--font-en);
+      line-height: 1.2;
+    }
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+      margin-top: 6px;
+    }
+    
+    .admin-section-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      margin-bottom: 28px;
+    }
+    .admin-sec-title {
+      font-size: 1.25rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    /* Tables */
+    .admin-table-wrap {
+      overflow-x: auto;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: right;
+      font-size: 0.88rem;
+    }
+    .admin-table th {
+      background: var(--bg-card);
+      padding: 12px 16px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      border-bottom: 2px solid var(--border);
+    }
+    .admin-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+    }
+    .admin-table tr:hover td {
+      background: rgba(255, 255, 255, 0.01);
+    }
+    
+    .action-btn-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    
+    .adjust-form {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .adjust-input {
+      width: 70px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      color: var(--text-primary);
+      font-family: var(--font-en);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- NAVBAR -->
+  <header class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:10px">
+        <img src="logo.png" alt="Adsa Game Logo" class="logo-img">
+        <span class="logo-vexa">ADSA</span>
+        <span class="logo-zone">GAME</span>
+      </a>
+      <div class="nav-right">
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Theme" title="Toggle Theme">
+          <i class="fas fa-moon icon-dark"></i>
+          <i class="fas fa-sun icon-light"></i>
+        </button>
+        <button class="lang-btn" id="langBtn"></button>
+        <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+    <a href="index.html">الرئيسية</a>
+    <a href="services.html">الخدمات</a>
+    <a href="events.html">الفعاليات </a>
+    <a href="#" onclick="logout()">تسجيل الخروج</a>
+  </div>
+
+  <!-- DASHBOARD CONTAINER -->
+  <div class="dashboard-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-user-info" style="padding: 20px; border-bottom: 1px solid var(--border); text-align: center; margin-bottom: 16px;">
+        <div style="font-size: 2.2rem; margin-bottom: 8px;">⚙️</div>
+        <div style="font-weight: 900; font-size: 1.1rem; color: var(--text-primary);">Admin</div>
+        <div style="font-size: 0.72rem; color: var(--orange); font-weight: 700; margin-top: 4px; display: inline-flex; align-items: center; gap: 4px; background: rgba(245, 158, 11, 0.1); padding: 3px 10px; border-radius: 99px;">
+          لوحة التحكم الكاملة للمسؤول
+        </div>
+      </div>
+      <button class="sidebar-btn active" data-target="stats" id="sideStats">
+        <i class="fas fa-chart-line"></i>
+        <span>الإحصائيات والمبيعات</span>
+      </button>
+      <button class="sidebar-btn" data-target="users" id="sideUsers">
+        <i class="fas fa-users"></i>
+        <span>إدارة المستخدمين والأرصدة</span>
+      </button>
+      <button class="sidebar-btn" data-target="applications" id="sideApps">
+        <i class="fas fa-user-check"></i>
+        <span>طلبات الانضمام للبواسترز <span id="appBadge" style="background:var(--red); color:#fff; font-size:0.65rem; padding:2px 6px; border-radius:50%; display:none">0</span></span>
+      </button>
+      <button class="sidebar-btn" data-target="deposits" id="sideDeposits">
+        <i class="fas fa-wallet"></i>
+        <span>شحنات المحفظة المعلقة <span id="depositBadge" style="background:var(--red); color:#fff; font-size:0.65rem; padding:2px 6px; border-radius:50%; display:none">0</span></span>
+      </button>
+      <button class="sidebar-btn" data-target="orders" id="sideOrders">
+        <i class="fas fa-clipboard-list"></i>
+        <span>جميع طلبات الخدمات</span>
+      </button>
+      <button class="sidebar-btn" data-target="support" id="sideSupport">
+        <i class="fas fa-comments"></i>
+        <span>محادثات الدعم الفني <span id="supportBadge" style="background:var(--red); color:#fff; font-size:0.65rem; padding:2px 6px; border-radius:50%; display:none">0</span></span>
+      </button>
+      <button class="sidebar-btn" onclick="logout()" id="sideLogout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="dashboard-main">
+      
+      <!-- =============================== -->
+      <!-- ANALYTICS SECTION               -->
+      <!-- =============================== -->
+      <div id="section-stats" class="service-tab-content">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1>📈 تحليلات المبيعات والزوار</h1>
+            <p>مراقبة مبيعات المنصة، إجمالي الإيرادات، وإحصائيات الزوار لتتبع نجاح الحملات الإعلانية.</p>
+          </div>
+        </div>
+
+        <div class="admin-stats-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="statIn">$0.00</div>
+            <div class="stat-label">📥 إجمالي الإيرادات (المداخيل)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statOut">$0.00</div>
+            <div class="stat-label">📥 إجمالي الإيرادات (المداخيل)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statNet" style="color:var(--green)">$0.00</div>
+            <div class="stat-label">✨ صافي ربح المنصة</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="statUsersCount">0</div>
+            <div class="stat-label">👥 المستخدمين المسجلين</div>
+          </div>
+        </div>
+
+        <div class="admin-section-card">
+          <div class="admin-sec-title">📊 إحصائيات زيارة صفحات الموقع</div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>رابط الصفحة (URL)</th>
+                  <th>عدد الزيارات والمشاهدات الفريدة</th>
+                </tr>
+              </thead>
+              <tbody id="pageViewsTableBody">
+                <tr>
+                  <td colspan="2" style="text-align:center;color:var(--text-muted)">لا توجد إحصائيات زيارات متاحة حالياً</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- USERS SECTION                   -->
+      <!-- =============================== -->
+      <div id="section-users" class="service-tab-content" style="display:none">
+        <div class="admin-section-card">
+          <div class="admin-sec-title">👥 إدارة حسابات المستخدمين وتعديل الأرصدة</div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>اسم المستخدم</th>
+                  <th>البريد الإلكتروني</th>
+                  <th>الدور/الرتبة</th>
+                  <th>إجمالي الرصيد</th>
+                  <th>الكاش باك</th>
+                  <th>تعديل الرصيد ($)</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody">
+                <!-- User rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- BOOSTER APPLICATIONS SECTION   -->
+      <!-- =============================== -->
+      <div id="section-applications" class="service-tab-content" style="display:none">
+        <div class="admin-section-card">
+          <div class="admin-sec-title">📥 طلبات الانضمام للاعبين المحترفين</div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>الاسم والبريد الإلكتروني</th>
+                  <th>عدد الكؤوس / رانك اللعبة</th>
+                  <th>تفاصيل ومهارات إضافية</th>
+                  <th>التاريخ</th>
+                  <th>الخيارات والعمليات</th>
+                </tr>
+              </thead>
+              <tbody id="appsTableBody">
+                <!-- Applications rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- BINANCE DEPOSITS SECTION        -->
+      <!-- =============================== -->
+      <div id="section-deposits" class="service-tab-content" style="display:none">
+        <div class="admin-section-card">
+          <div class="admin-sec-title">⏳ طلبات شحن المحفظة المعلقة</div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>اسم العميل</th>
+                  <th>طريقة الدفع</th>
+                  <th>المبلغ المشحون</th>
+                  <th>معلومات المرسل</th>
+                  <th>رقم المعاملة / التحويل</th>
+                  <th>التاريخ</th>
+                  <th>الخيارات</th>
+                </tr>
+              </thead>
+              <tbody id="depositsTableBody">
+                <!-- Deposit rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- ALL ORDERS SECTION              -->
+      <!-- =============================== -->
+      <div id="section-orders" class="service-tab-content" style="display:none">
+        <div class="admin-section-card">
+          <div class="admin-sec-title">📋 جميع طلبات الرفع والخدمات بالمنصة</div>
+          <div class="admin-table-wrap">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>رمز الطلب</th>
+                  <th>اسم العميل</th>
+                  <th>نوع الخدمة</th>
+                  <th>السعر الكلي (داخل)</th>
+                  <th>حصة البوستر (خارج)</th>
+                  <th>صافي الربح</th>
+                  <th>البوستر المسؤول</th>
+                  <th>حالة الطلب</th>
+                  <th>تاريخ الطلب</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody">
+                <!-- All orders rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- SUPPORT CHATS SECTION          -->
+      <!-- =============================== -->
+      <div id="section-support" class="service-tab-content" style="display:none">
+        <div class="admin-section-card" style="display: grid; grid-template-columns: 280px 1fr; gap: 20px; min-height: 500px; padding: 20px;">
+          <!-- Sidebar: Active sessions -->
+          <div style="border-left: 1px solid var(--border); padding-left: 15px; display: flex; flex-direction: column; gap: 10px;">
+            <h3 style="font-size: 1rem; font-weight: 800; padding-bottom: 10px; border-bottom: 1px solid var(--border); color: var(--text-primary);">المحادثات النشطة</h3>
+            <div id="supportSessionList" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-height: 420px;">
+              <!-- Sessions list -->
+            </div>
+          </div>
+          <!-- Chat window -->
+          <div id="adminSupportChatWindow" style="display: flex; flex-direction: column; height: 100%;">
+            <div style="padding-bottom: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+              <strong id="activeSupportUser" style="color: var(--text-primary);">اختر محادثة لبدء الدردشة</strong>
+              <span id="activeSupportId" style="font-size: 0.75rem; color: var(--text-muted); font-family: var(--font-en)"></span>
+            </div>
+            <div id="adminSupportMessages" style="flex: 1; overflow-y: auto; padding: 15px 0; display: flex; flex-direction: column; gap: 10px; min-height: 320px; max-height: 380px;">
+              <div style="color: var(--text-muted); text-align: center; margin-top: 100px;">يرجى تحديد جلسة دعم أو عميل من القائمة الجانبية لبدء المحادثة.</div>
+            </div>
+            <div id="adminSupportInputArea" style="display: none; gap: 10px; border-top: 1px solid var(--border); padding-top: 12px;">
+              <input type="text" id="adminSupportInput" class="form-input" style="flex: 1;" placeholder="اكتب رسالتك للدعم الفني هنا..." onkeydown="if(event.key==='Enter') sendAdminSupportMessage()">
+              <button class="btn-primary" onclick="sendAdminSupportMessage()" style="padding: 12px 24px; background: linear-gradient(135deg,var(--purple),var(--gradient-end)); font-weight:900; color:#000;">إرسال</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom" style="padding-top:0">
+        <span>© 2026 Adsa Game. جميع الحقوق محفوظة.</span>
+        <span style="color:var(--purple);font-weight:700;font-family:var(--font-en)">adsagame.com</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div id="globalToast" class="toast"></div>
+
+<!-- SCRIPTS -->
+<script src="js/main.js"></script>
+<script>
+  let currentUser = null;
+
+  function checkAuth() {
+    const userStr = localStorage.getItem('vx-user');
+    if (!userStr) {
+      location.href = 'auth.html';
+      return;
+    }
+    currentUser = JSON.parse(userStr);
+    if (currentUser.role !== 'admin') {
+      location.href = 'auth.html';
+      return;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('vx-user');
+    location.href = 'auth.html';
+  }
+
+  // Navigation
+  const sidebarButtons = document.querySelectorAll('.dashboard-sidebar button[data-target]');
+  const serviceTabs = {
+    stats: document.getElementById('section-stats'),
+    users: document.getElementById('section-users'),
+    applications: document.getElementById('section-applications'),
+    deposits: document.getElementById('section-deposits'),
+    orders: document.getElementById('section-orders'),
+    support: document.getElementById('section-support')
+  };
+
+  let activeSupportSessionId = null;
+  let adminSupportPollInterval = null;
+
+  function switchTab(target) {
+    if (!serviceTabs[target]) return;
+    
+    Object.entries(serviceTabs).forEach(([key, element]) => {
+      if (element) element.style.display = key === target ? '' : 'none';
+    });
+
+    sidebarButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.target === target);
+    });
+
+    clearInterval(adminSupportPollInterval);
+    if (target === 'support') {
+      loadSupportSessions();
+      adminSupportPollInterval = setInterval(loadSupportSessions, 6000);
+    } else {
+      activeSupportSessionId = null;
+    }
+
+    loadAdminData();
+  }
+
+  sidebarButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.target) switchTab(btn.dataset.target);
+    });
+  });
+
+  // Load Admin Data
+  async function loadAdminData() {
+    try {
+      const res = await fetch('/api/admin/stats');
+      const data = await res.json();
+      if (!res.ok) return;
+
+      // Stats
+      document.getElementById('statIn').textContent = `$${data.totalIn.toFixed(2)}`;
+      document.getElementById('statOut').textContent = `$${data.totalOut.toFixed(2)}`;
+      document.getElementById('statNet').textContent = `$${data.net.toFixed(2)}`;
+      document.getElementById('statUsersCount').textContent = data.usersCount;
+
+      // Badges
+      const pendingApps = data.applications.filter(a => a.status === 'pending');
+      const appBadge = document.getElementById('appBadge');
+      if (pendingApps.length > 0) {
+        appBadge.textContent = pendingApps.length;
+        appBadge.style.display = 'inline-block';
+      } else {
+        appBadge.style.display = 'none';
+      }
+
+      const pendingDeposits = data.orders.filter(o => o.status === 'pending_deposit');
+      const depositBadge = document.getElementById('depositBadge');
+      if (pendingDeposits.length > 0) {
+        depositBadge.textContent = pendingDeposits.length;
+        depositBadge.style.display = 'inline-block';
+      } else {
+        depositBadge.style.display = 'none';
+      }
+
+      // Page Views
+      const pvBody = document.getElementById('pageViewsTableBody');
+      pvBody.innerHTML = Object.entries(data.pageViews).map(([path, count]) => `
+        <tr>
+          <td style="font-family:var(--font-en)">${path}</td>
+          <td><strong>${count}</strong> visits</td>
+        </tr>
+      `).join('') || `<tr><td colspan="2" style="text-align:center;color:var(--text-muted)">No page stats available</td></tr>`;
+
+      // Users
+      const usersRes = await fetch('/api/admin/stats'); // reuse stats to fetch users list since server database controller returns users list
+      const usersList = data.users || [];
+      const usersBody = document.getElementById('usersTableBody');
+      usersBody.innerHTML = usersList.map(u => `
+        <tr>
+          <td><strong>${u.username}</strong></td>
+          <td>${u.email}</td>
+          <td><span class="card-badge" style="background:${u.role==='admin'?'var(--orange)':u.role==='booster'?'var(--green)':'var(--border)'}; color:#000">${u.role.toUpperCase()}</span></td>
+          <td style="font-family:var(--font-en)">$${u.balance.toFixed(2)}</td>
+          <td style="font-family:var(--font-en)">$${(u.cashback || 0).toFixed(2)}</td>
+          <td>
+            <div class="adjust-form">
+              <input type="number" class="adjust-input" id="adj-${u.id}" placeholder="+/-">
+              <button class="btn-primary" onclick="adjustBalance('${u.id}')" style="padding:6px 12px; font-size:0.75rem">Edit</button>
+            </div>
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="6" style="text-align:center;color:var(--text-muted)">No registered users</td></tr>`;
+
+      // Applications
+      const appsBody = document.getElementById('appsTableBody');
+      appsBody.innerHTML = data.applications.map(a => `
+        <tr>
+          <td><strong>${a.name}</strong><br><span style="font-size:0.75rem; color:var(--text-muted)">${a.email}</span></td>
+          <td>Trophies: <span style="color:var(--purple);font-weight:700;">${a.trophies}</span><br>Rank: <span style="color:var(--yellow);font-weight:700;">${a.rank}</span></td>
+          <td style="font-size:0.8rem; max-width:200px; overflow:hidden; text-overflow:ellipsis">${a.details || '—'}</td>
+          <td>${new (a.created_at).toLocaleString()}</td>
+          <td>
+            ${a.status === 'pending' ? `
+              <div class="action-btn-group">
+                <button class="btn-primary" onclick="approveApp('${a.id}', true)" style="padding:6px 12px; font-size:0.75rem; background:linear-gradient(135deg,var(--green),#047857)">Approve</button>
+                <button class="btn-yellow" onclick="approveApp('${a.id}', false)" style="padding:6px 12px; font-size:0.75rem; background:linear-gradient(135deg,var(--red),#be123c)">Reject</button>
+              </div>
+            ` : `<span class="card-badge" style="background:var(--border); color:#000">${a.status.toUpperCase()}</span>`}
+          </td>
+        </tr>
+      `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No page stats available</td></tr>`;
+
+      // Deposits Verification
+      const depositsBody = document.getElementById('depositsTableBody');
+      depositsBody.innerHTML = pendingDeposits.map(d => {
+        const method = d.details ? d.details.method : 'binance';
+        const senderInfo = d.details ? d.details.senderInfo || '—' : '—';
+        let methodBadgeColor = 'var(--purple)';
+        let methodText = 'Binance Pay';
+        if (method === 'orange') {
+          methodBadgeColor = 'var(--orange)';
+          methodText = 'Orange Cash';
+        } else if (method === 'instapay') {
+          methodBadgeColor = '#0088CC';
+          methodText = 'InstaPay';
+        }
+        
+        return `
+          <tr>
+            <td><strong>${d.clientUsername}</strong></td>
+            <td><span class="card-badge" style="background:${methodBadgeColor}; color:#fff; font-size:0.75rem">${methodText}</span></td>
+            <td style="color:var(--green); font-weight:700; font-family:var(--font-en)">$${d.price.toFixed(2)}</td>
+            <td style="font-family:var(--font-en)">${senderInfo}</td>
+            <td style="font-family:var(--font-en); font-size:0.75rem; color:var(--yellow); cursor:pointer" onclick="navigator.clipboard.writeText('${d.txHash}'); showToast('Transaction ID copied!', '')">${d.txHash} <i class="fas fa-copy"></i></td>
+            <td>${new (d.created_at).toLocaleString()}</td>
+            <td>
+              <div class="action-btn-group">
+                <button class="btn-primary" onclick="approveDeposit('${d.id}', true)" style="padding:6px 12px; font-size:0.75rem; background:linear-gradient(135deg,var(--green),#047857)">Approve & Deposit</button>
+                <button class="btn-yellow" onclick="approveDeposit('${d.id}', false)" style="padding:6px 12px; font-size:0.75rem; background:linear-gradient(135deg,var(--red),#be123c)">Reject & Cancel</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('') || `<tr><td colspan="7" style="text-align:center;color:var(--text-muted)">No pending deposit requests</td></tr>`;
+
+      //  
+      const ordersBody = document.getElementById('ordersTableBody');
+      ordersBody.innerHTML = data.orders.map(o => {
+        let payout = 0;
+        let profit = 0;
+        let displayPayout = '—';
+        let display = '—';
+
+        if (o.status === 'completed') {
+          payout = o.acceptedPrice !== undefined && o.acceptedPrice !== null ? o.acceptedPrice : (o.price * 0.7);
+          profit = (o.price + (o.tip || 0)) - payout;
+          displayPayout = `$${payout.toFixed(2)}`;
+          display = `$${profit.toFixed(2)}`;
+        } else if (o.status === 'active' || o.status === 'auction') {
+          payout = o.acceptedPrice !== undefined && o.acceptedPrice !== null ? o.acceptedPrice : (o.price * 0.7);
+          profit = (o.price + (o.tip || 0)) - payout;
+          displayPayout = `$${payout.toFixed(2)} (est.)`;
+          display = `$${profit.toFixed(2)} (est.)`;
+        }
+
+        const totalIn = o.price + (o.tip || 0);
+
+        return `
+          <tr>
+            <td style="font-family:var(--font-en)">${o.id}</td>
+            <td><strong>${o.clientUsername}</strong></td>
+            <td>${o.serviceType.toUpperCase()}</td>
+            <td style="font-family:var(--font-en); color:var(--purple); font-weight:700">$${totalIn.toFixed(2)}</td>
+            <td style="font-family:var(--font-en); color:var(--orange)">${displayPayout}</td>
+            <td style="font-family:var(--font-en); color:var(--green); font-weight:700">${display}</td>
+            <td>${o.boosterUsername || '—'}</td>
+            <td><span class="card-badge" style="background:${getOrderStatusColor(o.status)}; color:#000">${o.status.toUpperCase()}</span></td>
+            <td>${new (o.created_at).toLocaleString()}</td>
+          </tr>
+        `;
+      }).join('') || `<tr><td colspan="9" style="text-align:center;color:var(--text-muted)">No pending deposit requests</td></tr>`;
+      // Support Badge
+      try {
+        const supportRes = await fetch('/api/admin/support-sessions');
+        const supportSessions = await supportRes.json();
+        const supportBadge = document.getElementById('supportBadge');
+        if (supportBadge) {
+          if (supportSessions.length > 0) {
+            supportBadge.textContent = supportSessions.length;
+            supportBadge.style.display = 'inline-block';
+          } else {
+            supportBadge.style.display = 'none';
+          }
+        }
+      } catch (e) {
+        console.error('Error loading support badge', e);
+      }
+
+    } catch (e) {
+      console.error('Error loading admin stats', e);
+    }
+  }
+
+  function getOrderStatusColor(status) {
+    if (status === 'completed') return 'var(--green)';
+    if (status === 'active') return 'var(--blue)';
+    if (status === 'auction') return 'var(--yellow)';
+    if (status === 'pending_deposit') return 'var(--orange)';
+    if (status === 'refunded') return 'var(--red)';
+    return 'var(--border)';
+  }
+
+  // ===== SUPPORT CHAT FUNCTIONS =====
+  async function loadSupportSessions() {
+    try {
+      const res = await fetch('/api/admin/support-sessions');
+      const sessions = await res.json();
+      if (!res.ok) return;
+
+      const badge = document.getElementById('supportBadge');
+      if (sessions.length > 0) {
+        badge.textContent = sessions.length;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      const listContainer = document.getElementById('supportSessionList');
+      if (!listContainer) return;
+      
+      listContainer.innerHTML = sessions.map(s => {
+        const isSelected = s.id === activeSupportSessionId;
+        const timeStr = s.timestamp ? new (s.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+        return `
+          <div class="support-session-item ${isSelected ? 'selected' : ''}" onclick="selectSupportSession('${s.id}')" style="padding:12px; border-radius:var(--radius-sm); border:1px solid ${isSelected ? 'var(--purple)' : 'var(--border)'}; background:${isSelected ? 'rgba(124,58,237,0.1)' : 'var(--bg-card)'}; cursor:pointer; transition:var(--transition); margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+              <strong style="font-size:0.85rem; color:${isSelected ? 'var(--purple)' : 'var(--text-primary)'}">${s.id.replace('support-', 'Visitor ')}</strong>
+              <span style="font-size:0.7rem; color:var(--text-muted)">${timeStr}</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--text-secondary); white-space:nowrap; overflow:hidden; text-overflow:ellipsis">
+              ${s.lastSender === 'SUPPORT' ? '️ You: ' : ''}${s.lastMessage}
+            </div>
+          </div>
+        `;
+      }).join('') || '<div style="color:var(--text-muted); text-align:center; padding:20px; font-size:0.85rem">No active support chats</div>';
+    } catch (e) {
+      console.error('Error loading support sessions', e);
+    }
+  }
+
+  function selectSupportSession(sessionId) {
+    activeSupportSessionId = sessionId;
+    document.getElementById('activeSupportId').textContent = sessionId;
+    document.getElementById('activeSupportUser').textContent = sessionId.replace('support-', 'Chat with Visitor ');
+    document.getElementById('adminSupportInputArea').style.display = 'flex';
+    
+    loadSupportSessions();
+    
+    clearInterval(adminSupportPollInterval);
+    fetchSupportMessages();
+    adminSupportPollInterval = setInterval(fetchSupportMessages, 3000);
+  }
+
+  async function fetchSupportMessages() {
+    if (!activeSupportSessionId) return;
+    try {
+      const res = await fetch(`/api/chat/${activeSupportSessionId}`);
+      const messages = await res.json();
+      if (!res.ok) return;
+
+      const container = document.getElementById('adminSupportMessages');
+      const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
+
+      container.innerHTML = messages.map(m => {
+        let senderType = 'received';
+        if (m.sender === 'SYSTEM') senderType = 'system';
+        else if (m.sender === 'SUPPORT') senderType = 'sent';
+
+        return `
+          <div class="chat-msg ${senderType}">
+            <strong style="font-size:0.7rem; display:block; margin-bottom:2px; color:${senderType==='sent'?'var(--yellow)':'var(--purple)'}">${m.sender === 'SUPPORT' ? 'Support Team' : m.sender}</strong>
+            ${m.message}
+            <div style="font-size:0.6rem; color:var(--text-muted); text-align:left; margin-top:4px">${new (m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+          </div>
+        `;
+      }).join('');
+
+      if (shouldScroll) {
+        container.scrollTop = container.scrollHeight;
+      }
+    } catch (e) {
+      console.error('Error fetching support messages', e);
+    }
+  }
+
+  async function sendAdminSupportMessage() {
+    const input = document.getElementById('adminSupportInput');
+    const msg = input.value.trim();
+    if (!msg || !activeSupportSessionId) return;
+
+    input.value = '';
+    try {
+      const res = await fetch('/api/chat/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: activeSupportSessionId,
+          sender: 'SUPPORT',
+          message: msg
+        })
+      });
+      if (res.ok) {
+        fetchSupportMessages();
+        loadSupportSessions();
+      }
+    } catch (e) {
+      console.error('Error sending support message', e);
+    }
+  }
+
+  // Adjust Balance
+  async function adjustBalance(userId) {
+    const input = document.getElementById(`adj-${userId}`);
+    if (!input) return;
+    const amount = parseFloat(input.value);
+    if (!amount) {
+      showToast('Please enter a valid amount', '⚠️');
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/admin/adjust-balance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, amount })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message, '✅');
+        input.value = '';
+        loadAdminData();
+      } else {
+        showToast(data.error, '❌');
+      }
+    } catch (e) {
+      showToast('Server connection error', '❌');
+    }
+  }
+
+  // Approve Booster Application
+  async function approveApp(appId, approve) {
+    try {
+      const res = await fetch('/api/admin/approve-application', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ appId, approve })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message, '✅');
+        loadAdminData();
+      } else {
+        showToast(data.error, '❌');
+      }
+    } catch (e) {
+      showToast('Server connection error', '❌');
+    }
+  }
+
+  // Approve Deposit
+  async function approveDeposit(orderId, approve) {
+    try {
+      const res = await fetch('/api/admin/approve-deposit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, approve })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message, '✅');
+        loadAdminData();
+      } else {
+        showToast(data.error, '❌');
+      }
+    } catch (e) {
+      showToast('Server connection error', '❌');
+    }
+  }
+
+  checkAuth();
+  switchTab('stats');
+</script>
+</body>
+</html>
