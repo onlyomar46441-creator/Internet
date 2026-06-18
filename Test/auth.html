@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تسجيل الدخول / إنشاء حساب | Adsa Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .auth-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: radial-gradient(circle at center, rgba(var(--purple-rgb, 16, 185, 129), 0.08) 0%, var(--bg-primary) 70%);
+    }
+    .auth-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 480px;
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--purple), var(--yellow));
+    }
+    .auth-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      text-decoration: none;
+    }
+    .auth-logo img {
+      height: 40px;
+    }
+    .auth-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 30px;
+    }
+    .auth-tab {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-family: var(--font-en);
+      transition: var(--transition);
+      text-align: center;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+    }
+    .auth-tab.active {
+      color: var(--purple);
+      border-bottom-color: var(--purple);
+    }
+    .auth-form {
+      display: none;
+    }
+    .auth-form.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+    .input-icon-wrapper {
+      position: relative;
+    }
+    .input-icon-wrapper i {
+      position: absolute;
+      top: 50%;
+      right: 16px;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .input-icon-wrapper .auth-input {
+      padding-right: 46px;
+    }
+    .auth-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 13px 16px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: var(--font-en);
+      transition: var(--transition);
+    }
+    .auth-input:focus {
+      border-color: var(--purple);
+      background: rgba(var(--purple-rgb, 16, 185, 129), 0.05);
+      box-shadow: 0 0 0 3px rgba(var(--purple-rgb, 16, 185, 129), 0.1);
+    }
+    .role-selection {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .role-btn {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .role-btn.selected {
+      border-color: var(--purple);
+      background: rgba(var(--purple-rgb, 16, 185, 129), 0.1);
+      color: var(--purple);
+    }
+    .btn-submit {
+      width: 100%;
+      background: linear-gradient(135deg, var(--purple), var(--gradient-end));
+      color: #06070d;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      font-weight: 900;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: var(--transition);
+      margin-top: 10px;
+      box-shadow: 0 8px 30px rgba(var(--purple-rgb, 16, 185, 129), 0.25);
+    }
+    .btn-submit:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(var(--purple-rgb, 16, 185, 129), 0.4);
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .auth-footer a {
+      color: var(--purple);
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+  
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <a href="index.html" class="auth-logo">
+        <img src="logo.png" alt="Adsa Game Logo">
+        <span class="logo-vexa" style="font-size: 1.5rem; font-weight: 900;">ADSA</span>
+        <span class="logo-zone" style="font-size: 1.5rem; font-weight: 900;">GAME</span>
+      </a>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">تسجيل الدخول</button>
+        <button class="auth-tab" onclick="switchTab('register')">إنشاء حساب</button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="loginForm" class="auth-form active" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>اسم المستخدم أو البريد الإلكتروني</label>
+          <div class="input-icon-wrapper">
+            <i class="fas fa-user"></i>
+            <input type="text" id="loginInput" class="auth-input" placeholder="أدخل اسم المستخدم أو البريد الإلكتروني" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-icon-wrapper">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••" required>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+        </button>
+      </form>
+
+      <!-- REGISTER FORM -->
+      <form id="registerForm" class="auth-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label>اسم المستخدم</label>
+          <div class="input-icon-wrapper">
+            <i class="fas fa-user"></i>
+            <input type="text" id="regUsername" class="auth-input" placeholder="مثال: player1" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني</label>
+          <div class="input-icon-wrapper">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="regEmail" class="auth-input" placeholder="مثال: email@example.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>كلمة المرور</label>
+          <div class="input-icon-wrapper">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="regPassword" class="auth-input" placeholder="••••••••" required>
+          </div>
+        </div>
+        
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-user-plus"></i> إنشاء حساب
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <a href="index.html">← العودة للرئيسية</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="globalToast" class="toast"></div>
+
+<script src="js/main.js"></script>
+<script>
+  function switchTab(type) {
+    const tabs = document.querySelectorAll('.auth-tab');
+    const forms = document.querySelectorAll('.auth-form');
+    
+    if (type === 'login') {
+      tabs[0].classList.add('active');
+      tabs[1].classList.remove('active');
+      forms[0].classList.add('active');
+      forms[1].classList.remove('active');
+    } else {
+      tabs[0].classList.remove('active');
+      tabs[1].classList.add('active');
+      forms[0].classList.remove('active');
+      forms[1].classList.add('active');
+    }
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const loginInput = document.getElementById('loginInput').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التحقق...';
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ loginInput, password })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || 'خطأ في تسجيل الدخول', '❌');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+        return;
+      }
+
+      showToast(data.message, '✨');
+      localStorage.setItem('vx-user', JSON.stringify(data.user));
+
+      setTimeout(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const isJoining = urlParams.get('join') === 'booster';
+        if (data.user.role === 'admin') {
+          location.href = 'admin.html';
+        } else if (data.user.role === 'booster') {
+          location.href = 'booster.html';
+        } else {
+          location.href = isJoining ? 'services.html#apply-booster' : 'services.html';
+        }
+      }, 1000);
+
+    } catch (err) {
+      showToast('حدث خطأ في الاتصال بالشبكة', '❌');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+    }
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const username = document.getElementById('regUsername').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إنشاء الحساب...';
+
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        showToast(data.error || 'خطأ في إنشاء الحساب', '❌');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
+        return;
+      }
+
+      showToast(data.message + ' يمكنك تسجيل الدخول الآن.', '✨');
+      switchTab('login');
+      document.getElementById('loginInput').value = username;
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
+
+    } catch (err) {
+      showToast('خطأ في الاتصال بالشبكة', '❌');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-user-plus"></i> إنشاء حساب';
+    }
+  }
+</script>
+</body>
+</html>
