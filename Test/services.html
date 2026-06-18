@@ -1,0 +1,3433 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>خدمات الرفع والترقية | Adsa Game</title>
+  <meta name="description" content="  Adsa Game  —      Slider       ." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /*   specific layout additions */
+    .dashboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .dashboard-title h1 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--text-primary);
+    }
+    .dashboard-title p {
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      margin-top: 4px;
+    }
+    
+    /* Layout grid within main content */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 28px;
+      align-items: start;
+    }
+    @media (max-width: 1150px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Checkout & details card */
+    .details-card-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 28px;
+    }
+    
+    /* Speed Selection inside dashboard */
+    .speed-wrapper {
+      background: rgba(255,255,255,0.01);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      margin-bottom: 24px;
+    }
+    .speed-title {
+      font-weight: 800;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .order-side-panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      position: sticky;
+      top: 90px;
+      overflow: hidden;
+    }
+    .panel-headline {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      font-weight: 800;
+      font-size: 0.95rem;
+      background: rgba(255,255,255,0.01);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* s custom layout */
+    .brawler-header {
+      font-weight: 850;
+      font-size: 1rem;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /*    Buttons */
+    .wallet-type-btn {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 10px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-family: var(--font-en);
+      font-weight: 700;
+      font-size: 0.82rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .wallet-type-btn:hover {
+      border-color: var(--purple);
+      background: rgba(16,185,129,0.06);
+      color: var(--purple);
+      transform: translateY(-2px);
+    }
+    .wallet-type-btn.selected {
+      border-color: var(--purple);
+      background: rgba(16,185,129,0.12);
+      color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+
+    /* Linked Wallet Card */
+    .linked-wallet-card {
+      background: rgba(255,255,255,0.02);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 10px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .linked-wallet-card:hover {
+      border-color: var(--purple);
+      background: rgba(var(--purple-rgb, 16, 185, 129), 0.04);
+    }
+    .linked-wallet-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--purple), var(--gradient-end));
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+    .wallet-icon-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      background: rgba(16,185,129,0.1);
+    }
+    .wallet-card-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .wallet-card-name {
+      font-weight: 800;
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .wallet-card-number {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: var(--font-en);
+      direction: ltr;
+      text-align: right;
+    }
+    .wallet-unlink-btn {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      color: var(--red);
+      border-radius: var(--radius-sm);
+      padding: 7px 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font-en);
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .wallet-unlink-btn:hover {
+      background: rgba(239,68,68,0.18);
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 900px) {
+      #section-my-account > div[style*="grid"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+    .dropdown-item {
+      display: flex !important;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 8px;
+      color: var(--text-secondary) !important;
+      text-decoration: none;
+      font-size: 0.85rem;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+    }
+    .dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--blue) !important;
+    }
+    /* Brawler avatar grid buttons */
+    #brawlerAvatarGrid button:hover {
+      border-color: var(--blue) !important;
+      background: rgba(59,130,246,0.1) !important;
+      transform: scale(1.08);
+    }
+    #brawlerAvatarGrid button {
+      transition: all 0.18s ease;
+    }
+    /* Navbar profile container */
+    .navbar-profile-container {
+      align-items: center;
+    }
+    .navbar-profile-trigger:hover img {
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.5);
+    }
+    /* Profile preview image pulse on hover */
+    #profileAvatarPreview {
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+    #profileAvatarPreview:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 32px rgba(59,130,246,0.5);
+    }
+    /* Profile save button hover */
+    #profileSaveBtn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:10px">
+        <img src="logo.png" alt="Adsa Game Logo" class="logo-img">
+        <span class="logo-vexa">ADSA</span>
+        <span class="logo-zone">GAME</span>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html">الرئيسية</a></li>
+          <li><a href="services.html" class="active">الخدمات</a></li>
+          <li><a href="events.html">الفعاليات </a></li>
+          <li><a href="contact.html">تواصل معنا</a></li>
+        </ul>
+      </nav>
+      <div class="nav-right" style="display:flex;align-items:center;gap:15px">
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Theme" title="Toggle Theme">
+          <i class="fas fa-moon icon-dark"></i>
+          <i class="fas fa-sun icon-light"></i>
+        </button>
+        <button class="lang-btn" id="langBtn" style="display:none"></button>
+
+        <!-- Navbar Profile Area -->
+        <div class="navbar-profile-container" id="navProfileContainer" style="display:none; position:relative;">
+          <button class="navbar-profile-trigger" id="navProfileTrigger" style="background:none; border:none; padding:0; display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <img id="navAvatarImg" src="https://cdn.brawlify.com/brawlers/emoji/Shelly.png" alt="Avatar" style="width:36px; height:36px; border-radius:50%; border:2px solid var(--blue); object-fit:contain; background:rgba(255,255,255,0.05); padding:2px;">
+            <i class="fas fa-chevron-down" style="font-size:0.75rem; color:var(--text-secondary);"></i>
+          </button>
+          
+          <!-- Dropdown Panel -->
+          <div class="navbar-profile-dropdown" id="navProfileDropdown" style="display:none; position:absolute; top:45px; left:0; width:220px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-md); box-shadow:0 10px 30px rgba(0,0,0,0.5); padding:12px; z-index:10000; text-align:right;">
+            <div style="padding:4px 8px 10px 8px; border-bottom:1px solid var(--border); margin-bottom:8px;">
+              <div id="navDropdownUsername" style="font-weight:800; color:var(--text-primary); font-size:0.95rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">-</div>
+              <div id="navDropdownEmail" style="font-size:0.72rem; color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; margin-top:2px;">-</div>
+            </div>
+            
+            <a href="#" class="dropdown-item" onclick="switchTab('trophy'); return false;">
+              <i class="fas fa-home" style="color:var(--blue)"></i>
+              <span>لوحة التحكم ⚙️</span>
+            </a>
+            <a href="#" class="dropdown-item" onclick="switchTab('my-account'); return false;">
+              <i class="fas fa-user-circle" style="color:var(--yellow)"></i>
+              <span> </span>
+            </a>
+            <a href="#" class="dropdown-item" onclick="switchTab('my-orders'); return false;">
+              <i class="fas fa-history" style="color:var(--green)"></i>
+              <span> </span>
+            </a>
+            <div style="border-top:1px solid var(--border); margin:8px 0;"></div>
+            <a href="#" class="dropdown-item" onclick="logout(); return false;" style="color:var(--red) !important;">
+              <i class="fas fa-sign-out-alt" style="color:var(--red)"></i>
+              <span>  </span>
+            </a>
+          </div>
+        </div>
+        
+        <!-- Guest Login Button -->
+        <a href="auth.html" id="navLoginBtn" class="btn-order" style="display:flex; font-size:0.82rem; padding:8px 16px; align-items:center; gap:6px;"><i class="fas fa-sign-in-alt"></i> تسجيل الدخول</a>
+
+        <button class="hamburger" id="hamburger">
+          <span>InstaPay</span><span>InstaPay</span><span>InstaPay</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+    <a href="index.html">الرئيسية</a>
+    <a href="services.html">الخدمات</a>
+    <a href="events.html">الفعاليات 🔥</a>
+    <a href="contact.html">تواصل معنا</a>
+  </div>
+
+  <!-- ===== DASHBOARD CONTAINER ===== -->
+  <div class="dashboard-container">
+    
+    <!-- LEFT SIDEBAR -->
+    <aside class="dashboard-sidebar">
+      <!-- User Info Panel -->
+      <div id="clientUserInfo" class="sidebar-user-info" style="padding: 20px; border-bottom: 1px solid var(--border); text-align: center; margin-bottom: 16px; display: none;">
+        <div style="font-size: 2.2rem; margin-bottom: 8px;">👤</div>
+        <div id="clientUsername" style="font-weight: 900; font-size: 1.1rem; color: var(--text-primary);"></div>
+        <div style="font-size: 0.82rem; color: var(--green); font-weight: 700; margin-top: 6px; display: flex; flex-direction: column; gap: 4px; background: rgba(255,255,255,0.02); padding: 8px; border-radius: var(--radius-sm); border:1px solid var(--border)">
+          <div>الرصيد: <span id="clientBalanceVal" style="font-family:var(--font-en)">$0.00</span></div>
+          <div style="color: var(--yellow)">الكاش باك: <span id="clientCashbackVal" style="font-family:var(--font-en)">$0.00</span></div>
+        </div>
+      </div>
+      <div id="clientGuestInfo" style="padding: 20px; text-align: center; border-bottom: 1px solid var(--border);">
+        <a href="auth.html" class="btn-primary" style="display: block; font-size: 0.85rem; padding: 10px 14px;">تسجيل الدخول / حساب جديد</a>
+      </div>
+
+      <button class="sidebar-btn active" data-target="trophy" id="sideTrophy">
+        <i class="fas fa-trophy"></i>
+        <span>رفع الكؤوس</span>
+      </button>
+      <button class="sidebar-btn" data-target="ranked" id="sideRanked">
+        <i class="fas fa-chart-bar"></i>
+        <span>رفع الرانك</span>
+      </button>
+      <button class="sidebar-btn" data-target="prestige" id="sidePrestige">
+        <i class="fas fa-crown"></i>
+        <span>رفع البرستيج</span>
+      </button>
+
+      <button class="sidebar-btn" data-target="my-orders" id="sideMyOrders" style="display:none">
+        <i class="fas fa-history"></i>
+        <span>طلباتي ومحفظتي</span>
+      </button>
+      <button class="sidebar-btn" data-target="my-account" id="sideMyAccount" style="display:none !important">
+        <i class="fas fa-link"></i>
+        <span>ربط المحفظة 🔗</span>
+      </button>
+      <button class="sidebar-btn" data-target="apply-booster" id="sideApplyBooster" style="display:none">
+        <i class="fas fa-briefcase"></i>
+        <span>الانضمام كلاعب محترف</span>
+      </button>
+      <button class="sidebar-btn" onclick="location.href='events.html'" id="sideEvents">
+        <i class="fas fa-bolt"></i>
+        <span>الفعاليات 🔥</span>
+      </button>
+      <button class="sidebar-btn" onclick="location.href='contact.html'" id="sideContact">
+        <i class="fas fa-envelope"></i>
+        <span>تواصل معنا</span>
+      </button>
+      <button class="sidebar-btn" onclick="logout()" id="sideLogout" style="display:none; color:var(--red)">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>تسجيل الخروج</span>
+      </button>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="dashboard-main">
+
+      <!-- =============================== -->
+      <!-- TROPHY SECTION                  -->
+      <!-- =============================== -->
+      <div id="section-trophy" class="service-tab-content">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1><img src="trophy.png" alt="" class="trophy-icon"> رفع الكؤوس (Trophy Boost)</h1>
+            <p>ارفع كؤوس حسابك بسرعة وأمان مع الحصول على عمولة كاش باك 2%</p>
+            <div class="service-desc-box" style="margin-top: 12px; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; background: rgba(255,255,255,0.01); border: 1px dashed var(--border); padding: 10px 14px; border-radius: var(--radius-sm);">
+              ℹ️ <strong>تفاصيل الخدمة:</strong> نحن نقدم خدمة رفع الكؤوس لحسابك بواسطة لاعبين محترفين مع أعلى مستويات الأمان وضمان الفوز. نلعب بوضع صامت تماماً، ونلتزم بالسرية وعدم إنفاق موارد حسابك.
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="details-card-container">
+            
+            <!-- Speed Selector -->
+            <div class="speed-wrapper">
+              <div class="speed-title">⚡ اختيار سرعة التنفيذ:</div>
+              <div class="speed-options">
+                <button class="speed-btn selected" data-speed="normal">
+                  <span>عادية (Normal Speed)</span> <span class="speed-extra"></span>
+                </button>
+                <button class="speed-btn" data-speed="super">
+                  <span>فائقة (Super Speed - Fast)</span> <span class="speed-extra">+20%</span>
+                </button>
+                <button class="speed-btn" data-speed="hypersuper">
+                  <span>قصوى (Hyper Speed - Super Fast)</span> <span class="speed-extra">+40%</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Dual Range Slider Calculator -->
+            <div class="brawler-header">🏆 حاسبة أسعار رفع الكؤوس</div>
+            <div class="dual-range-wrapper">
+              <div class="dual-range-values">
+                <div style="font-family: var(--font-en)"><span>من:</span> <span id="rangeMinVal">0</span> <img src="trophy.png" alt="" class="trophy-icon"></div>
+                <div style="font-family: var(--font-en)"><img src="trophy.png" alt="" class="trophy-icon"> <span id="rangeMaxVal">50,000</span> <span>إلى:</span></div>
+              </div>
+              <div class="dual-range-container">
+                <div class="slider-track" id="sliderTrack"></div>
+                <input type="range" dir="ltr" class="range-input" id="trophyFrom" min="0" max="200000" step="1000" value="0">
+                <input type="range" dir="ltr" class="range-input" id="trophyTo" min="0" max="200000" step="1000" value="50000">
+              </div>
+            </div>
+
+            <!--  sufficiency and selection options -->
+            <div class="form-group" style="margin-top: 20px;">
+              <label style="font-weight: 800; font-size: 0.95rem; color: var(--text-primary); display: block; margin-bottom: 8px;">👤 عدد الأبطال الحاليين في الحساب:</label>
+              <input type="number" id="trophyBrawlersCount" class="form-input" min="1" max="150" value="85" style="width: 100%; max-width: 120px; padding: 10px; border-radius: var(--radius-md); border: 1px solid var(--border); background: rgba(255,255,255,0.02); color: var(--text-primary); font-family: var(--font-en); font-weight: 700;">
+            </div>
+
+            <div id="trophySufficiencyWarning" class="warning-box" style="display: none; margin-top: 16px;">
+              <i class="fas fa-exclamation-triangle"></i>
+              <div>
+                <strong>⚠️ Security Notice:</strong>
+                <span id="trophySufficiencyWarningText">Your current brawler count is too low to reach this goal safely. We recommend unlocking more brawlers first.</span>
+              </div>
+            </div>
+
+            <!--     -->
+            <div class="service-details-card" style="margin-top: 24px; padding: 22px; border: 1.5px solid var(--border); border-radius: var(--radius-lg); background: rgba(255, 255, 255, 0.01); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2); position: relative; overflow: hidden;">
+              <div style="font-weight: 900; font-size: 1.05rem; color: var(--blue); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+                <i class="fas fa-info-circle" style="font-size: 1.2rem;"></i>
+                <span>Included Service Features </span>
+              </div>
+              <div style="font-size: 0.85rem; line-height: 1.8; color: var(--text-secondary); display: flex; flex-direction: column; gap: 14px; font-family: var(--font-en); text-align: right;">
+                <p style="margin: 0; font-weight: 600; color: var(--text-primary);">Every order includes the following premium features:</p>
+                <div style="display: grid; grid-template-columns: 1fr; gap: 14px;">
+                  <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <span style="background: rgba(59, 130, 246, 0.12); color: var(--blue); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; font-size: 0.85rem; box-shadow: 0 0 10px rgba(59,130,246,0.15);">1</span>
+                    <div>
+                      <strong style="color: var(--text-primary); display: block; margin-bottom: 3px; font-size: 0.9rem;">Offline Gameplay Mode</strong>
+                                      (no disturbance).
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <span style="background: rgba(59, 130, 246, 0.12); color: var(--blue); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; font-size: 0.85rem; box-shadow: 0 0 10px rgba(59,130,246,0.15);">2</span>
+                    <div>
+                      <strong style="color: var(--text-primary); display: block; margin-bottom: 3px; font-size: 0.9rem;">Trophy Chatbot (AI Chatbot)</strong>
+                          "  "       **    **.                ( 1000   2000 )      .
+                    </div>
+                  </div>
+                  <div style="display: flex; gap: 12px; align-items: flex-start;">
+                    <span style="background: rgba(59, 130, 246, 0.12); color: var(--blue); width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0; font-size: 0.85rem; box-shadow: 0 0 10px rgba(59,130,246,0.15);">3</span>
+                    <div>
+                      <strong style="color: var(--text-primary); display: block; margin-bottom: 3px; font-size: 0.9rem;">VPN Protection ️</strong>
+                             (Booster)    .    VPN                  .
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sticky Side Panel -->
+          <div class="order-side-panel">
+            <div class="panel-headline"> Summary</div>
+            <div class="order-summary" id="trophySummaryPanel">
+              <div class="summary-rows">
+                <div class="summary-row"><span class="s-label">Trophy range price</span></div>
+              </div>
+              <div class="summary-total">
+                <span class="total-label">المجموع الكلي:</span>
+                <span class="total-price" id="panelTrophyTotal">$0.00</span>
+              </div>
+            </div>
+            <div style="padding:0 24px 24px">
+              <button class="btn-checkout" id="trophyCheckout" onclick="checkoutTrophy()" style="width:100%; border:none; cursor:pointer;">
+                <i class="fas fa-shopping-cart"></i> <span>Order Now</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- RANKED SECTION                  -->
+      <!-- =============================== -->
+      <div id="section-ranked" class="service-tab-content" style="display:none">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1>رفع الرانك (Ranked Push)</h1>
+            <p>اختر الرانك الحالي والمستهدف لحساب السعر (يشمل كاش باك 2%)</p>
+            <div class="service-desc-box" style="margin-top: 12px; font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; background: rgba(255,255,255,0.01); border: 1px dashed var(--border); padding: 10px 14px; border-radius: var(--radius-sm);">
+              ℹ️ <strong>تفاصيل الخدمة:</strong> نحن نقدم خدمة رفع تصنيف الرانك الخاص بك من البرونزي حتى الماسترز مع ضمان سرية وأمان الحساب ولعب محترف بدون لفت الانتباه.
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="details-card-container">
+            
+            <!-- Speed Selector -->
+            <div class="speed-wrapper">
+              <div class="speed-title">⚡ اختيار سرعة التنفيذ:</div>
+              <div class="speed-options">
+                <button class="speed-btn selected" data-speed="normal">
+                  <span>عادية (Normal Speed)</span> <span class="speed-extra"></span>
+                </button>
+                <button class="speed-btn" data-speed="super">
+                  <span>فائقة (Super Speed - Fast)</span> <span class="speed-extra">+20%</span>
+                </button>
+                <button class="speed-btn" data-speed="hypersuper">
+                  <span>قصوى (Hyper Speed - Super Fast)</span> <span class="speed-extra">+40%</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Unified Dropdowns & Badges Selector -->
+            <div class="brawler-header">🏆 اختر مسار الرانك:</div>
+            <div class="ranked-selector-grid">
+              
+              <!-- Start Rank -->
+              <div class="rank-select-box">
+                <div style="font-weight:700;font-size:0.9rem;color:var(--text-secondary)">الرانك الحالي (البداية)</div>
+                <img id="currentRankImg" src="https://cdn.brawlify.com/ranked/regular/Bronze.png" class="rank-badge-img" alt="الرانك الحالي">
+                <select class="rank-dropdown" id="currentRankSelect"></select>
+              </div>
+
+              <!-- Arrow Indicator -->
+              <div class="rank-arrow-indicator">
+                <i class="fas fa-angle-left"></i>
+              </div>
+
+              <!-- الرانك المستهدف -->
+              <div class="rank-select-box">
+                <div style="font-weight:700;font-size:0.9rem;color:var(--text-secondary)">الرانك المستهدف (الهدف)</div>
+                <img id="targetRankImg" src="https://cdn.brawlify.com/ranked/regular/Gold.png" class="rank-badge-img" alt="الرانك المستهدف">
+                <select class="rank-dropdown" id="targetRankSelect"></select>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Sticky Side Panel -->
+          <div class="order-side-panel">
+            <div class="panel-headline">📊 ملخص رفع الرانك</div>
+            <div class="order-summary" id="rankedSummary">
+              <div class="summary-rows">
+                <div class="summary-row"><span class="s-label">Ranks range price</span></div>
+              </div>
+              <div class="summary-total">
+                <span class="total-label">المجموع الكلي:</span>
+                <span class="total-price" id="panelRankedTotal">$0.00</span>
+              </div>
+            </div>
+            <div style="padding:0 24px 24px">
+              <button class="btn-checkout" id="rankedCheckout" onclick="checkoutRanked()" style="width:100%; border:none; cursor:pointer;">
+                <i class="fas fa-shopping-cart"></i> <span>اطلب الرفع الآن</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- PRESTIGE SECTION                -->
+      <!-- =============================== -->
+      <!-- =============================== -->
+      <!-- PRESTIGE SECTION                -->
+      <!-- =============================== -->
+      <div id="section-prestige" class="service-tab-content" style="display:none">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1>   </h1>
+            <p>Select your brawler and target prestige tier to boost your profile styling.</p>
+            <div class="service-desc-box" style="margin-top: 12px; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; background: rgba(124,58,237,0.03); border: 1px dashed var(--purple); padding: 12px 16px; border-radius: var(--radius-sm); display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1.4rem;"></span>
+              <span><strong>Prestige Boost:</strong> Unlock custom cosmetic status frames for your brawlers! Your prestige status will show a special border during match loadings.</span>
+            </div>
+            
+            <div style="margin-top: 12px; padding: 14px 18px; background: rgba(16, 185, 129, 0.06); border: 1.5px solid rgba(16, 185, 129, 0.25); border-radius: var(--radius-lg); font-size: 0.88rem; line-height: 1.6; color: var(--text-primary);">
+              <div style="font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--green);">
+                <i class="fas fa-bolt"></i>
+                <span>Special Offer: Boost Prestige starting from $15.00 ⚡</span>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--text-secondary); display: flex; align-items: center; gap: 8px;">
+                <i class="fas fa-shield-alt" style="color: var(--green);"></i>
+                <span>Full VPN security is activated to ensure your account is protected 100%.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="details-card-container" style="position: relative; overflow: hidden;">
+            <!-- Step Indicators -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
+              <div style="font-size: 0.8rem; font-weight: 800; color: var(--purple); background: rgba(124,58,237,0.1); padding: 4px 10px; border-radius: 20px;">1. Tier</div>
+              <div style="width: 20px; height: 1px; background: var(--border);"></div>
+              <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);" id="prestigeStep2Badge">2. Brawlers</div>
+              <div style="width: 20px; height: 1px; background: var(--border);"></div>
+              <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);" id="prestigeStep3Badge">3. Trophies</div>
+              <div style="width: 20px; height: 1px; background: var(--border);"></div>
+              <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted);" id="prestigeStep4Badge">4. Checkout</div>
+            </div>
+
+            <!-- Step 1: Select Prestige Level -->
+            <div class="brawler-header"> Step 1: Select Prestige Tier</div>
+            <div class="prestige-tiers" id="prestigeTiers" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 28px;">
+              <!-- Card 1 -->
+              <div class="prestige-card reveal animate-delay-1" data-tier="1" style="text-align:center; padding: 20px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-xl); cursor: pointer; transition: var(--transition); position: relative;">
+                <div style="position: absolute; top: 8px; right: 8px; background: rgba(6,182,212,0.15); color: #06b6d4; font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 10px;">Trophy 0 - 1000</div>
+                <img src="tiered_1.png" alt="Prestige 1" style="width: 54px; height: 54px; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <div style="font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; color: var(--text-primary);">Prestige 1</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px;">0 ← 1,000 <img src="trophy.png" alt="" class="trophy-icon"></div>
+                <div style="font-weight: 800; color: var(--yellow); font-family: var(--font-en); font-size: 1.1rem;">$0.60 <small style="font-size: 0.7rem; opacity: 0.8;">/ 100 trophies</small></div>
+              </div>
+              
+              <!-- Card 2 -->
+              <div class="prestige-card reveal animate-delay-2" data-tier="2" style="text-align:center; padding: 20px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-xl); cursor: pointer; transition: var(--transition); position: relative;">
+                <div style="position: absolute; top: 8px; right: 8px; background: rgba(239,68,68,0.15); color: #ef4444; font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 10px;">Trophy 1000 - 2000</div>
+                <img src="tiered_2.png" alt="Prestige 2" style="width: 54px; height: 54px; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <div style="font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; color: var(--text-primary);">Prestige 2</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px;">1,000 ← 2,000 <img src="trophy.png" alt="" class="trophy-icon"></div>
+                <div style="font-weight: 800; color: var(--yellow); font-family: var(--font-en); font-size: 1.1rem;">$1.50 <small style="font-size: 0.7rem; opacity: 0.8;">/ 100 trophies</small></div>
+              </div>
+
+              <!-- Card 3 -->
+              <div class="prestige-card reveal animate-delay-3" data-tier="3" style="text-align:center; padding: 20px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-xl); cursor: pointer; transition: var(--transition); position: relative;">
+                <div style="position: absolute; top: 8px; right: 8px; background: rgba(251,191,36,0.15); color: #fbbf24; font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 10px;">Trophy 2000 - 3000</div>
+                <img src="tiered_3.png" alt="Prestige 3" style="width: 54px; height: 54px; object-fit: contain; margin-bottom: 8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <div style="font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; color: var(--text-primary);">Prestige 3</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px;">2,000 ← 3,000 <img src="trophy.png" alt="" class="trophy-icon"></div>
+                <div style="font-weight: 800; color: var(--yellow); font-family: var(--font-en); font-size: 1.1rem;">$18.00 <small style="font-size: 0.7rem; opacity: 0.8;">/ 100 trophies</small></div>
+              </div>
+
+              <!-- Card 4 (Custom) -->
+              <div class="prestige-card reveal animate-delay-4" data-tier="custom" style="text-align:center; padding: 20px; background: var(--bg-card); border: 1.5px solid var(--border); border-radius: var(--radius-xl); cursor: pointer; transition: var(--transition); position: relative;">
+                <div style="position: absolute; top: 8px; right: 8px; background: rgba(124,58,237,0.15); color: var(--purple); font-size: 0.65rem; font-weight: 800; padding: 2px 8px; border-radius: 10px;">Custom Range</div>
+                <div style="font-size: 2.2rem; margin-bottom: 8px; line-height: 1.2;">⚙️</div>
+                <div style="font-size: 1.15rem; font-weight: 900; margin-bottom: 4px; color: var(--text-primary);">Prestige Custom</div>
+                <div style="font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px;">0 ← 3,000 <img src="trophy.png" alt="" class="trophy-icon"></div>
+                <div style="font-weight: 800; color: var(--yellow); font-family: var(--font-en); font-size: 1.1rem;">Custom Price <small style="font-size: 0.7rem; opacity: 0.8;">/ 100</small></div>
+              </div>
+            </div>
+
+            <!-- Step 2: Choose  (initially hidden) -->
+            <div id="prestigeBrawlerSelectionSection" style="display:none;">
+              <div class="brawler-header">  2:   </div>
+              <div class="brawler-search-wrap" style="margin-bottom:16px">
+                <i class="fas fa-search brawler-search-icon"></i>
+                <input type="text" class="brawler-search" id="prestigeBrawlerSearch" placeholder="Type your message here...">
+              </div>
+              <div class="brawler-grid" id="prestigeBrawlerGrid" style="margin-bottom: 28px;">
+                <div style="color:var(--text-muted);padding:16px;font-size:0.85rem;grid-column:1/-1;text-align:center">
+                  <i class="fas fa-spinner fa-spin"></i> <span>Loading brawlers...</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calculator details moved to modal -->
+
+          </div>
+
+          <!-- Sticky Side Panel -->
+          <div class="order-side-panel">
+            <div class="panel-headline">   </div>
+            <div class="order-summary" id="prestigeSummary">
+              <div class="summary-rows">
+                <div class="summary-row"><span class="s-label">Prestige Boost السعر الأساسي</span></div>
+              </div>
+              <div class="summary-total">
+                <span class="total-label">المجموع الكلي:</span>
+                <span class="total-price" id="panelPrestigeTotal">$0.00</span>
+              </div>
+            </div>
+            <div style="padding:0 24px 24px">
+              <button class="btn-checkout" id="prestigeCheckout" onclick="openPrestigeDetailsModal()" style="width:100%; border:none; cursor:pointer;" disabled>
+                <i class="fas fa-magic"></i> <span>Orange Cash</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- =============================== -->
+      <!-- MY ORDERS & WALLET SECTION      -->
+      <!-- =============================== -->
+      <div id="section-my-orders" class="service-tab-content" style="display:none">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1  > My Orders & Wallet</h1>
+            <p>Track your orders, manage your wallet balance, and top up your account.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Wallet details & deposit form -->
+            <div class="details-card-container">
+              <div class="brawler-header"  > Wallet Details</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px">
+                <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border); padding:16px; border-radius:var(--radius-lg); text-align:center">
+                  <div style="font-size:0.8rem; color:var(--text-muted)">Current Balance</div>
+                  <div style="font-size:2rem; font-weight:900; color:var(--purple); margin-top:6px; font-family:var(--font-en)" id="walletBalanceBig">$0.00</div>
+                </div>
+                <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border); padding:16px; border-radius:var(--radius-lg); text-align:center">
+                  <div style="font-size:0.8rem; color:var(--text-muted)">Cashback Balance (2%)</div>
+                  <div style="font-size:2rem; font-weight:900; color:var(--yellow); margin-top:6px; font-family:var(--font-en)" id="walletCashbackBig">$0.00</div>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; align-items:end">
+                <div class="form-group" style="margin-bottom:0">
+                  <label>Top-up Amount ($)</label>
+                  <input type="number" class="auth-input" id="depositAmount" value="20" min="5" oninput="toggleTxHashInput()">
+                </div>
+                <div class="form-group" style="margin-bottom:0">
+                  <label>Payment Method</label>
+                  <select class="form-select" id="depositMethod" onchange="toggleTxHashInput()" style="width:100%; padding:13px; background:rgba(255,255,255,0.04); border:1.5px solid var(--border); color:var(--text-primary); border-radius:var(--radius-sm)">
+                    <option value="paypal"  > Wallet Details   (PayPal)</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Instructions Container -->
+              <div id="depositInstructions" style="display:none; margin-top:16px; padding:16px; background:rgba(255,255,255,0.02); border:1.5px dashed var(--purple); border-radius:var(--radius-md); font-size:0.85rem; line-height:1.6; color:var(--text-primary)">
+              </div>
+
+              <!-- Extra Sender Info -->
+              <div class="form-group" id="senderInfoWrapper" style="display:none; margin-top:16px">
+                <label id="senderInfoLabel">Sender Information</label>
+                <input type="text" class="auth-input" id="depositSenderInfo" placeholder="e.g. 01206510088">
+              </div>
+
+              <!-- Tx Hash / Reference -->
+              <div class="form-group" id="txHashWrapper" style="display:none; margin-top:16px">
+                <label id="txHashLabel">Transaction ID (Tx Hash) / Reference</label>
+                <input type="text" class="auth-input" id="depositTxHash" placeholder="Enter new password">
+              </div>
+
+              <button class="btn-primary" onclick="executeDeposit()" style="margin-top:20px; width:100%; border:none; cursor:pointer; font-weight:800; font-size:1rem; padding:14px">
+                <i class="fas fa-wallet"></i> Confirm & Top Up
+              </button>
+            </div>
+
+            <!-- Active & Past Orders list -->
+            <div class="details-card-container">
+              <div class="brawler-header"  > My Orders</div>
+              <div class="auction-list" id="clientOrdersList">
+                <div style="color:var(--text-muted);padding:16px;text-align:center">No orders found.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sticky Chat Column -->
+          <div class="order-side-panel" id="clientActiveChatColumn" style="display: none; position: sticky; top: 90px;">
+            <div class="chat-box" style="height:420px">
+              <div class="chat-header">
+                <span id="clientChatWithTitle"> Chat with Booster</span>
+                <span id="clientChatOrderTag" style="font-size: 0.75rem; color: var(--purple); font-family: var(--font-en);"></span>
+              </div>
+              <div class="chat-messages" id="clientChatMessages"></div>
+              <div class="chat-footer">
+                <input type="text" class="chat-input" id="clientChatInput" placeholder="Type your message here..." onkeydown="if(event.key==='Enter') sendClientChatMessage()">
+                <button class="btn-primary" onclick="sendClientChatMessage()" style="padding: 10px 16px;"><i class="fas fa-paper-plane"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- MY ACCOUNT / PROFILE SETTINGS   -->
+      <!-- =============================== -->
+      <div id="section-my-account" class="service-tab-content" style="display:none">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1> Profile Settings</h1>
+            <p>Manage your account settings, email, password, and customize your avatar.</p>
+          </div>
+        </div>
+
+        <!-- Profile Card Layout -->
+        <div style="display:grid; grid-template-columns:1fr 1.4fr; gap:24px; align-items:start;">
+
+          <!-- Left: Avatar Picker -->
+          <div class="details-card-container" style="position:relative; overflow:hidden; text-align:center;">
+            <div style="position:absolute;top:-40px;left:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(124,58,237,0.18),transparent 70%);pointer-events:none;"></div>
+
+            <!-- Current Avatar Preview -->
+            <div style="margin-bottom:20px; display:flex; flex-direction:column; align-items:center; gap:12px;">
+              <div style="position:relative; display:inline-block;">
+                <img id="profileAvatarPreview" src="https://cdn.brawlify.com/brawlers/emoji/Shelly.png" alt="Avatar"
+                  style="width:88px;height:88px;border-radius:50%;border:3px solid var(--blue);object-fit:contain;background:rgba(255,255,255,0.05);padding:4px;box-shadow:0 0 24px rgba(59,130,246,0.35);">
+                <div style="position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#fff;">✎</div>
+              </div>
+              <div>
+                <div id="profileAvatarName" style="font-weight:800; font-size:1rem; color:var(--text-primary);"></div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">Prestige Level</div>
+              </div>
+            </div>
+
+            <div style="font-size:0.8rem;font-weight:700;color:var(--text-secondary);margin-bottom:12px;text-align:right;"> Choose Avatar (Brawler Emoji)</div>
+            
+            <!-- Brawler Grid -->
+            <div id="brawlerAvatarGrid" style="display:grid;grid-template-columns:repeat(4, 1fr);gap:8px;margin-bottom:16px;"></div>
+
+            <!-- Custom URL -->
+            <div style="margin-top:4px;">
+              <label style="font-size:0.78rem;font-weight:700;color:var(--text-muted);display:block;margin-bottom:6px;text-align:right;">️ Custom Avatar URL</label>
+              <input type="url" id="profileCustomAvatarUrl" class="auth-input" placeholder="https://example.com/image.png"
+                oninput="previewCustomAvatar(this.value)"
+                style="font-size:0.82rem;">
+            </div>
+          </div>
+
+          <!-- Right: Profile Settings Form -->
+          <div class="details-card-container" style="position:relative; overflow:hidden;">
+            <div style="position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:radial-gradient(circle,rgba(59,130,246,0.12),transparent 70%);pointer-events:none;"></div>
+            
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">
+              <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--blue),#6366f1);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">⚙️</div>
+              <div>
+                <div style="font-size:1.05rem;font-weight:900;color:var(--text-primary);">Account Settings</div>
+                <div style="font-size:0.8rem;color:var(--text-muted);">Update your email and password</div>
+              </div>
+            </div>
+
+            <form id="profileSettingsForm" onsubmit="saveProfileSettings(event)">
+              <!-- Email -->
+              <div class="form-group" style="margin-bottom:18px;">
+                <label style="font-size:0.85rem;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:8px;"> Email Address</label>
+                <div style="position:relative;">
+                  <i class="fas fa-envelope" style="position:absolute;top:50%;right:16px;transform:translateY(-50%);color:var(--blue);font-size:0.9rem;"></i>
+                  <input type="email" id="profileEmail" class="auth-input" style="padding-right:46px;" placeholder="your@email.com">
+                </div>
+              </div>
+
+              <!-- New Password -->
+              <div class="form-group" style="margin-bottom:18px;">
+                <label style="font-size:0.85rem;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:8px;"> New Password <span style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+                <div style="position:relative;">
+                  <i class="fas fa-lock" style="position:absolute;top:50%;right:16px;transform:translateY(-50%);color:var(--blue);font-size:0.9rem;"></i>
+                  <input type="password" id="profileNewPassword" class="auth-input" style="padding-right:46px;" placeholder="Enter new password">
+                </div>
+              </div>
+
+              <!-- Confirm Password -->
+              <div class="form-group" style="margin-bottom:24px;">
+                <label style="font-size:0.85rem;font-weight:700;color:var(--text-secondary);display:block;margin-bottom:8px;"> Confirm New Password</label>
+                <div style="position:relative;">
+                  <i class="fas fa-lock" style="position:absolute;top:50%;right:16px;transform:translateY(-50%);color:var(--text-muted);font-size:0.9rem;"></i>
+                  <input type="password" id="profileConfirmPassword" class="auth-input" style="padding-right:46px;" placeholder="Confirm new password">
+                </div>
+              </div>
+
+              <!-- Info box -->
+              <div style="background:rgba(59,130,246,0.06);border:1px dashed rgba(59,130,246,0.3);border-radius:var(--radius-md);padding:14px;margin-bottom:20px;font-size:0.8rem;line-height:1.7;color:var(--text-secondary);text-align:right;">
+                <i class="fas fa-info-circle" style="color:var(--blue);margin-left:6px;"></i>
+                         .
+              </div>
+
+              <button type="submit" id="profileSaveBtn"
+                style="width:100%;background:linear-gradient(135deg,var(--blue),#6366f1);color:#fff;padding:14px;border:none;border-radius:var(--radius-md);font-weight:900;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 8px 30px rgba(59,130,246,0.3);transition:var(--transition);">
+                <i class="fas fa-save"></i> Save Settings
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- =============================== -->
+      <!-- BECOME A BOOSTER SECTION         -->
+      <!-- =============================== -->
+      <div id="section-apply-booster" class="service-tab-content" style="display:none">
+        <div class="dashboard-header">
+          <div class="dashboard-title">
+            <h1 style="display:flex;align-items:center;gap:10px;"><i class="fas fa-briefcase"></i> Become a Booster</h1>
+            <p>Apply to join our pro players team and start earning money today.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-grid" style="grid-template-columns: 1fr;">
+          <!-- If user is client -->
+          <div id="boosterApplyFormContainer" class="details-card-container" style="max-width: 700px; margin: 0 auto; width: 100%;">
+            <div style="background: rgba(124, 58, 237, 0.04); border: 1.5px solid rgba(124, 58, 237, 0.25); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 24px;">
+              <div style="display:flex; gap:12px; align-items:flex-start;">
+                <span style="font-size:1.5rem;"></span>
+                <div>
+                  <div style="font-weight:800; font-size:1rem; color:var(--purple); margin-bottom:6px;">Requirements:</div>
+                  <ul style="font-size:0.85rem; color:var(--text-secondary); line-height:1.7; padding-left: 20px; list-style-type: decimal;">
+                    <li>You must have a high rank (Legendary or Masters).</li>
+                    <li>Over 45,000 trophies in your account.</li>
+                    <li>Clean gameplay record without any history of toxic behavior or hacks.</li>
+                    <li>Clean gameplay record without any history of toxic behavior or hacks.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <form id="boosterApplicationForm" onsubmit="submitBoosterApplication(event)">
+              <div class="form-group">
+                <label style="font-weight: 700; margin-bottom: 8px; display: block;">Full Name:</label>
+                <input type="text" id="appFullName" class="auth-input" placeholder="Enter transaction hash" required style="width: 100%;">
+              </div>
+              <div class="form-group" style="margin-top: 18px;">
+                <label style="font-weight: 700; margin-bottom: 8px; display: block;">Email Address:</label>
+                <input type="email" id="appEmail" class="auth-input" placeholder=": email@example.com" required style="width: 100%;">
+              </div>
+              <div class="form-group" style="margin-top: 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div>
+                  <label style="font-weight: 700; margin-bottom: 8px; display: block;">Highest Rank Reached:</label>
+                  <select id="appRank" class="form-select" style="width: 100%; padding:13px 16px; background:rgba(255,255,255,0.03); border:1.5px solid var(--border); color:var(--text-primary); border-radius:var(--radius-sm);" required>
+                    <option value=""></option>
+                    <option value=" 3"> 3</option>
+                    <option value=" 2"> 2</option>
+                    <option value=" 1"> 1</option>
+                    <option value="Mythic"></option>
+                    <option value="Diamond"></option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-weight: 700; margin-bottom: 8px; display: block;">Trophy Count:</label>
+                  <input type="number" id="app" class="auth-input" min="0" placeholder="e.g. 55000" required style="width: 100%;">
+                </div>
+              </div>
+              <div class="form-group" style="margin-top: 18px;">
+                <label style="font-weight: 700; margin-bottom: 8px; display: block;">Additional Details (Describe your skills):</label>
+                <textarea id="appDetails" class="form-textarea" placeholder="Tell us about yourself, your preferred brawlers, and your daily availability..." style="width: 100%; min-height: 120px;"></textarea>
+              </div>
+
+              <button type="submit" id="submitAppBtn" class="btn-submit" style="width: 100%; border: none; padding: 14px; font-size: 1rem; font-weight: 950; margin-top: 22px; cursor: pointer; background: linear-gradient(135deg, var(--purple), var(--gradient-end));">
+                <i class="fas fa-paper-plane"></i> Apply to Join
+              </button>
+            </form>
+          </div>
+
+          <!-- If user is pending_booster -->
+          <div id="boosterPendingContainer" class="details-card-container" style="max-width: 600px; margin: 0 auto; width: 100%; display: none; text-align: center; padding: 40px 30px;">
+            <div style="font-size: 4rem; margin-bottom: 20px;">⏳</div>
+            <h2 style="font-weight: 900; color: var(--purple); margin-bottom: 12px;">Application Pending</h2>
+            <p style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 24px;">
+              We have successfully received your application as a pro player! We are currently reviewing your application and verifying that your account statistics match the conditions. You will be contacted via email  technical support very soon.
+            </p>
+            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px; font-size: 0.85rem; color: var(--text-muted);">
+              Application Status: <strong style="color: var(--yellow);">Pending Review</strong>
+            </div>
+          </div>
+        </div>
+
+    </main>
+  </div>
+
+  <!-- ===== AI TROPHY CHATBOT MODAL ===== -->
+  <div id="trophyChatbotModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); align-items:center; justify-content:center; z-index:9999; padding:20px; backdrop-filter:blur(8px);">
+    <div style="background:var(--bg-secondary); border:1.5px solid var(--border); border-radius:var(--radius-xl); width:100%; max-width:550px; height:90vh; max-height:680px; display:flex; flex-direction:column; box-shadow:0 24px 64px rgba(0,0,0,0.5); position:relative; overflow:hidden;">
+      <!-- Header -->
+      <div style="padding:16px 24px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:rgba(59,130,246,0.03)">
+        <div style="display:flex; align-items:center; gap:10px">
+          <div style="width:38px; height:38px; background:linear-gradient(135deg, var(--blue), #1D4ED8); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.15rem; filter:drop-shadow(0 2px 8px rgba(59,130,246,0.3))"></div>
+          <div style="text-align:right">
+            <div style="font-weight:900; font-size:0.95rem; color:var(--text-primary)">الدعم الفني لـ Adsa Game (AI)</div>
+            <div style="font-size:0.7rem; color:var(--text-muted); display:flex; align-items:center; gap:4px">
+              <span style="width:6px; height:6px; background:#10B981; border-radius:50%"></span> Online
+            </div>
+          </div>
+        </div>
+        <button onclick="closeTrophyChatbotModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.25rem; cursor:pointer"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- Messages area -->
+      <div id="chatbotMessages" style="flex:1; padding:24px; overflow-y:auto; display:flex; flex-direction:column; gap:16px; background:rgba(0,0,0,0.15)">
+        <!-- Dynamic message bubbles will go here -->
+      </div>
+
+      <!-- Action Panel -->
+      <div id="chatbotActionPanel" style="padding:16px 24px; border-top:1px solid var(--border); background:var(--bg-card); display:flex; flex-direction:column; gap:12px">
+        <!-- Dynamic inputs/buttons will be generated here by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CHECKOUT MODAL ===== -->
+  <div id="checkoutModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999; padding:20px;">
+    <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-xl); width:100%; max-width:500px; padding:32px; box-shadow:0 20px 60px rgba(0,0,0,0.5); position:relative">
+      <button onclick="closeCheckoutModal()" style="position:absolute; top:20px; left:20px; background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer"><i class="fas fa-times"></i></button>
+      
+      <div style="font-size:1.5rem; font-weight:900; color:var(--purple); margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px"> Order Checkout</div>
+      
+      <!-- Order details -->
+      <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:20px; font-size:0.9rem; line-height:1.6">
+        <div>Service: <strong id="checkoutServiceType"></strong></div>
+        <div id="checkoutDetails"></div>
+        <div style="margin-top:10px; border-top:1px dashed var(--border); padding-top:10px; display:flex; justify-content:space-between">
+          <span>السعر الأساسي (Earns 2% Cashback):</span>
+          <span style="font-weight:700" id="checkoutBasePrice">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Tip Selection -->
+      <div class="tip-section">
+        <div class="tip-title"><i class="fas fa-star" style="color:var(--yellow)"></i> Add a Tip for the Player </div>
+        <div class="tip-subtitle">Support the booster — 100% goes directly to the player</div>
+        <div class="tip-grid">
+          <button class="tip-btn selected" id="tip-0" onclick="selectTip(0)">$0<br><small style="font-size:0.65rem;font-weight:600;opacity:0.7">No tip</small></button>
+          <button class="tip-btn" id="tip-2" onclick="selectTip(2)">$2<br><small style="font-size:0.65rem;font-weight:600;opacity:0.7">Nice support</small></button>
+          <button class="tip-btn" id="tip-5" onclick="selectTip(5)">$5<br><small style="font-size:0.65rem;font-weight:600;opacity:0.7">Super help</small></button>
+          <button class="tip-btn" id="tip-10" onclick="selectTip(10)">$10<br><small style="font-size:0.65rem;font-weight:600;opacity:0.7">God level!</small></button>
+        </div>
+      </div>
+
+      <!-- Payment details -->
+      <div style="margin-bottom:20px">
+        <div style="display:flex; justify-content:space-between; font-size:1.15rem; font-weight:800; margin-bottom:12px">
+          <span>Total Amount:</span>
+          <span style="color:var(--green)" id="checkoutTotalPrice">$0.00</span>
+        </div>
+        
+        <!-- Hidden payment fields kept in DOM to prevent JavaScript TypeErrors -->
+        <div style="display: none;">
+          <label>    :</label>
+          <div class="payment-methods-grid">
+            <div class="payment-card" data-value="wallet" onclick="selectPaymentMethod('wallet')">
+              <i class="fas fa-wallet" style="color:#10B981"></i>
+              <span>Pay with Wallet Balance</span>
+            </div>
+            <div class="payment-card selected" data-value="paypal" onclick="selectPaymentMethod('paypal')">
+              <i class="fab fa-paypal" style="color:#0079C1"></i>
+              <span>  (PayPal)</span>
+            </div>
+            <div class="payment-card" data-value="orange" onclick="selectPaymentMethod('orange')">
+              <i class="fas fa-mobile-alt" style="color:#FF6600"></i>
+              <span>Orange Cash</span>
+            </div>
+            <div class="payment-card" data-value="vodafone" onclick="selectPaymentMethod('vodafone')">
+              <i class="fas fa-mobile-alt" style="color:#E60000"></i>
+              <span>Orange Cash</span>
+            </div>
+            <div class="payment-card" data-value="etisalat" onclick="selectPaymentMethod('etisalat')">
+              <i class="fas fa-mobile-alt" style="color:#059669"></i>
+              <span>Orange Cash</span>
+            </div>
+            <div class="payment-card" data-value="instapay" onclick="selectPaymentMethod('instapay')">
+              <i class="fas fa-paper-plane" style="color:#C026D3"></i>
+              <span>InstaPay</span>
+            </div>
+            <div class="payment-card" data-value="binance" onclick="selectPaymentMethod('binance')">
+              <i class="fas fa-coins" style="color:#F3BA2F"></i>
+              <span>  (Binance Pay)</span>
+            </div>
+          </div>
+
+          <!-- Checkout payment instructions for manual payments -->
+          <div id="checkoutInstructions" style="display:none; margin-top:12px; padding:12px; background:rgba(255,255,255,0.02); border:1px dashed var(--purple); border-radius:var(--radius-sm); font-size:0.8rem; line-height:1.5; color:var(--text-primary)">
+          </div>
+
+          <div class="form-group" id="checkoutSenderInfoWrapper" style="display:none; margin-top:12px; margin-bottom:0">
+            <label id="checkoutSenderInfoLabel">Sender Information</label>
+            <input type="text" class="auth-input" id="checkoutSenderInfo" placeholder="Sender details (e.g. phone number)">
+          </div>
+
+          <div class="form-group" id="checkoutTxHashWrapper" style="display:none; margin-top:12px; margin-bottom:0">
+            <label id="checkoutTxHashLabel">Transaction ID / Reference</label>
+            <input type="text" class="auth-input" id="checkoutTxHash" placeholder="Sender details (e.g. phone number)">
+          </div>
+        </div>
+
+        <input type="hidden" id="checkoutPaymentMethod" value="pending">
+        
+        <div style="margin-top: 15px; padding: 14px; background: rgba(59, 130, 246, 0.05); border: 1px dashed var(--blue); border-radius: var(--radius-md); font-size: 0.82rem; line-height: 1.6; color: var(--text-secondary); text-align: right;">
+          <i class="fas fa-info-circle" style="color: var(--blue); margin-left: 6px;"></i>
+              .                .
+        </div>
+      </div>
+
+      <!-- Action button -->
+      <button class="btn-primary" onclick="confirmOrderPurchase()" style="width:100%; border:none; padding:14px; font-size:1rem; font-weight:800; cursor:pointer">
+        <i class="fas fa-shopping-bag"></i>    
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== PRESTIGE DETAILS MODAL ===== -->
+  <div id="prestigeDetailsModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999; padding:20px;">
+    <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-xl); width:100%; max-width:550px; padding:32px; box-shadow:0 20px 60px rgba(0,0,0,0.5); position:relative; max-height:90vh; overflow-y:auto;">
+      <button onclick="closePrestigeDetailsModal()" style="position:absolute; top:20px; left:20px; background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer"><i class="fas fa-times"></i></button>
+      
+      <div style="font-size:1.5rem; font-weight:900; color:var(--purple); margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px; display:flex; align-items:center; gap:10px;">
+        <span> Prestige Boost Details</span>
+      </div>
+
+      <!--  and Tier Info Badges -->
+      <div style="display:flex; gap:12px; margin-bottom:20px;">
+        <div style="flex:1; background:rgba(124,58,237,0.06); border:1px solid rgba(124,58,237,0.15); padding:10px 14px; border-radius:var(--radius-md); display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;"></span>
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Selected Brawler</div>
+            <div style="font-weight:800; color:var(--text-primary); font-size:0.95rem;" id="prestigeModalBrawlerName">-</div>
+          </div>
+        </div>
+        <div style="flex:1; background:rgba(251,191,36,0.06); border:1px solid rgba(251,191,36,0.15); padding:10px 14px; border-radius:var(--radius-md); display:flex; align-items:center; gap:8px;">
+          <span style="font-size:1.2rem;"></span>
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Prestige Level</div>
+            <div style="font-weight:800; color:var(--yellow); font-size:0.95rem;" id="prestigeModalTierName">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step: Choose Trophy Range -->
+      <div style="margin-bottom:20px;">
+        <label style="font-weight: 800; font-size: 0.95rem; color: var(--text-primary); display: block; margin-bottom:10px;"> Select Trophy Range (Multiples of 100):</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+          <div class="form-group" style="margin-bottom:0;">
+            <label style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px; display:block;">From Trophies</label>
+            <select id="prestigeModalTrophyFrom" class="form-select" onchange="onPrestigeModalFromChange()" style="width:100%; padding:12px; background:rgba(255,255,255,0.04); border:1.5px solid var(--border); color:var(--text-primary); border-radius:var(--radius-sm); font-family:var(--font-en); font-weight:700;"></select>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:6px; display:block;">From Trophies</label>
+            <select id="prestigeModalTrophyTo" class="form-select" onchange="updatePrestigeModalPrice()" style="width:100%; padding:12px; background:rgba(255,255,255,0.04); border:1.5px solid var(--border); color:var(--text-primary); border-radius:var(--radius-sm); font-family:var(--font-en); font-weight:700;"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step: Select Speed -->
+      <div style="margin-bottom:20px;">
+        <label style="font-weight: 800; font-size: 0.95rem; color: var(--text-primary); display: block; margin-bottom:10px;">⏱️    :</label>
+        <div id="prestigeModalTimeSection">
+          <!-- Will be populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Step: Additional Requirements -->
+      <div class="form-group" style="margin-bottom:20px;">
+        <label style="font-weight: 800; font-size: 0.95rem; color: var(--text-primary); display: block; margin-bottom:8px;">    :</label>
+        <textarea id="prestigeModalAdditionalInfo" class="form-textarea" placeholder="Write any additional instructions for the booster (e.g. play at specific times, avoid spending resources...)" style="width:100%; min-height:80px; padding:12px; border-radius:var(--radius-md); border:1px solid var(--border); background:rgba(255,255,255,0.02); color:var(--text-primary); font-family:var(--font-en); line-height:1.6;"></textarea>
+      </div>
+
+      <!-- Summary & Pricing -->
+      <div style="background:rgba(255,255,255,0.01); border:1px solid var(--border); border-radius:var(--radius-md); padding:16px; margin-bottom:20px; font-size:0.9rem; line-height:1.6">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="color:var(--text-secondary);">  :</span>
+          <strong style="color:var(--text-primary);" id="prestigeModalCupsToGain">0 </strong>
+        </div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="color:var(--text-secondary);"> :</span>
+          <strong style="color:var(--text-primary);" id="prestigeModalSelectedSpeedLabel"></strong>
+        </div>
+        <div style="margin-top:10px; border-top:1px dashed var(--border); padding-top:10px; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:800; font-size:1.15rem;"> :</span>
+          <span style="font-weight:900; color:var(--green); font-size:1.5rem;" id="prestigeModalTotalPrice">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Submit button -->
+      <button class="btn-primary" id="prestigeModalSubmitBtn" onclick="confirmPrestigeModalOrder()" style="width:100%; border:none; padding:14px; font-size:1rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px;">
+        <i class="fas fa-paper-plane"></i> Submit Request & Coordinate with Support
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== RATING MODAL ===== -->
+  <div id="ratingModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); align-items:center; justify-content:center; z-index:9999; padding:20px;">
+    <div style="background:var(--bg-secondary); border:1px solid var(--border); border-radius:var(--radius-xl); width:100%; max-width:450px; padding:32px; box-shadow:0 20px 60px rgba(0,0,0,0.5); position:relative">
+      <button onclick="closeRatingModal()" style="position:absolute; top:20px; left:20px; background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer"><i class="fas fa-times"></i></button>
+      
+      <div style="font-size:1.3rem; font-weight:900; color:var(--purple); margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px">⭐    </div>
+      
+      <div class="form-group">
+        <label> :</label>
+        <select class="form-select" id="rateStars" style="width:100%; padding:12px; background:rgba(255,255,255,0.04); border:1.5px solid var(--border); color:var(--text-primary); border-radius:var(--radius-sm); margin-top:8px">
+          <option value="5">★★★★★ (5/5)  </option>
+          <option value="4">★★★★☆ (4/5)  </option>
+          <option value="3">★★★☆☆ (3/5) </option>
+          <option value="2">★★☆☆☆ (2/5) </option>
+          <option value="1">★☆☆☆☆ (1/5) </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label> :</label>
+        <textarea class="form-textarea" id="rateReview" placeholder="Tell us about yourself, your preferred brawlers, and your daily availability..." style="margin-top:8px"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="submitRating()" style="width:100%; border:none; padding:12px; font-size:0.95rem; font-weight:800; cursor:pointer; margin-top:10px">
+          
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-bottom" style="padding-top:0">
+        <span>© 2026 Adsa Game.   .</span>
+        <div style="display:flex;gap:16px">
+          <a href="index.html" style="color:var(--text-muted);font-size:0.85rem">الرئيسية</a>
+          <a href="events.html" style="color:var(--text-muted);font-size:0.85rem">الفعاليات</a>
+          <a href="contact.html" style="color:var(--text-muted);font-size:0.85rem">تواصل معنا</a>
+        </div>
+        <span style="color:var(--purple);font-weight:700;font-family:var(--font-en)">adsagame.com</span>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+<div id="globalToast" class="toast"></div>
+
+<!-- JS SCRIPTS -->
+<script src="js/brawlers.js"></script>
+<script src="js/main.js"></script>
+<script>
+// ===== TAB & SIDEBAR SWITCHING =====
+const sidebarButtons = document.querySelectorAll('.dashboard-sidebar button[data-target]');
+const serviceTabs = {
+  trophy: document.getElementById('section-trophy'),
+  ranked: document.getElementById('section-ranked'),
+  prestige: document.getElementById('section-prestige'),
+  'my-orders': document.getElementById('section-my-orders'),
+  'my-account': document.getElementById('section-my-account'),
+  'apply-booster': document.getElementById('section-apply-booster')
+};
+
+function switchTab(target) {
+  if (!serviceTabs[target]) return;
+  
+  // Hide all sections, show target
+  Object.entries(serviceTabs).forEach(([key, element]) => {
+    if (element) element.style.display = key === target ? '' : 'none';
+  });
+
+  // Toggle active button style
+  sidebarButtons.forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.target === target);
+  });
+
+  // Init sections on demand
+  if (target === 'trophy' && !window._trophyInitDone) {
+    window._trophyInitDone = true;
+    AdsaServices.initTrophy();
+  }
+  if (target === 'ranked' && !window._rankedInitDone) {
+    window._rankedInitDone = true;
+    AdsaServices.initRanked();
+  }
+  if (target === 'prestige' && !window._prestigeInitDone) {
+    window._prestigeInitDone = true;
+    AdsaServices.initPrestige();
+  }
+  if (target === 'my-orders') {
+    loadClientOrders();
+    clearInterval(clientChatPollInterval);
+    document.getElementById('clientActiveChatColumn').style.display = 'none';
+    activeChatOrderId = null;
+  }
+  if (target === 'my-account') {
+    initProfileSection();
+  }
+}
+
+sidebarButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.dataset.target) switchTab(btn.dataset.target);
+  });
+});
+
+// Setup speed group toggles globally
+document.querySelectorAll('.speed-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const parent = btn.closest('.speed-options');
+    if (parent) {
+      parent.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    }
+  });
+});
+
+// Theme Toggle
+const themeToggleBtn = document.getElementById('themeToggle');
+if (themeToggleBtn) {
+  const currentTheme = localStorage.getItem('vx-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  themeToggleBtn.querySelector('i').className = currentTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+  
+  themeToggleBtn.addEventListener('click', () => {
+    const newTheme = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('vx-theme', newTheme);
+    themeToggleBtn.querySelector('i').className = newTheme === 'light' ? 'fas fa-sun' : 'fas fa-moon';
+  });
+}
+
+// Client authentication checks
+let currentUser = null;
+let activeChatOrderId = null;
+let clientChatPollInterval = null;
+let currentCheckoutData = null;
+let selectedTipAmt = 0;
+let ratingTargetOrderId = null;
+let siteConfig = null;
+
+async function fetchSiteConfig() {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(`/api/site/config?userId=${currentUser.id}`);
+    if (res.ok) {
+      siteConfig = await res.json();
+      // Re-render instructions if already showing
+      const chModal = document.getElementById('checkoutModal');
+      if (chModal && chModal.style.display === 'flex') {
+        toggleCheckoutInstructions();
+      }
+      toggleTxHashInput();
+    }
+  } catch(e) {
+    console.error('Failed to fetch site config', e);
+  }
+}
+
+function copyToClipboard(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btn.innerHTML;
+    btn.innerHTML = `<i class="fas fa-check" style="color:var(--purple)"></i> <span style="color:var(--purple)">Copied!</span>`;
+    btn.style.borderColor = "var(--purple)";
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.borderColor = "";
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy', err);
+  });
+}
+
+function renderPremiumInstructions(method, amountUSD, container) {
+  const egpAmount = amountUSD * 50;
+  const walletNumber = siteConfig && siteConfig.mainWallet ? (siteConfig.mainWallet[method] || siteConfig.mainWallet.orange) : "01206510088";
+  
+  let title = "";
+  let icon = "";
+  let colorClass = "";
+  let walletLabel = "";
+
+  if (method === 'orange' || method === 'vodafone' || method === 'etisalat') {
+    title = method === 'orange' ? " " : (method === 'vodafone' ? " " : " ");
+    icon = method === 'orange' ? "" : (method === 'vodafone' ? "" : "");
+    colorClass = method === 'orange' ? "var(--orange)" : (method === 'vodafone' ? "var(--red)" : "var(--blue)");
+    walletLabel = "Wallet Number (Recipient)";
+  } else if (method === 'instapay') {
+    title = " ()";
+    icon = "";
+    colorClass = "var(--purple)";
+    walletLabel = "Payment Address IPA / Account";
+  } else if (method === 'binance') {
+    title = "  ( )";
+    icon = "";
+    colorClass = "var(--yellow)";
+    walletLabel = "Our Pay ID / Merchant ID";
+  }
+
+  const walletHtml = `
+    <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; margin:12px 0; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+      <div style="text-align:left;">
+        <span style="font-size:0.75rem; color:var(--text-muted); display:block; text-align:left;">${walletLabel}</span>
+        <strong style="color:${colorClass}; font-size:1.15rem; font-family:var(--font-en); letter-spacing:1px; direction:ltr; unicode-bidi:embed; display:block;" id="copyTargetVal">${walletNumber}</strong>
+      </div>
+      <button onclick="copyToClipboard('${walletNumber}', this)" class="btn-primary" style="padding:6px 12px; font-size:0.8rem; border-radius:var(--radius-sm); border:1px solid var(--border); cursor:pointer; background:rgba(255,255,255,0.05); color:var(--text-primary); transition:var(--transition); display:flex; align-items:center; gap:6px; flex-shrink:0;">
+        <i class="fas fa-copy"></i>
+        <span>Copy</span>
+      </button>
+    </div>
+  `;
+
+  const amountHtml = `
+    <div style="background:rgba(255,255,255,0.03); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px 16px; margin:12px 0; display:flex; justify-content:space-between; align-items:center; gap:10px;">
+      <div style="text-align:left;">
+        <span style="font-size:0.75rem; color:var(--text-muted); display:block; text-align:left;">Amount to Transfer</span>
+        <strong style="color:var(--text-primary); font-size:1.2rem; font-family:var(--font-en); display:block;">${method === 'binance' ? '$' + amountUSD.toFixed(2) : egpAmount.toLocaleString() + ' EGP'}</strong>
+      </div>
+      ${method !== 'binance' ? `<span style="font-size:0.7rem; color:var(--text-muted); background:rgba(255,255,255,0.04); padding:4px 8px; border-radius:10px;">Exchange Rate: 1$ = 50 EGP</span>` : ''}
+    </div>
+  `;
+
+  const stepsHtml = `
+    <div style="display:flex; flex-direction:column; gap:12px; font-size:0.82rem; margin-top:14px; text-align:left;">
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <span style="width:20px; height:20px; background:${colorClass}; color:#000; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.75rem; flex-shrink:0; margin-top:2px;">1</span>
+        <div>Copy the ${walletLabel} and the amount shown above.</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <span style="width:20px; height:20px; background:${colorClass}; color:#000; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.75rem; flex-shrink:0; margin-top:2px;">2</span>
+        <div>Open your wallet app (Orange/Vodafone/Etisalat//Binance) and transfer the full amount.</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:flex-start;">
+        <span style="width:20px; height:20px; background:${colorClass}; color:#000; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.75rem; flex-shrink:0; margin-top:2px;">3</span>
+        <div>Enter the sender phone number and transaction/reference code below, then click Confirm.</div>
+      </div>
+    </div>
+  `;
+
+  container.innerHTML = `
+    <div style="border-radius:var(--radius-md); overflow:hidden;">
+      <div style="display:flex; align-items:center; gap:8px; font-weight:800; font-size:0.95rem; margin-bottom:12px; color:var(--text-primary); text-align:left;">
+        <span>${icon}</span>
+        <span>Payment Instructions via ${title}</span>
+      </div>
+      ${amountHtml}
+      ${walletHtml}
+      <div style="border-top:1px dashed var(--border); margin:12px 0;"></div>
+      ${stepsHtml}
+    </div>
+  `;
+}
+
+function checkClientAuth() {
+  const userStr = localStorage.getItem('vx-user');
+  if (userStr) {
+    currentUser = JSON.parse(userStr);
+    
+    // Hide guest info, show user info panel
+    document.getElementById('clientGuestInfo').style.display = 'none';
+    document.getElementById('clientUserInfo').style.display = 'block';
+    document.getElementById('clientUsername').textContent = currentUser.username;
+    
+    // Update navbar profile avatar dropdown
+    const navProfileContainer = document.getElementById('navProfileContainer');
+    const navLoginBtn = document.getElementById('navLoginBtn');
+    if (navProfileContainer) navProfileContainer.style.display = 'flex';
+    if (navLoginBtn) navLoginBtn.style.display = 'none';
+    
+    // Update dropdown username/email
+    const navDropdownUsername = document.getElementById('navDropdownUsername');
+    const navDropdownEmail = document.getElementById('navDropdownEmail');
+    if (navDropdownUsername) navDropdownUsername.textContent = currentUser.username;
+    if (navDropdownEmail) navDropdownEmail.textContent = currentUser.email || '';
+    
+    // Update navbar avatar image
+    const navAvatarImg = document.getElementById('navAvatarImg');
+    if (navAvatarImg && currentUser.avatar) {
+      navAvatarImg.src = currentUser.avatar;
+    }
+    
+    // Show my-orders tab and logout button
+    document.getElementById('sideMyOrders').style.display = 'block';
+    // sideMyAccount is hidden from sidebar by design - accessible via navbar dropdown only
+    document.getElementById('side ').style.display = 'block';
+    
+    // Handle    visibility and state
+    const sideApplyBtn = document.getElementById('sideApplyBooster');
+    if (sideApplyBtn) {
+      if (currentUser.role === 'client') {
+        sideApplyBtn.style.display = 'block';
+        document.getElementById('boosterApplyFormContainer').style.display = 'block';
+        document.getElementById('boosterPendingContainer').style.display = 'none';
+        const emailInput = document.getElementById('appEmail');
+        if (emailInput) emailInput.value = currentUser.email || '';
+      } else if (currentUser.role === 'pending_booster') {
+        sideApplyBtn.style.display = 'block';
+        document.getElementById('boosterApplyFormContainer').style.display = 'none';
+        document.getElementById('boosterPendingContainer').style.display = 'block';
+      } else {
+        sideApplyBtn.style.display = 'none';
+      }
+    }
+    
+    fetchClientWallet();
+    fetchSiteConfig();
+    initProfileSection();
+  } else {
+    document.getElementById('clientGuestInfo').style.display = 'block';
+    document.getElementById('clientUserInfo').style.display = 'none';
+    document.getElementById('sideMyOrders').style.display = 'none';
+    const sideApplyBtn = document.getElementById('sideApplyBooster');
+    if (sideApplyBtn) sideApplyBtn.style.display = 'none';
+    document.getElementById('side ').style.display = 'none';
+    
+    // Show login button in navbar, hide profile
+    const navProfileContainer = document.getElementById('navProfileContainer');
+    const navLoginBtn = document.getElementById('navLoginBtn');
+    if (navProfileContainer) navProfileContainer.style.display = 'none';
+    if (navLoginBtn) navLoginBtn.style.display = 'flex';
+  }
+}
+
+async function fetchClientWallet() {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(`/api/auth/user/${currentUser.id}`);
+    const data = await res.json();
+    if (res.ok) {
+      currentUser.balance = data.balance;
+      currentUser.cashback = data.cashback;
+      localStorage.setItem('vx-user', JSON.stringify(currentUser));
+      
+      document.getElementById('clientBalanceVal').textContent = `$${data.balance.toFixed(2)}`;
+      document.getElementById('clientCashbackVal').textContent = `$${data.cashback.toFixed(2)}`;
+      
+      const bBig = document.getElementById('walletBalanceBig');
+      const cBig = document.getElementById('walletCashbackBig');
+      if (bBig) bBig.textContent = `$${data.balance.toFixed(2)}`;
+      if (cBig) cBig.textContent = `$${data.cashback.toFixed(2)}`;
+    }
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function logout() {
+  localStorage.removeItem('vx-user');
+  location.href = 'index.html';
+}
+
+// Deposit functionality
+function toggleTxHashInput() {
+  const method = document.getElementById('depositMethod').value;
+  const txHashWrapper = document.getElementById('txHashWrapper');
+  const senderInfoWrapper = document.getElementById('senderInfoWrapper');
+  const depositInstructions = document.getElementById('depositInstructions');
+  const txHashLabel = document.getElementById('txHashLabel');
+  const depositTxHash = document.getElementById('depositTxHash');
+  const senderInfoLabel = document.getElementById('senderInfoLabel');
+  const depositSenderInfo = document.getElementById('depositSenderInfo');
+
+  if (method === 'paypal') {
+    txHashWrapper.style.display = 'none';
+    senderInfoWrapper.style.display = 'none';
+    depositInstructions.style.display = 'none';
+  } else {
+    txHashWrapper.style.display = 'block';
+    senderInfoWrapper.style.display = method !== 'binance' ? 'block' : 'none';
+    depositInstructions.style.display = 'block';
+
+    if (method === 'orange' || method === 'vodafone' || method === 'etisalat') {
+      txHashLabel.textContent = 'Transaction ID / Reference Code';
+      depositTxHash.placeholder = 'Enter the transfer code received in the SMS';
+      senderInfoLabel.textContent = 'Sender Phone Number (Vodafone / Orange / Etisalat)';
+      depositSenderInfo.placeholder = 'Enter 11-digit phone number (: 01206510088)';
+    } else if (method === 'instapay') {
+      txHashLabel.textContent = 'Transaction ID / Reference Code';
+      depositTxHash.placeholder = 'Enter the transaction reference ID (Ref ID)';
+      senderInfoLabel.textContent = 'Sender Name  IPA Address';
+      depositSenderInfo.placeholder = 'e.g. username@instapay  Full Name';
+    } else if (method === 'binance') {
+      txHashLabel.textContent = 'Transaction ID (Tx Hash / ID)';
+      depositTxHash.placeholder = 'Enter the Binance Transaction ID (Tx Hash)';
+    }
+
+    const amount = parseFloat(document.getElementById('depositAmount').value) || 0;
+    renderPremiumInstructions(method, amount, depositInstructions);
+  }
+}
+
+async function executeDeposit() {
+  if (!currentUser) {
+    showToast('     ', '⚠️');
+    location.href = 'auth.html';
+    return;
+  }
+  const amount = parseFloat(document.getElementById('depositAmount').value);
+  const method = document.getElementById('depositMethod').value;
+  const txHash = document.getElementById('depositTxHash').value.trim();
+  
+  const isLocalPhone = (method === 'orange' || method === 'vodafone' || method === 'etisalat');
+  const senderInfo = (isLocalPhone || method === 'instapay') ? document.getElementById('depositSenderInfo').value.trim() : '';
+
+  if (!amount || amount <= 0) {
+    showToast('    ', '⚠️');
+    return;
+  }
+  if (method !== 'paypal' && !txHash) {
+    showToast('    ', '⚠️');
+    return;
+  }
+  if ((isLocalPhone || method === 'instapay') && !senderInfo) {
+    showToast(isLocalPhone ? '     ' : '      IPA', '⚠️');
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/wallet/deposit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        method,
+        amount,
+        txHash,
+        senderInfo
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, '');
+      fetchClientWallet();
+      document.getElementById('depositTxHash').value = '';
+      if (document.getElementById('depositSenderInfo')) {
+        document.getElementById('depositSenderInfo').value = '';
+      }
+      if (method === 'paypal') {
+        switchTab('my-orders');
+      }
+    } else {
+      showToast(data.error, '❌');
+    }
+  } catch(e) {
+    showToast('Server connection error', '❌');
+  }
+}
+
+// Checkout wrappers
+function checkoutTrophy() {
+  if (!currentUser) {
+    showToast('      ', '⚠️');
+    location.href = 'auth.html';
+    return;
+  }
+  const from = parseInt(document.getElementById('trophyFrom').value);
+  const to = parseInt(document.getElementById('trophyTo').value);
+  
+  // Base price calculation with 2% markup
+  let basePrice = calcTrophyPrice(from, to) * 1.02; 
+  const extra = basePrice * (speedExtra[selectedSpeed] || 0);
+  const total = basePrice + extra;
+
+  if (total <= 0) {
+    showToast('    ', '⚠️');
+    return;
+  }
+
+  openTrophyChatbot(from, to, selectedSpeed, basePrice, extra);
+}
+
+function checkoutRanked() {
+  if (!currentUser) {
+    showToast('      ', '⚠️');
+    location.href = 'auth.html';
+    return;
+  }
+  
+  const startIdx = parseInt(document.getElementById('currentRankSelect').value);
+  const targetIdx = parseInt(document.getElementById('targetRankSelect').value);
+  
+  if (targetIdx <= startIdx) {
+    showToast('       ', '⚠️');
+    return;
+  }
+
+  let base = 0;
+  for (let i = startIdx; i < targetIdx; i++) {
+    base += RANKS_LIST[i].price;
+  }
+  
+  // 2% Markup
+  base = base * 1.02;
+  const extra = base * (speedExtra[selectedSpeed] || 0);
+  const total = base + extra;
+
+  const startRank = RANKS_LIST[startIdx].name;
+  const targetRank = RANKS_LIST[targetIdx].name;
+
+  const details = {
+    fromRank: startRank,
+    toRank: targetRank,
+    speed: selectedSpeed
+  };
+
+  openCheckout('ranked', total, details);
+}
+
+window.selectedPrestigeModalTimeOption = '5h';
+window.selectPrestigeModalTime = function(opt) {
+  window.selectedPrestigeModalTimeOption = opt;
+  window.updatePrestigeModalPrice();
+};
+
+window.openPrestigeDetailsModal = function() {
+  if (!currentUser) {
+    showToast('   ', '⚠️');
+    setTimeout(() => location.href = 'auth.html', 1000);
+    return;
+  }
+  if (!window.selectedBrawler) {
+    showToast('    ', '⚠️');
+    return;
+  }
+  if (!window.selectedPrestigeTier) {
+    showToast('    ', '⚠️');
+    return;
+  }
+
+  // Set header info
+  document.getElementById('prestigeModalBrawlerName').textContent = window.selectedBrawler.name;
+  
+  let tierLabel = ' 1';
+  let minCups = 0;
+  let maxCups = 1000;
+  
+  if (window.selectedPrestigeTier === '1') {
+    tierLabel = ' 1 (0 ← 1000)';
+    minCups = 0;
+    maxCups = 1000;
+    window.selectedPrestigeModalTimeOption = '5h';
+  } else if (window.selectedPrestigeTier === '2') {
+    tierLabel = ' 2 (1000 ← 2000)';
+    minCups = 1000;
+    maxCups = 2000;
+    window.selectedPrestigeModalTimeOption = '24h';
+  } else if (window.selectedPrestigeTier === '3') {
+    tierLabel = ' 3 (2000 ← 3000)';
+    minCups = 2000;
+    maxCups = 3000;
+    window.selectedPrestigeModalTimeOption = '1w';
+  } else if (window.selectedPrestigeTier === 'custom') {
+    tierLabel = '  (0 ← 3000)';
+    minCups = 0;
+    maxCups = 3000;
+    window.selectedPrestigeModalTimeOption = '1w';
+  }
+  
+  document.getElementById('prestigeModalTierName').textContent = tierLabel;
+
+  // Populate "From" select dropdown (steps of 100 cups)
+  const fromSelect = document.getElementById('prestigeModalTrophyFrom');
+  let fromHtml = '';
+  for (let c = minCups; c < maxCups; c += 100) {
+    fromHtml += `<option value="${c}">${c.toLocaleString()} </option>`;
+  }
+  fromSelect.innerHTML = fromHtml;
+  fromSelect.value = minCups;
+
+  // Trigger from change to populate to options
+  window.onPrestigeModalFromChange();
+
+  // Reset textarea
+  document.getElementById('prestigeModalAdditionalInfo').value = '';
+
+  // Open the modal
+  document.getElementById('prestigeDetailsModal').style.display = 'flex';
+};
+
+window.closePrestigeDetailsModal = function() {
+  document.getElementById('prestigeDetailsModal').style.display = 'none';
+};
+
+window.onPrestigeModalFromChange = function() {
+  const fromVal = parseInt(document.getElementById('prestigeModalTrophyFrom').value);
+  const toSelect = document.getElementById('prestigeModalTrophyTo');
+  
+  let maxCups = 1000;
+  if (window.selectedPrestigeTier === '2') maxCups = 2000;
+  else if (window.selectedPrestigeTier === '3') maxCups = 3000;
+  else if (window.selectedPrestigeTier === 'custom') maxCups = 3000;
+
+  let toHtml = '';
+  for (let c = fromVal + 100; c <= maxCups; c += 100) {
+    toHtml += `<option value="${c}">${c.toLocaleString()} </option>`;
+  }
+  toSelect.innerHTML = toHtml;
+  
+  // Set default "To" to max value
+  toSelect.value = maxCups;
+
+  window.updatePrestigeModalPrice();
+};
+
+window.updatePrestigeModalPrice = function() {
+  const from = parseInt(document.getElementById('prestigeModalTrophyFrom').value || 0);
+  const to = parseInt(document.getElementById('prestigeModalTrophyTo').value || 0);
+  
+  if (to <= from) {
+    document.getElementById('prestigeModalTotalPrice').textContent = '$0.00';
+    document.getElementById('prestigeModalCupsToGain').textContent = '0 ';
+    return;
+  }
+
+  // Update cups to gain
+  document.getElementById('prestigeModalCupsToGain').textContent = `${(to - from).toLocaleString()} `;
+
+  // Dynamic Time section population inside modal
+  const timeSection = document.getElementById('prestigeModalTimeSection');
+  if (timeSection) {
+    let html = '';
+    const opt = window.selectedPrestigeModalTimeOption;
+    if (to <= 1000) {
+      html = `
+        <div class="speed-options" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+          <button type="button" class="speed-btn ${opt === '2h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('2h')">
+            <span>InstaPay</span> <span class="speed-extra">+$0.50</span>
+          </button>
+          <button type="button" class="speed-btn ${opt === '4h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('4h')">
+            <span>4 </span> <span class="speed-extra">+$0.75</span>
+          </button>
+          <button type="button" class="speed-btn ${opt === '5h' || opt === '24h' || opt === '1w' ? 'selected' : ''}" onclick="selectPrestigeModalTime('5h')">
+            <span>5h (Default)</span> <span class="speed-extra"></span>
+          </button>
+          <button type="button" class="speed-btn ${opt === '12h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('12h')">
+            <span>1</span> <span class="speed-extra"></span>
+          </button>
+          <button type="button" class="speed-btn ${opt === '24h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('24h')">
+            <span>24 </span> <span class="speed-extra"></span>
+          </button>
+        </div>
+      `;
+    } else if (to <= 2000) {
+      const activeOpt = (opt === '5h' || opt === '1w') ? '24h' : opt;
+      html = `
+        <div class="speed-options" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px;">
+          <button type="button" class="speed-btn ${activeOpt === '2h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('2h')">
+            <span>InstaPay</span> <span class="speed-extra">+$2.50</span>
+          </button>
+          <button type="button" class="speed-btn ${activeOpt === '4h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('4h')">
+            <span>4 </span> <span class="speed-extra">+$0.75</span>
+          </button>
+          <button type="button" class="speed-btn ${activeOpt === '6h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('6h')">
+            <span>6 </span> <span class="speed-extra">+$0.50</span>
+          </button>
+          <button type="button" class="speed-btn ${activeOpt === '12h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('12h')">
+            <span>1</span> <span class="speed-extra">+$0.50</span>
+          </button>
+          <button type="button" class="speed-btn ${activeOpt === '24h' ? 'selected' : ''}" onclick="selectPrestigeModalTime('24h')">
+            <span>24h (Default)</span> <span class="speed-extra"></span>
+          </button>
+        </div>
+      `;
+    } else {
+      const activeOpt = (opt === '5h' || opt === '24h' || opt === '2h' || opt === '4h' || opt === '6h' || opt === '12h') ? '1w' : opt;
+      html = `
+        <div class="speed-options" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px;">
+          <button type="button" class="speed-btn ${activeOpt === '1w' ? 'selected' : ''}" onclick="selectPrestigeModalTime('1w')">
+            <span>Normal (Default)</span> <span class="speed-extra"></span>
+          </button>
+          <button type="button" class="speed-btn ${activeOpt === 'booster_agree' ? 'selected' : ''}" onclick="selectPrestigeModalTime('booster_agree')">
+            <span>High Speed</span> <span class="speed-extra"></span>
+          </button>
+        </div>
+      `;
+    }
+    timeSection.innerHTML = html;
+  }
+
+  // Calculate pricing
+  const prestigeBase = window.AdsaServices.calcPrestigeTrophyPrice(from, to);
+  let timeExtra = 0;
+  let timeLabel = '';
+  const opt = window.selectedPrestigeModalTimeOption || '5h';
+  
+  if (to <= 1000) {
+    const opts = {
+      '2h': { label: '', extra: 0.50 },
+      '4h': { label: '4 ', extra: 0.75 },
+      '5h': { label: '5 Hours (Default)', extra: 0.00 },
+      '12h': { label: '1', extra: 0.00 },
+      '24h': { label: '24 ', extra: 0.00 }
+    };
+    const info = opts[opt] || opts['5h'];
+    timeExtra = info.extra;
+    timeLabel = info.label;
+  } else if (to <= 2000) {
+    const opts = {
+      '2h': { label: '', extra: 2.50 },
+      '4h': { label: '4 ', extra: 0.75 },
+      '6h': { label: '6 ', extra: 0.50 },
+      '12h': { label: '1', extra: 0.50 },
+      '24h': { label: '24  (  - Default)', extra: 0.00 }
+    };
+    const activeOpt = (opt === '5h' || !opts[opt]) ? '24h' : opt;
+    const info = opts[activeOpt];
+    timeExtra = info.extra;
+    timeLabel = info.label;
+  } else {
+    const opts = {
+      '1w': { label: '  (Default)', extra: 0.00 },
+      'booster_agree': { label: '  ', extra: 0.00 }
+    };
+    const activeOpt = (opt === '5h' || opt === '24h' || !opts[opt]) ? '1w' : opt;
+    const info = opts[activeOpt];
+    timeExtra = info.extra;
+    timeLabel = info.label;
+  }
+
+  const basePrice = (prestigeBase + timeExtra) * 1.02; // 2% Markup
+  document.getElementById('prestigeModalTotalPrice').textContent = `$${basePrice.toFixed(2)}`;
+  document.getElementById('prestigeModalSelectedSpeedLabel').textContent = timeLabel;
+};
+
+window.confirmPrestigeModalOrder = async function() {
+  const from = parseInt(document.getElementById('prestigeModalTrophyFrom').value || 0);
+  const to = parseInt(document.getElementById('prestigeModalTrophyTo').value || 0);
+  const additionalInfo = document.getElementById('prestigeModalAdditionalInfo').value.trim();
+
+  // Price recalculation
+  const prestigeBase = window.AdsaServices.calcPrestigeTrophyPrice(from, to);
+  let timeExtra = 0;
+  let timeLabel = '';
+  const opt = window.selectedPrestigeModalTimeOption || '5h';
+  
+  if (to <= 1000) {
+    const opts = {
+      '2h': { label: '', extra: 0.50 },
+      '4h': { label: '4 ', extra: 0.75 },
+      '5h': { label: '5 Hours (Default)', extra: 0.00 },
+      '12h': { label: '1', extra: 0.00 },
+      '24h': { label: '24 ', extra: 0.00 }
+    };
+    const info = opts[opt] || opts['5h'];
+    timeExtra = info.extra;
+    timeLabel = info.label;
+  } else if (to <= 2000) {
+    const opts = {
+      '2h': { label: '', extra: 2.50 },
+      '4h': { label: '4 ', extra: 0.75 },
+      '6h': { label: '6 ', extra: 0.50 },
+      '12h': { label: '1', extra: 0.50 },
+      '24h': { label: '24  (  - Default)', extra: 0.00 }
+    };
+    const activeOpt = (opt === '5h' || !opts[opt]) ? '24h' : opt;
+    const info = opts[activeOpt];
+    timeExtra = info.extra;
+    timeLabel = info.label;
+  } else {
+    const opts = {
+      '1w': { label: '  (Default)', extra: 0.00 },
+      'booster_agree': { label: '  ', extra: 0.00 }
+    };
+    const activeOpt = (opt === '5h' || opt === '24h' || !opts[opt]) ? '1w' : opt;
+    const info = opts[activeOpt];
+    timeExtra = info.extra;
+    timeLabel = info.label;
+  }
+
+  const total = (prestigeBase + timeExtra) * 1.02;
+
+  if (total <= 0) {
+    showToast('     ', '⚠️');
+    return;
+  }
+
+  const details = {
+    brawler: window.selectedBrawler.name,
+    rangeFrom: from,
+    rangeTo: to,
+    timeDuration: timeLabel,
+    additionalInfo: additionalInfo,
+    speed: opt
+  };
+
+  const btn = document.getElementById('prestigeModalSubmitBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Request...';
+  }
+
+  try {
+    const res = await fetch('/api/orders/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        clientId: currentUser.id,
+        serviceType: 'prestige',
+        price: total,
+        tip: 0,
+        details,
+        payMethod: 'pending' // Unpaid pending support coordination order
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, '');
+      
+      // Close details modal
+      window.closePrestigeDetailsModal();
+      
+      // Load fresh orders
+      await loadClientOrders();
+      
+      // Open support chat automatically for this new order!
+      openClientChat('support-' + data.order.id, 'Support');
+      
+      // Redirect client to my-orders section
+      switchTab('my-orders');
+      
+      // Clear inputs
+      document.getElementById('prestigeModalAdditionalInfo').value = '';
+    } else {
+      showToast(data.error, '❌');
+    }
+  } catch(e) {
+    showToast('Server connection error', '❌');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Request & Coordinate with Support';
+    }
+  }
+};
+
+function payPendingOrder(orderId) {
+  const order = window.clientOrdersList ? window.clientOrdersList.find(o => o.id === orderId) : null;
+  if (!order) return;
+  openCheckout('prestige', order.price, order.details);
+  // Add orderId to checkout data so confirmOrderPurchase knows to call /pay instead of /create
+  currentCheckoutData.orderId = orderId;
+}
+
+// Open Checkout Modal
+function openCheckout(serviceType, price, details) {
+  currentCheckoutData = { serviceType, price, details };
+  selectedTipAmt = 0;
+  
+  // Reset payment selection and inputs
+  const selectEl = document.getElementById('checkoutPaymentMethod');
+  if (selectEl) selectEl.value = 'pending';
+  const txInput = document.getElementById('checkoutTxHash');
+  if (txInput) txInput.value = '';
+  const infoInput = document.getElementById('checkoutSenderInfo');
+  if (infoInput) infoInput.value = '';
+
+  // Select Tip 0 by default
+  selectTip(0);
+
+  document.getElementById('checkoutServiceType').textContent = getServiceLabelAr(serviceType);
+  document.getElementById('checkoutDetails').innerHTML = formatOrderDetailsAr(details);
+  document.getElementById('checkoutBasePrice').textContent = `$${price.toFixed(2)}`;
+  
+  updateCheckoutTotal();
+  
+  document.getElementById('checkoutModal').style.display = 'flex';
+}
+
+function selectTip(amt) {
+  selectedTipAmt = amt;
+  document.querySelectorAll('[id^="tip-"]').forEach(b => b.classList.remove('selected'));
+  const btn = document.getElementById(`tip-${amt}`);
+  if (btn) btn.classList.add('selected');
+  updateCheckoutTotal();
+}
+
+function toggleCheckoutInstructions() {
+  const method = document.getElementById('checkoutPaymentMethod').value;
+  const txWrapper = document.getElementById('checkoutTxHashWrapper');
+  const infoWrapper = document.getElementById('checkoutSenderInfoWrapper');
+  const instContainer = document.getElementById('checkoutInstructions');
+  const txLabel = document.getElementById('checkoutTxHashLabel');
+  const txInput = document.getElementById('checkoutTxHash');
+  const infoLabel = document.getElementById('checkoutSenderInfoLabel');
+  const infoInput = document.getElementById('checkoutSenderInfo');
+
+  if (!currentCheckoutData) return;
+  const totalUSD = currentCheckoutData.price + selectedTipAmt;
+
+  if (method === 'wallet' || method === 'paypal') {
+    txWrapper.style.display = 'none';
+    infoWrapper.style.display = 'none';
+    instContainer.style.display = 'none';
+  } else {
+    txWrapper.style.display = 'block';
+    infoWrapper.style.display = method !== 'binance' ? 'block' : 'none';
+    instContainer.style.display = 'block';
+
+    if (method === 'orange' || method === 'vodafone' || method === 'etisalat') {
+      txLabel.textContent = 'Transfer Code / Transaction Reference Received';
+      txInput.placeholder = 'Enter the transfer code received in the SMS';
+      infoLabel.textContent = 'Sender Phone Number (Your Cash Wallet)';
+      infoInput.placeholder = 'Enter 11-digit phone number (: 01206510088)';
+    } else if (method === 'instapay') {
+      txLabel.textContent = 'Transaction ID / Reference Code';
+      txInput.placeholder = 'Enter the transaction reference ID (Ref ID)';
+      infoLabel.textContent = 'Sender Name  IPA Address';
+      infoInput.placeholder = 'e.g. username@instapay  Full Name';
+    } else if (method === 'binance') {
+      txLabel.textContent = 'Transaction ID (Tx Hash / Reference)';
+      txInput.placeholder = 'Enter the Binance Transaction ID (Tx Hash)';
+    }
+
+    renderPremiumInstructions(method, totalUSD, instContainer);
+  }
+}
+
+function updateCheckoutTotal() {
+  if (!currentCheckoutData) return;
+  const total = currentCheckoutData.price + selectedTipAmt;
+  document.getElementById('checkoutTotalPrice').textContent = `$${total.toFixed(2)}`;
+  toggleCheckoutInstructions();
+}
+
+function closeCheckoutModal() {
+  document.getElementById('checkoutModal').style.display = 'none';
+  currentCheckoutData = null;
+}
+
+// Confirm Purchase
+async function confirmOrderPurchase() {
+  if (!currentCheckoutData) return;
+  const payMethod = document.getElementById('checkoutPaymentMethod').value;
+  const total = currentCheckoutData.price + selectedTipAmt;
+
+  if (payMethod === 'wallet' && currentUser.balance < total) {
+    showToast('   .      .', '⚠️');
+    return;
+  }
+
+  // Validate manual payments
+  let txHash = '';
+  let senderInfo = '';
+  if (payMethod !== 'wallet' && payMethod !== 'paypal' && payMethod !== 'pending') {
+    txHash = document.getElementById('checkoutTxHash').value.trim();
+    senderInfo = document.getElementById('checkoutSenderInfo').value.trim();
+    if (!txHash) {
+      showToast('    ', '⚠️');
+      return;
+    }
+    if (payMethod !== 'binance' && !senderInfo) {
+      const isLocalPhone = (payMethod === 'orange' || payMethod === 'vodafone' || payMethod === 'etisalat');
+      showToast(isLocalPhone ? '     ' : '      IPA', '⚠️');
+      return;
+    }
+  }
+
+  const btn = document.querySelector('#checkoutModal .btn-primary');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Placing Order...';
+  }
+
+  try {
+    const isExisting = !!currentCheckoutData.orderId;
+    const url = isExisting ? '/api/orders/pay' : '/api/orders/create';
+    const bodyObj = isExisting ? {
+      orderId: currentCheckoutData.orderId,
+      payMethod,
+      txHash,
+      senderInfo
+    } : {
+      clientId: currentUser.id,
+      serviceType: currentCheckoutData.serviceType,
+      price: currentCheckoutData.price,
+      tip: selectedTipAmt,
+      details: {
+        ...currentCheckoutData.details,
+        payMethod,
+        txHash,
+        senderInfo
+      },
+      payMethod
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(bodyObj)
+    });
+    
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, '');
+      fetchClientWallet();
+      closeCheckoutModal();
+      switchTab('my-orders');
+      loadClientOrders(); // Reload orders list to show updated status
+    } else {
+      showToast(data.error, '❌');
+    }
+  } catch(e) {
+    showToast('Server connection error', '❌');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-shopping-bag"></i>    ';
+    }
+  }
+}
+
+// Client Orders list
+async function loadClientOrders() {
+  const container = document.getElementById('clientOrdersList');
+  try {
+    const res = await fetch('/api/admin/stats'); // reuse admin stats since it returns orders list
+    const stats = await res.json();
+    if (!res.ok) return;
+
+    const myOrders = stats.orders.filter(o => o.clientId === currentUser.id);
+    if (myOrders.length === 0) {
+      container.innerHTML = `<div style="color:var(--text-muted);padding:16px;text-align:center">You have no orders yet.</div>`;
+      return;
+    }
+
+    container.innerHTML = myOrders.map(o => {
+      const hasDeadline = !!o.deadline;
+      let timerHtml = '';
+      
+      if (hasDeadline && o.status === 'active') {
+        timerHtml = `<div style="margin-top:10px; font-weight:700; color:var(--orange)">⏰ Time Left: <span id="clientTimer-${o.id}" class="client-deadline-countdown" data-time="${o.deadline}">--:--:--</span></div>`;
+      }
+
+      return `
+        <div class="auction-card" style="border-color:${o.status==='completed'?'var(--green)':'var(--border)'}">
+          <div class="auction-header">
+            <span class="auction-title">${getServiceLabelAr(o.serviceType)}</span>
+            <span class="card-badge" style="background:${getOrderStatusColor(o.status)}; color:#000; font-family:var(--font-en)">${o.status.toUpperCase()}</span>
+          </div>
+          <div class="auction-meta">
+            <div>Price: <span style="color:var(--green); font-weight:700">$${o.price.toFixed(2)}</span></div>
+            ${o.tip > 0 ? `<div>Tip: <span style="color:var(--yellow); font-weight:700">$${o.tip.toFixed(2)}</span></div>` : ''}
+            <div>Cashback: <span style="color:var(--yellow); font-weight:700">$${(o.cashbackEarned || 0).toFixed(2)}</span></div>
+            <div>Booster: <span>${o.boosterUsername || 'Searching...'}</span></div>
+          </div>
+          <div style="font-size:0.85rem; color:var(--text-secondary); background:rgba(255,255,255,0.01); border:1px solid var(--border); padding:10px 14px; border-radius:var(--radius-sm)">
+            <strong>Details:</strong> ${formatOrderDetailsAr(o.details)}
+          </div>
+
+          ${timerHtml}
+
+          <div style="display:flex; gap:12px; margin-top:10px; flex-wrap:wrap">
+            ${o.status === 'pending_payment' ? `
+              <button class="btn-primary" onclick="payPendingOrder('${o.id}')" style="padding:8px 16px; font-size:0.8rem; background:linear-gradient(135deg,var(--purple),#6D28D9); border:none; color:#fff; cursor:pointer; font-weight:800; border-radius:var(--radius-sm)">
+                <i class="fas fa-credit-card"></i> Pay Now ($${o.price.toFixed(2)})
+              </button>
+              <button class="btn-secondary" onclick="openClientChat('support-${o.id}', 'Support')" style="padding:8px 16px; font-size:0.8rem">
+                <i class="fas fa-comments"></i> Live Support Chat
+              </button>
+            ` : ''}
+
+            ${o.boosterUsername && o.status !== 'pending_payment' ? `
+              <button class="btn-secondary" onclick="openClientChat('${o.id}', '${o.boosterUsername}')" style="padding:8px 16px; font-size:0.8rem">
+                <i class="fas fa-comments"></i> Chat with Booster (${o.boosterUsername})
+              </button>
+            ` : ''}
+
+            ${!o.boosterUsername && o.status !== 'pending_payment' ? `
+              <button class="btn-secondary" onclick="openClientChat('support-${o.id}', 'Support')" style="padding:8px 16px; font-size:0.8rem">
+                <i class="fas fa-comments"></i> Chat with Support
+              </button>
+            ` : ''}
+
+            ${o.status === 'active' && hasDeadline && new Date() > new Date(o.deadline) ? `
+              <button class="btn-yellow" onclick="refundExpiredOrder('${o.id}')" style="padding:8px 16px; font-size:0.8rem; background:linear-gradient(135deg,var(--red),#be123c)">
+                <i class="fas fa-undo"></i> Request Refund (Expired)
+              </button>
+            ` : ''}
+
+            ${o.status === 'completed' && o.rating === null ? `
+              <button class="btn-primary" onclick="openRatingModal('${o.id}')" style="padding:8px 16px; font-size:0.8rem">
+                <i class="fas fa-star"></i> Rate booster
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    window.clientOrdersList = myOrders;
+    startClientTimers();
+
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+function getServiceLabelAr(type) {
+  if (type === 'trophy') return '<img src="trophy.png" alt="" class="trophy-icon"> Trophy Boost';
+  if (type === 'ranked') return ' Ranked Boost';
+  if (type === 'prestige') return ' Prestige Boost';
+  if (type === 'events') return '⚡ Events Boost';
+  return type;
+}
+
+function formatOrderDetailsAr(details) {
+  if (!details) return 'No details';
+  if (typeof details === 'string') return details;
+  let parts = [];
+  
+  if (details.fromCups !== undefined) {
+    parts.push(`From: ${details.fromCups.toLocaleString()}  | To: ${details.toCups.toLocaleString()} `);
+    if (details.brawlerCount) parts.push(`Brawlers: ${details.brawlerCount}`);
+    if (details.preferredBrawlers && details.preferredBrawlers.length > 0) {
+      parts.push(`Preferred Brawlers: ${details.preferredBrawlers.join(', ')}`);
+    }
+  } else {
+    if (details.brawler) parts.push(`: ${details.brawler}`);
+    if (details.fromRank) parts.push(`From Rank: ${details.fromRank} | To Rank: ${details.toRank}`);
+    if (details.tier) parts.push(`Tier: ${details.tier}`);
+  }
+
+  // Prestige specific fields
+  if (details.rangeFrom !== undefined) parts.push(`: From ${details.rangeFrom} To ${details.rangeTo}`);
+  if (details.powerLevel) parts.push(`Power Level: ${details.powerLevel}`);
+  if (details.gadget !== undefined) parts.push(`Gadget: ${details.gadget ? 'Yes' : 'No'}`);
+  if (details.starPower !== undefined) parts.push(`Star Power: ${details.starPower ? 'Yes' : 'No'}`);
+  if (details.discordStream) parts.push(`Live Stream: Yes`);
+
+  if (details.speed && details.speed !== 'normal') parts.push(`Speed: ${details.speed === 'super' ? 'Super' : 'Hyper Super'}`);
+  return parts.join(' | ');
+}
+
+function getOrderStatusColor(status) {
+  if (status === 'completed') return 'var(--green)';
+  if (status === 'active') return 'var(--blue)';
+  if (status === 'auction') return 'var(--yellow)';
+  if (status === 'pending_deposit') return 'var(--orange)';
+  if (status === 'refunded') return 'var(--red)';
+  return 'var(--border)';
+}
+
+// Expired Refund
+async function refundExpiredOrder(orderId) {
+  if (!confirm('Are you sure you want to cancel and refund this order?')) return;
+  try {
+    const res = await fetch('/api/orders/refund', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, clientId: currentUser.id })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, '✅');
+      fetchClientWallet();
+      loadClientOrders();
+    } else {
+      showToast(data.error, '❌');
+    }
+  } catch(e) {
+    showToast('خطأ في الشبكة، يرجى المحاولة لاحقاً', '❌');
+  }
+}
+
+// Rating modal
+function openRatingModal(orderId) {
+  ratingTargetOrderId = orderId;
+  document.getElementById('ratingModal').style.display = 'flex';
+}
+
+function closeRatingModal() {
+  document.getElementById('ratingModal').style.display = 'none';
+  ratingTargetOrderId = null;
+}
+
+async function submitRating() {
+  if (!ratingTargetOrderId) return;
+  const rating = document.getElementById('rateStars').value;
+  const review = document.getElementById('rateReview').value.trim();
+
+  try {
+    const res = await fetch('/api/orders/rate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: ratingTargetOrderId,
+        clientId: currentUser.id,
+        rating,
+        review
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, '✅');
+      closeRatingModal();
+      loadClientOrders();
+    } else {
+      showToast(data.error, '❌');
+    }
+  } catch(e) {
+    showToast('خطأ في الشبكة، يرجى المحاولة لاحقاً', '❌');
+  }
+}
+
+// Client chat
+function openClientChat(orderId, boosterName) {
+  activeChatOrderId = orderId;
+  document.getElementById('clientActiveChatColumn').style.display = 'block';
+  document.getElementById('clientChatWithTitle').textContent = `  : ${boosterName}`;
+  document.getElementById('clientChatOrderTag').textContent = `ORDER ID: ${orderId}`;
+  
+  fetchClientChatMessages();
+
+  clearInterval(clientChatPollInterval);
+  clientChatPollInterval = setInterval(fetchClientChatMessages, 3000);
+}
+
+async function fetchClientChatMessages() {
+  if (!activeChatOrderId) return;
+  try {
+    const res = await fetch(`/api/chat/${activeChatOrderId}`);
+    const messages = await res.json();
+    if (!res.ok) return;
+
+    const container = document.getElementById('clientChatMessages');
+    const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 20;
+
+    container.innerHTML = messages.map(m => {
+      let senderType = 'received';
+      if (m.sender === 'SYSTEM') senderType = 'system';
+      else if (m.sender === currentUser.username) senderType = 'sent';
+
+      return `
+        <div class="chat-msg ${senderType}">
+          ${m.sender !== 'SYSTEM' && m.sender !== currentUser.username ? `<strong style="font-size:0.7rem; display:block; margin-bottom:2px; color:var(--purple)">${m.sender}</strong>` : ''}
+          ${m.message}
+          <div style="font-size:0.6rem; color:var(--text-muted); text-align:left; margin-top:4px">${new Date(m.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+        </div>
+      `;
+    }).join('');
+
+    if (shouldScroll) {
+      container.scrollTop = container.scrollHeight;
+    }
+  } catch (e) {
+    console.error('Error fetching chat', e);
+  }
+}
+
+async function sendClientChatMessage() {
+  const input = document.getElementById('clientChatInput');
+  const msg = input.value.trim();
+  if (!msg || !activeChatOrderId) return;
+
+  input.value = '';
+  try {
+    const res = await fetch('/api/chat/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        orderId: activeChatOrderId,
+        sender: currentUser.username,
+        message: msg
+      })
+    });
+    if (res.ok) {
+      fetchClientChatMessages();
+    }
+  } catch (e) {
+    console.error('Error sending message', e);
+  }
+}
+
+function startClientTimers() {
+  const activeTimers = document.querySelectorAll('.client-deadline-countdown');
+  activeTimers.forEach(el => {
+    const targetTime = new Date(el.dataset.time).getTime();
+    
+    const interval = setInterval(() => {
+      const diff = targetTime - Date.now();
+      if (diff <= 0) {
+        el.textContent = '  !';
+        el.style.color = 'var(--red)';
+        clearInterval(interval);
+        loadClientOrders(); // refresh view to show refund button
+        return;
+      }
+
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      
+      let display = '';
+      if (d > 0) display += `${d}   `;
+      display += `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+      el.textContent = display;
+    }, 1000);
+  });
+}
+
+// Load default hash on URL
+const hash = window.location.hash.replace('#', '');
+if (hash && serviceTabs[hash]) {
+  switchTab(hash);
+} else {
+  switchTab('trophy');
+}
+
+// Initial checks
+checkClientAuth();
+AdsaServices.initSpeed();
+
+// Check query parameters for Flash Sale redirection
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.get('flash') === 'prestige2') {
+  switchTab('prestige');
+  setTimeout(() => {
+    if (currentUser) {
+      openCheckout('prestige', 15.00, {
+        brawler: '  ',
+        tier: '2 ×  2 (  24 )',
+        speed: 'normal'
+      });
+    } else {
+      showToast('       ', '⚠️');
+      setTimeout(() => location.href = 'auth.html', 1500);
+    }
+  }, 800);
+}
+// ===== WALLET LINKING SYSTEM =====
+let selectedWalletType = 'orange';
+
+const walletMeta = {
+  orange:   { icon: '', label: ' ', hint: '     (11    01).', ph: ': 01206510088', inputIcon: 'fa-phone' },
+  vodafone: { icon: '', label: ' ', hint: '     (11    01).', ph: ': 01012345678', inputIcon: 'fa-phone' },
+  instapay: { icon: '', label: '', hint: '  IPA   (username@instapay).', ph: ': username@instapay', inputIcon: 'fa-at' },
+  binance:  { icon: '', label: ' ', hint: '  Pay ID  .', ph: ': 123456789', inputIcon: 'fa-coins' },
+  etisalat: { icon: '', label: ' ', hint: '     (11    01).', ph: ': 01100000000', inputIcon: 'fa-phone' }
+};
+
+function selectWalletType(type) {
+  selectedWalletType = type;
+  // Update button styles
+  document.querySelectorAll('.wallet-type-btn').forEach(btn => {
+    btn.classList.toggle('selected', btn.dataset.type === type);
+  });
+  // Update hint and placeholder
+  const meta = walletMeta[type];
+  if (meta) {
+    document.getElementById('walletLinkInfoText').textContent = meta.hint;
+    document.getElementById('linkWalletNumber').placeholder = meta.ph;
+    document.getElementById('walletInputIcon').className = `fas ${meta.inputIcon}`;
+    document.getElementById('walletInputIcon').style.cssText = 'position:absolute;top:50%;right:16px;transform:translateY(-50%);color:var(--purple);font-size:0.95rem;';
+  }
+}
+
+async function linkWallet() {
+  if (!currentUser) {
+    showToast('   ', '⚠️');
+    return;
+  }
+  const walletNumber = document.getElementById('linkWalletNumber').value.trim();
+  const walletName   = document.getElementById('linkWalletName').value.trim();
+
+  if (!walletNumber) {
+    showToast('   /  ', '⚠️');
+    return;
+  }
+
+  const btn = document.getElementById('linkWalletBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>  ...';
+
+  try {
+    const res = await fetch('/api/wallet/link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        walletType: selectedWalletType,
+        walletNumber,
+        walletName
+      })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, '✅');
+      document.getElementById('linkWalletNumber').value = '';
+      document.getElementById('linkWalletName').value = '';
+      renderLinkedWallets(data.linkedWallets);
+    } else {
+      showToast(data.error, '❌');
+    }
+  } catch(e) {
+    showToast('خطأ في الشبكة، يرجى المحاولة لاحقاً', '❌');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-link"></i> Link Wallet';
+  }
+}
+
+async function loadLinkedWallets() {
+  if (!currentUser) return;
+  try {
+    const res = await fetch(`/api/wallet/linked/${currentUser.id}`);
+    const data = await res.json();
+    if (res.ok) renderLinkedWallets(data.linkedWallets);
+  } catch(e) { console.error(e); }
+}
+
+async function unlinkWallet(walletId) {
+  if (!currentUser) return;
+  if (!confirm('       ')) return;
+
+  try {
+    const res = await fetch('/api/wallet/unlink', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: currentUser.id, walletId })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast(data.message, '️');
+      renderLinkedWallets(data.linkedWallets);
+    } else {
+      showToast(data.error, '❌');
+    }
+  } catch(e) {
+    showToast('خطأ في الشبكة، يرجى المحاولة لاحقاً', '❌');
+  }
+}
+
+function renderLinkedWallets(wallets) {
+  const container  = document.getElementById('linkedWalletsList');
+  const countBadge = document.getElementById('walletCountBadge');
+  if (!container) return;
+
+  countBadge.textContent = `${wallets.length} / 5`;
+  countBadge.style.background = wallets.length >= 5
+    ? 'rgba(239,68,68,0.15)' : 'rgba(16,185,129,0.15)';
+  countBadge.style.color = wallets.length >= 5
+    ? 'var(--red)' : 'var(--purple)';
+
+  if (!wallets || wallets.length === 0) {
+    container.innerHTML = `
+      <div style="text-align:center;padding:32px 16px;color:var(--text-muted);">
+        <div style="font-size:2.5rem;margin-bottom:10px;"></div>
+        <div style="font-weight:700;margin-bottom:6px;">No linked wallets</div>
+        <div style="font-size:0.82rem;">Link a wallet to start topping up your balance</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = wallets.map(w => {
+    const meta = walletMeta[w.walletType] || { icon: '', label: w.walletType };
+    const linkedDate = new Date(w.linkedAt).toLocaleDateString('en-US', { day:'2-digit', month:'short', year:'numeric' });
+    const displayName = w.walletName || meta.label;
+    return `
+      <div class="linked-wallet-card" id="wcard-${w.id}">
+        <div class="wallet-icon-circle">${meta.icon}</div>
+        <div class="wallet-card-info">
+          <div class="wallet-card-name">${displayName}</div>
+          <div class="wallet-card-number">${w.walletNumber}</div>
+          <div style="font-size:0.72rem;color:var(--text-muted);margin-top:3px;">Linked on ${linkedDate}</div>
+        </div>
+        <button class="wallet-unlink-btn" onclick="unlinkWallet('${w.id}')">
+          <i class="fas fa-unlink"></i> 
+        </button>
+      </div>`;
+  }).join('');
+}
+
+async function submitBoosterApplication(e) {
+  e.preventDefault();
+  if (!currentUser) return;
+
+  const name = document.getElementById('appFullName').value.trim();
+  const email = document.getElementById('appEmail').value.trim();
+  const rank = document.getElementById('appRank').value;
+  const trophies = parseInt(document.getElementById('app').value) || 0;
+  const details = document.getElementById('appDetails').value.trim();
+
+  const btn = document.getElementById('submitAppBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting application...';
+
+  try {
+    const res = await fetch('/api/booster/apply', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        userId: currentUser.id,
+        name,
+        email,
+        rank,
+        trophies,
+        details
+      })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast('Application submitted successfully! Our team will contact you soon.', '');
+      
+      // Update local storage role
+      currentUser.role = 'pending_booster';
+      localStorage.setItem('vx-user', JSON.stringify(currentUser));
+      
+      // Update view
+      checkClientAuth();
+      switchTab('apply-booster');
+    } else {
+      showToast(data.error || 'Error submitting application', '❌');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> Apply to Join';
+    }
+  } catch (err) {
+    showToast('Server connection error', '❌');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Apply to Join';
+  }
+}
+
+// ===== NAVBAR PROFILE DROPDOWN =====
+(function() {
+  const trigger = document.getElementById('navProfileTrigger');
+  const dropdown = document.getElementById('navProfileDropdown');
+  if (!trigger || !dropdown) return;
+
+  trigger.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const isOpen = dropdown.style.display === 'block';
+    dropdown.style.display = isOpen ? 'none' : 'block';
+    // Flip chevron
+    const chevron = trigger.querySelector('.fa-chevron-down');
+    if (chevron) chevron.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!trigger.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+      const chevron = trigger.querySelector('.fa-chevron-down');
+      if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+  });
+
+  // Close dropdown when a dropdown item is clicked
+  dropdown.querySelectorAll('.dropdown-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      dropdown.style.display = 'none';
+      const chevron = trigger.querySelector('.fa-chevron-down');
+      if (chevron) chevron.style.transform = 'rotate(0deg)';
+    });
+  });
+})();
+
+// ===== BRAWLER AVATARS LIST =====
+const BRAWLER_AVATARS = [
+  { name: '',   slug: 'Shelly'   },
+  { name: '',   slug: 'Colt'     },
+  { name: '',    slug: 'Bull'     },
+  { name: '',   slug: 'Bea'      },
+  { name: '',   slug: 'Nita'     },
+  { name: '', slug: 'Dynamike' },
+  { name: '',     slug: 'Bo'       },
+  { name: ' ', slug: 'El Primo' },
+  { name: '',  slug: 'Barley'   },
+  { name: '',   slug: 'Poco'     },
+  { name: '',   slug: 'Rosa'     },
+  { name: '',   slug: 'Rico'     },
+  { name: '',  slug: 'Darryl'   },
+  { name: '',   slug: 'Penny'    },
+  { name: '',   slug: 'Carl'     },
+  { name: '',   slug: 'Jacky'    },
+  { name: '',    slug: 'Gale'     },
+  { name: '',   slug: 'Nolo'     },
+  { name: '',   slug: 'EMZ'      },
+  { name: '',    slug: 'Stu'      },
+  { name: '',   slug: 'Bibi'     },
+  { name: '',    slug: 'Belle'    },
+  { name: '',   slug: 'Squeak'   },
+  { name: '',  slug: 'Louie'    },
+  { name: '',   slug: 'Leon'     },
+  { name: '',   slug: 'Tara'     },
+  { name: '',    slug: 'Gene'     },
+  { name: '',   slug: 'Max'      },
+  { name: ' ', slug: 'Mr. P'   },
+  { name: '', slug: 'Sprout'   },
+  { name: '', slug: 'Byron'    },
+  { name: '',  slug: 'Spike'    },
+  { name: '',    slug: 'Crow'     },
+  { name: '',  slug: 'Leon'     },
+  { name: '', slug: 'Mortis'   },
+  { name: '',   slug: 'Bibi'     },
+  { name: '',   slug: 'Sandy'    },
+  { name: '',   slug: 'Amber'    },
+  { name: ' ', slug: 'Mega Knight' },
+  { name: '',   slug: 'Surge'    },
+];
+
+let selectedBrawlerAvatar = 'https://cdn.brawlify.com/brawlers/emoji/Shelly.png';
+
+function getBrawlerEmojiUrl(slug) {
+  return 'https://cdn.brawlify.com/brawlers/emoji/' + encodeURIComponent(slug) + '.png';
+}
+
+function initProfileSection() {
+  if (!currentUser) return;
+
+  // Pre-fill email
+  const emailInput = document.getElementById('profileEmail');
+  if (emailInput) emailInput.value = currentUser.email || '';
+
+  // Set initial avatar
+  const avatarUrl = currentUser.avatar || getBrawlerEmojiUrl('Shelly');
+  selectedBrawlerAvatar = avatarUrl;
+  const preview = document.getElementById('profileAvatarPreview');
+  if (preview) preview.src = avatarUrl;
+
+  // Clear custom URL field if it's a brawlify URL
+  const customInput = document.getElementById('profileCustomAvatarUrl');
+  if (customInput && avatarUrl.includes('brawlify')) customInput.value = '';
+  else if (customInput) customInput.value = avatarUrl;
+
+  // Build brawler grid
+  buildBrawlerGrid();
+}
+
+function buildBrawlerGrid() {
+  const grid = document.getElementById('brawlerAvatarGrid');
+  if (!grid) return;
+  
+  // Get unique slugs only
+  const seen = new Set();
+  const unique = BRAWLER_AVATARS.filter(b => {
+    if (seen.has(b.slug)) return false;
+    seen.add(b.slug);
+    return true;
+  });
+
+  grid.innerHTML = unique.map(b => {
+    const url = getBrawlerEmojiUrl(b.slug);
+    const isSelected = selectedBrawlerAvatar === url;
+    return `<button type="button" onclick="selectBrawlerAvatar('${b.slug}', '${b.name}')"
+      title="${b.name}"
+      style="background:${isSelected ? 'rgba(59,130,246,0.2)' : 'rgba(255,255,255,0.03)'};border:${isSelected ? '2px solid var(--blue)' : '1.5px solid var(--border)'};border-radius:10px;padding:6px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:3px;">
+      <img src="${url}" alt="${b.name}" style="width:36px;height:36px;object-fit:contain;" onerror="this.style.display='none'">
+      <span style="font-size:0.58rem;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:56px;">${b.name}</span>
+    </button>`;
+  }).join('');
+}
+
+function selectBrawlerAvatar(slug, name) {
+  const url = getBrawlerEmojiUrl(slug);
+  selectedBrawlerAvatar = url;
+  
+  const preview = document.getElementById('profileAvatarPreview');
+  if (preview) preview.src = url;
+  
+  const nameEl = document.getElementById('profileAvatarName');
+  if (nameEl) nameEl.textContent = name;
+  
+  // Clear custom URL input
+  const customInput = document.getElementById('profileCustomAvatarUrl');
+  if (customInput) customInput.value = '';
+  
+  // Rebuild grid to highlight selected
+  buildBrawlerGrid();
+}
+
+function previewCustomAvatar(url) {
+  if (!url) return;
+  selectedBrawlerAvatar = url;
+  const preview = document.getElementById('profileAvatarPreview');
+  if (preview) preview.src = url;
+  const nameEl = document.getElementById('profileAvatarName');
+  if (nameEl) nameEl.textContent = '';
+  // Rebuild grid to clear highlights
+  buildBrawlerGrid();
+}
+
+async function saveProfileSettings(e) {
+  e.preventDefault();
+  if (!currentUser) return;
+
+  const email = (document.getElementById('profileEmail')?.value || '').trim();
+  const newPass = (document.getElementById('profileNewPassword')?.value || '').trim();
+  const confirmPass = (document.getElementById('profileConfirmPassword')?.value || '').trim();
+
+  if (newPass && newPass !== confirmPass) {
+    showToast('   !', '❌');
+    return;
+  }
+
+  const btn = document.getElementById('profileSaveBtn');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>  ...';
+  }
+
+  const payload = {
+    userId: currentUser.id,
+    email: email || undefined,
+    avatar: selectedBrawlerAvatar || undefined
+  };
+  if (newPass) payload.password = newPass;
+
+  try {
+    const res = await fetch('/api/auth/update-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (res.ok) {
+      // Merge updated values into currentUser
+      if (email) currentUser.email = email;
+      if (selectedBrawlerAvatar) currentUser.avatar = selectedBrawlerAvatar;
+      localStorage.setItem('vx-user', JSON.stringify(currentUser));
+      
+      // Refresh navbar avatar
+      const navAvatarImg = document.getElementById('navAvatarImg');
+      if (navAvatarImg && currentUser.avatar) navAvatarImg.src = currentUser.avatar;
+      
+      // Refresh dropdown email
+      const navDropdownEmail = document.getElementById('navDropdownEmail');
+      if (navDropdownEmail) navDropdownEmail.textContent = currentUser.email || '';
+
+      // Clear password fields
+      document.getElementById('profileNewPassword').value = '';
+      document.getElementById('profileConfirmPassword').value = '';
+
+      showToast('✅    !', '');
+    } else {
+      showToast(data.error || '   ', '❌');
+    }
+  } catch (err) {
+    showToast('خطأ في الشبكة، يرجى المحاولة لاحقاً', '❌');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-save"></i> Save Settings';
+    }
+  }
+}
+
+// ==========================================
+// CONVERSATIONAL AI WIZARD CHATBOT FOR TROPHY BOOST
+// ==========================================
+let chatbotState = {
+  step: 0,
+  fromCups: 0,
+  toCups: 0,
+  speed: 'normal',
+  basePrice: 0,
+  speedExtra: 0,
+  profileImage: null,
+  under1000Brawlers: [],
+  above2000Brawlers: [],
+  boosterNotes: '',
+  brawlerSearchQuery: '',
+  finalPrice: 0
+};
+
+function getSpeedLabelAr(speed) {
+  if (speed === 'super') return '';
+  if (speed === 'hypersuper') return '';
+  return '';
+}
+
+function chatbotAddRobotMessage(text) {
+  const container = document.getElementById('chatbotMessages');
+  if (!container) return;
+
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 14px 14px 0 14px; padding: 12px 16px; align-self: flex-start; max-width: 85%; line-height: 1.6; font-size: 0.85rem; color: var(--text-primary); text-align: right; margin-bottom: 4px; display: inline-block; word-break: break-word;`;
+  bubble.innerHTML = text.replace(/\n/g, '<br>');
+
+  container.appendChild(bubble);
+  container.scrollTop = container.scrollHeight;
+}
+
+function chatbotAddUserMessage(html) {
+  const container = document.getElementById('chatbotMessages');
+  if (!container) return;
+
+  const bubble = document.createElement('div');
+  bubble.style.cssText = `background: linear-gradient(135deg, var(--blue), #1D4ED8); border-radius: 14px 14px 14px 0; padding: 12px 16px; align-self: flex-end; max-width: 85%; line-height: 1.6; font-size: 0.85rem; color: #fff; text-align: right; box-shadow: 0 4px 12px rgba(59,130,246,0.25); margin-bottom: 4px; display: inline-block; word-break: break-word;`;
+  bubble.innerHTML = html;
+
+  container.appendChild(bubble);
+  container.scrollTop = container.scrollHeight;
+}
+
+window.openTrophyChatbot = function(from, to, speed, basePrice, speedExtra) {
+  chatbotState = {
+    step: 0,
+    fromCups: from,
+    toCups: to,
+    speed: speed,
+    basePrice: basePrice,
+    speedExtra: speedExtra,
+    profileImage: null,
+    under1000Brawlers: [],
+    above2000Brawlers: [],
+    boosterNotes: '',
+    brawlerSearchQuery: '',
+    finalPrice: basePrice + speedExtra
+  };
+
+  const msgContainer = document.getElementById('chatbotMessages');
+  if (msgContainer) msgContainer.innerHTML = '';
+
+  document.getElementById('trophyChatbotModal').style.display = 'flex';
+
+  chatbotAddRobotMessage(`مرحباً بك! 👋 أنا المساعد الذكي لمنصة Adsa Game.
+    لقد اخترت نطاق رفع الكؤوس من <strong>${from.toLocaleString()}</strong> إلى <strong>${to.toLocaleString()}</strong> كؤوس مع سرعة ${getSpeedLabelAr(speed)}.
+
+ يرجى إرسال لقطة شاشة لملف حسابك الشخصي (Brawl Stars Profile Screen) أو الضغط على زر التخطي للمتابعة.`);
+  
+  chatbotRenderActions();
+};
+
+window.closeTrophyChatbotModal = function() {
+  document.getElementById('trophyChatbotModal').style.display = 'none';
+};
+
+window.chatbotRenderActions = function() {
+  const panel = document.getElementById('chatbotActionPanel');
+  if (!panel) return;
+
+  panel.innerHTML = '';
+
+  if (chatbotState.step === 0) {
+    panel.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:10px; width:100%">
+        <label class="btn-primary" style="width:100%; padding:14px; text-align:center; cursor:pointer; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px; border-radius: var(--radius-md);">
+          <i class="fas fa-camera"></i>
+          <span>رفع صورة 📸</span>
+          <input type="file" id="chatbotImageFileInput" accept="image/*" style="display:none" onchange="TrophyChatbot.handleImageSelect(event)">
+        </label>
+        <button class="btn-secondary" onclick="TrophyChatbot.skipImage()" style="width:100%; border:1px solid var(--border); background:rgba(255,255,255,0.02); color:var(--text-primary); padding:12px; border-radius:var(--radius-md); font-weight:700; cursor:pointer">
+تخطي وإرسال لاحقاً ➔
+        </button>
+      </div>
+    `;
+  } else if (chatbotState.step === 1 || chatbotState.step === 2) {
+    const isStep1 = chatbotState.step === 1;
+    const gridBackground = isStep1 ? 'rgba(0,0,0,0.15)' : 'rgba(239, 68, 68, 0.04)';
+    const gridBorderColor = isStep1 ? 'var(--border)' : 'rgba(239, 68, 68, 0.25)';
+
+    panel.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:12px; width:100%">
+        <div style="font-size:0.8rem; color:var(--text-secondary); text-align:right; font-weight:700">
+          ${isStep1 ? '     1000  (+$0.10 ):' : '     2000  (+$0.50 ):'}
+        </div>
+        <div class="brawler-search-wrap" style="margin-bottom:0">
+          <i class="fas fa-search brawler-search-icon"></i>
+          <input type="text" class="brawler-search" id="chatbotBrawlerSearch" placeholder="ابحث عن بطل..." oninput="TrophyChatbot.searchBrawlers(this.value)">
+        </div>
+        <div id="chatbotBrawlerGridContainer" style="max-height: 180px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 8px; padding: 10px; border: 1px solid ${gridBorderColor}; border-radius: var(--radius-md); background: ${gridBackground};">
+          <!-- Populated by renderBrawlersList() -->
+        </div>
+        <button class="btn-primary" onclick="TrophyChatbot.submitBrawlersStep()" style="width:100%; border:none; padding:12px; font-weight:800; cursor:pointer; border-radius: var(--radius-md);">
+تخطي وإرسال لاحقاً ➔
+        </button>
+      </div>
+    `;
+    TrophyChatbot.renderBrawlersList();
+  } else if (chatbotState.step === 3) {
+    panel.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:12px; width:100%">
+        <div style="font-size:0.8rem; color:var(--text-secondary); text-align:right; font-weight:700">       ():</div>
+        <textarea id="chatbotNotesText" class="form-textarea" placeholder="اكتب ملاحظاتك هنا (مثال: يرجى عدم فتح صناديق أو اللعب في أوقات معينة)..." style="width:100%; min-height:80px; padding:12px; border-radius:var(--radius-md); border:1px solid var(--border); background:rgba(255,255,255,0.02); color:var(--text-primary); font-family:var(--font-en); line-height:1.6; resize:none;"></textarea>
+        <button class="btn-primary" onclick="TrophyChatbot.submitNotes()" style="width:100%; border:none; padding:12px; font-weight:800; cursor:pointer; border-radius: var(--radius-md);">
+ تخطي وإرسال لاحقاً ➔
+        </button>
+      </div>
+    `;
+  } else if (chatbotState.step === 4) {
+    panel.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:12px; width:100%">
+        <button class="btn-primary" onclick="TrophyChatbot.confirmPurchase()" style="width:100%; border:none; padding:14px; font-size:1rem; font-weight:900; cursor:pointer; background:linear-gradient(135deg, var(--blue), #1D4ED8); border-radius: var(--radius-md);">
+          <i class="fas fa-check-circle"></i>      ($${chatbotState.finalPrice.toFixed(2)})
+        </button>
+      </div>
+    `;
+  }
+};
+
+window.TrophyChatbot = {
+  handleImageSelect(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      chatbotState.profileImage = e.target.result;
+      chatbotAddUserMessage(`<div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px">تم رفع لقطة الملف الشخصي 📸</div><img src="${e.target.result}" style="max-width:160px; border-radius:var(--radius-md); filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))" alt="صورة الحساب">`);
+      TrophyChatbot.goToStep(1);
+    };
+    reader.readAsDataURL(file);
+  },
+
+  skipImage() {
+    chatbotState.profileImage = 'skipped';
+    chatbotAddUserMessage("تخطي رفع الصورة");
+    TrophyChatbot.goToStep(1);
+  },
+
+  goToStep(step) {
+    chatbotState.step = step;
+    chatbotState.brawlerSearchQuery = '';
+
+    if (step === 1) {
+      chatbotAddRobotMessage(`رائع جداً! 🦾 الخطوة التالية: حدد الأبطال الذين ترغب في أن نلعب بهم تحت 1000 كأس (سيتم إضافة <strong>$0.10</strong> لكل بطل محدد). يمكنك أيضاً تخطي هذه الخطوة.`);
+    } else if (step === 2) {
+      chatbotAddRobotMessage(`جميل! الخطوة التالية: حدد الأبطال الذين ترغب في أن نلعب بهم فوق 2000 كأس (سيتم إضافة <strong>$0.50</strong> لكل بطل محدد). يمكنك أيضاً تخطي هذه الخطوة.`);
+    } else if (step === 3) {
+      chatbotAddRobotMessage(`وصلت الرسالة! ✍️ الخطوة الأخيرة: هل لديك أي ملاحظات إضافية ترغب في توجيهها للبوستر الذي سيلعب بحسابك؟ (مثال: أوقات اللعب المفضلة لديك)`);
+    } else if (step === 4) {
+      TrophyChatbot.calculateFinalInvoice();
+    }
+
+    chatbotRenderActions();
+  },
+
+  searchBrawlers(query) {
+    chatbotState.brawlerSearchQuery = query.toLowerCase();
+    TrophyChatbot.renderBrawlersList();
+  },
+
+  async renderBrawlersList() {
+    const container = document.getElementById('chatbotBrawlerGridContainer');
+    if (!container) return;
+
+    if (!window.allBrawlersList || window.allBrawlersList.length === 0) {
+      window.allBrawlersList = await fetchBrawlers();
+    }
+
+    const isStep1 = chatbotState.step === 1;
+    const activeList = isStep1 ? chatbotState.under1000Brawlers : chatbotState.above2000Brawlers;
+    const query = chatbotState.brawlerSearchQuery || '';
+
+    const filtered = window.allBrawlersList.filter(b => b.name.toLowerCase().includes(query));
+
+    const itemHighlightBg = isStep1 ? 'rgba(59, 130, 246, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+    const itemHighlightBorder = isStep1 ? '2px solid var(--blue)' : '2px solid var(--red)';
+    const itemBg = isStep1 ? 'rgba(255,255,255,0.03)' : 'rgba(239,68,68,0.03)';
+    const itemBorder = isStep1 ? '1px solid var(--border)' : '1px solid rgba(239, 68, 68, 0.15)';
+
+    container.innerHTML = filtered.map(b => {
+      const isSelected = activeList.includes(b.name);
+      return `
+        <div class="brawler-item-chatbot" onclick="TrophyChatbot.toggleBrawlerSelection('${b.name}')" 
+             style="background:${isSelected ? itemHighlightBg : itemBg}; border:${isSelected ? itemHighlightBorder : itemBorder}; border-radius:10px; padding:6px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; text-align:center; transition:all 0.2s;">
+          <img src="${b.image}" alt="${b.name}" style="width:28px; height:28px; object-fit:contain;" onerror="this.src='https://cdn.brawlify.com/brawler/${encodeURIComponent(b.name)}.png'">
+          <span style="font-size:0.65rem; color:var(--text-primary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; width:100%">${b.name}</span>
+        </div>
+      `;
+    }).join('');
+  },
+
+  toggleBrawlerSelection(name) {
+    const isStep1 = chatbotState.step === 1;
+    let list = isStep1 ? chatbotState.under1000Brawlers : chatbotState.above2000Brawlers;
+
+    if (list.includes(name)) {
+      list = list.filter(n => n !== name);
+    } else {
+      list.push(name);
+    }
+
+    if (isStep1) chatbotState.under1000Brawlers = list;
+    else chatbotState.above2000Brawlers = list;
+
+    TrophyChatbot.renderBrawlersList();
+  },
+
+  submitBrawlersStep() {
+    const isStep1 = chatbotState.step === 1;
+    const list = isStep1 ? chatbotState.under1000Brawlers : chatbotState.above2000Brawlers;
+
+    if (list.length > 0) {
+      chatbotAddUserMessage(`تم اختيار ${list.length} بطل: ${list.join(', ')}`);
+    } else {
+      chatbotAddUserMessage("تخطي اختيار الأبطال");
+    }
+
+    TrophyChatbot.goToStep(isStep1 ? 2 : 3);
+  },
+
+  submitNotes() {
+    const notesInput = document.getElementById('chatbotNotesText');
+    const notes = notesInput ? notesInput.value.trim() : '';
+    chatbotState.boosterNotes = notes;
+
+    if (notes) {
+      chatbotAddUserMessage(`ملاحظاتي للبوستر: "${notes}"`);
+    } else {
+      chatbotAddUserMessage("تخطي كتابة الملاحظات");
+    }
+
+    TrophyChatbot.goToStep(4);
+  },
+
+  calculateFinalInvoice() {
+    const base = chatbotState.basePrice;
+    const speedExtraCost = chatbotState.speedExtra;
+
+    const under1000Count = chatbotState.under1000Brawlers.length;
+    const under1000Cost = under1000Count * 0.10;
+
+    const above2000Count = chatbotState.above2000Brawlers.length;
+    const above2000Cost = above2000Count * 0.50;
+
+    const finalPrice = base + speedExtraCost + under1000Cost + above2000Cost;
+    chatbotState.finalPrice = finalPrice;
+
+    chatbotAddRobotMessage(`ممتاز! لقد قمت بحساب الفاتورة النهائية لطلبك: 🧾
+
+- نطاق الرفع: من ${chatbotState.fromCups.toLocaleString()} إلى ${chatbotState.toCups.toLocaleString()} كؤوس
+- سرعة التنفيذ: ${getSpeedLabelAr(chatbotState.speed)}
+- السعر الأساسي: $${base.toFixed(2)}
+- تكلفة السرعة الإضافية: $${speedExtraCost.toFixed(2)}
+- أبطال مفضلين تحت 1000 كأس: ${under1000Count} (+$${under1000Cost.toFixed(2)})
+- أبطال مفضلين فوق 2000 كأس: ${above2000Count} (+$${above2000Cost.toFixed(2)})
+- صورة الملف الشخصي: ${chatbotState.profileImage === 'skipped' ? 'تم التخطي' : 'تم الرفع 📸'}
+- ملاحظات البوستر: ${chatbotState.boosterNotes ? `"${chatbotState.boosterNotes}"` : 'لا يوجد'}
+
+💵 المجموع الكلي النهائي: <strong style="color:var(--green); font-size:1.15rem">$${finalPrice.toFixed(2)}</strong>
+
+اضغط على الزر أدناه لتأكيد الطلب وبدء التنفيذ! 🚀`);
+  },
+
+  async confirmPurchase() {
+    const btn = document.querySelector('#chatbotActionPanel .btn-primary');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري إرسال الطلب...';
+    }
+
+    const details = {
+      fromCups: chatbotState.fromCups,
+      toCups: chatbotState.toCups,
+      brawlerCount: parseInt(document.getElementById('trophyBrawlersCount').value) || 85,
+      preferredBrawlers: chatbotState.under1000Brawlers,
+      above2000Brawlers: chatbotState.above2000Brawlers,
+      speed: chatbotState.speed,
+      profileScreenshot: chatbotState.profileImage !== 'skipped' ? 'uploaded' : 'none',
+      screenshotData: chatbotState.profileImage !== 'skipped' ? chatbotState.profileImage : undefined,
+      notes: chatbotState.boosterNotes
+    };
+
+    try {
+      const res = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: currentUser.id,
+          serviceType: 'trophy',
+          price: chatbotState.finalPrice,
+          tip: 0,
+          details,
+          payMethod: 'pending'
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showToast(data.message, '');
+        closeTrophyChatbotModal();
+
+        await loadClientOrders();
+        openClientChat('support-' + data.order.id, 'Support');
+        switchTab('my-orders');
+      } else {
+        showToast(data.error, '❌');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fas fa-check-circle"></i> تأكيد الطلب والتواصل مع الدعم ($${chatbotState.finalPrice.toFixed(2)})`;
+        }
+      }
+    } catch(e) {
+      showToast('خطأ في الشبكة، يرجى المحاولة لاحقاً', '❌');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-check-circle"></i> تأكيد الطلب والتواصل مع الدعم ($${chatbotState.finalPrice.toFixed(2)})`;
+      }
+    }
+  }
+};
+
+// --- Floating Egyptian AI Chatbot Controller ---
+(function() {
+  const toggleBtn = document.getElementById('aiChatToggleBtn');
+  const chatContainer = document.getElementById('floatingAiChatContainer');
+  const closeBtn = document.getElementById('aiChatCloseBtn');
+  const aiChatMessages = document.getElementById('aiChatMessages');
+  const aiChatInput = document.getElementById('aiChatInput');
+  const aiChatSendBtn = document.getElementById('aiChatSendBtn');
+  const aiTypingIndicator = document.getElementById('aiTypingIndicator');
+  const badge = toggleBtn ? toggleBtn.querySelector('.ai-chat-badge') : null;
+
+  if (!toggleBtn || !chatContainer) return;
+
+  // Toggle chat window visibility
+  toggleBtn.addEventListener('click', () => {
+    const isActive = chatContainer.classList.contains('active');
+    if (isActive) {
+      chatContainer.classList.remove('active');
+      toggleBtn.classList.remove('active');
+      toggleBtn.querySelector('i').className = 'fas fa-robot';
+    } else {
+      chatContainer.classList.add('active');
+      toggleBtn.classList.add('active');
+      toggleBtn.querySelector('i').className = 'fas fa-times';
+      if (badge) badge.style.display = 'none'; // hide notification badge
+      
+      // Auto focus input
+      setTimeout(() => {
+        if (aiChatInput) aiChatInput.focus();
+      }, 300);
+    }
+  });
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      chatContainer.classList.remove('active');
+      toggleBtn.classList.remove('active');
+      toggleBtn.querySelector('i').className = 'fas fa-robot';
+    });
+  }
+
+  // Handle message sending
+  async function sendMsgToEgyptianAI() {
+    const text = aiChatInput.value.trim();
+    if (!text) return;
+
+    // Append user message
+    appendAiChatMessage(text, 'user');
+    aiChatInput.value = '';
+
+    // Scroll to bottom
+    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+
+    // Show typing indicator
+    if (aiTypingIndicator) aiTypingIndicator.style.display = 'block';
+    aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+
+    try {
+      const response = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text })
+      });
+      const data = await response.json();
+      
+      // Hide typing indicator after realistic delay (600ms)
+      setTimeout(() => {
+        if (aiTypingIndicator) aiTypingIndicator.style.display = 'none';
+        
+        if (data.reply) {
+          appendAiChatMessage(data.reply, 'bot');
+        } else if (data.error) {
+          appendAiChatMessage(data.error, 'bot');
+        } else {
+          appendAiChatMessage('معلش يا زميلي حصل مشكلة في السيرفر، جرب تاني كدة!', 'bot');
+        }
+        aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+      }, 600);
+
+    } catch (err) {
+      if (aiTypingIndicator) aiTypingIndicator.style.display = 'none';
+      appendAiChatMessage('الخادم مهنج يا صاحبي، اتأكد إنك شغال وجرب تاني!', 'bot');
+      aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
+    }
+  }
+
+  function appendAiChatMessage(msg, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `ai-msg ${sender}`;
+    msgDiv.innerHTML = msg; // Support HTML markup
+    aiChatMessages.appendChild(msgDiv);
+  }
+
+  if (aiChatSendBtn && aiChatInput) {
+    aiChatSendBtn.addEventListener('click', sendMsgToEgyptianAI);
+    aiChatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        sendMsgToEgyptianAI();
+      }
+    });
+  }
+})();
+</script>
+
+  <!-- ===== FLOATING EGYPTIAN AI CHATBOT WIDGET ===== -->
+  <button id="aiChatToggleBtn" class="floating-ai-chat-btn" aria-label="شات المساعد الذكي" title="اسأل المساعد الذكي">
+    <i class="fas fa-robot"></i>
+    <span class="ai-chat-badge" style="position: absolute; top: -5px; right: -5px; background: var(--red); color: #fff; padding: 2px 6px; font-size: 0.65rem; border-radius: 50%; border: 1.5px solid var(--bg-secondary); box-shadow: 0 0 10px rgba(239, 68, 68, 0.4)">1</span>
+  </button>
+
+  <div id="floatingAiChatContainer" class="floating-ai-chat-container">
+    <div class="ai-chat-header">
+      <div class="ai-chat-user-info">
+        <div class="ai-avatar">🤖</div>
+        <div>
+          <div class="ai-status-title">المساعد الذكي (Brawl Bot)</div>
+          <div class="ai-status-subtitle">نشط الآن • لهجة مصرية 🇪🇬</div>
+        </div>
+      </div>
+      <button id="aiChatCloseBtn" class="ai-chat-close-btn" aria-label="إغلاق الشات">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    <div id="aiChatMessages" class="ai-chat-messages">
+      <div class="ai-msg bot">
+        يا هلا بيك يا صاحبي! أنا المساعد الذكي الخاص ببراول ستارز 🎮. اسألني عن أي حاجة تخص اللعبة (أبطال، أطوار، نصائح الرفع، VPN) وهقولك الخلاصة باللهجة المصرية المية مية! 😉🏆
+      </div>
+    </div>
+    
+    <!-- Typing indicator -->
+    <div id="aiTypingIndicator" class="ai-typing-indicator">
+      <span class="ai-dot"></span>
+      <span class="ai-dot"></span>
+      <span class="ai-dot"></span>
+    </div>
+    
+    <div class="ai-chat-input-area">
+      <input type="text" id="aiChatInput" class="ai-chat-input" placeholder="اكتب سؤالك عن براول ستارز هنا..." />
+      <button id="aiChatSendBtn" class="ai-chat-send-btn" aria-label="إرسال">
+        <i class="fas fa-paper-plane" style="transform: rotate(180deg)"></i>
+      </button>
+    </div>
+  </div>
+</body>
+</html>
