@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الرئيسية | Adsa Game</title>
+  <meta name="description" content="Adsa Game - المنصة العربية الأولى لخدمات Brawl Stars. ارفع مستوى حسابك، كؤوسك، رتبتك والبرستيج بأمان وضمان." />
+  <meta property="og:title" content="Adsa Game | خدمات Brawl Stars الاحترافية" />
+  <meta property="og:description" content="رفع كؤوس، رتب، برستيج وفعاليات Brawl Stars بأمان وسرعة فائقة." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="navbar" id="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:10px">
+        <img src="logo.png" alt="Adsa Game Logo" class="logo-img">
+        <span class="logo-vexa">ADSA</span>
+        <span class="logo-zone">GAME</span>
+      </a>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="index.html" class="active">الرئيسية</a></li>
+          <li><a href="services.html">الخدمات</a></li>
+          <li><a href="events.html">الفعاليات</a></li>
+          <li><a href="contact.html">تواصل معنا</a></li>
+        </ul>
+      </nav>
+      <div class="nav-right">
+        <button class="theme-toggle-btn" id="themeToggle" aria-label="Toggle Theme" title="Toggle Theme">
+          <i class="fas fa-moon icon-dark"></i>
+          <i class="fas fa-sun icon-light"></i>
+        </button>
+        <button class="lang-btn" id="langBtn" style="display:none"></button>
+        <a href="auth.html" id="navAuthBtn" class="btn-order">تسجيل الدخول</a>
+        <a href="services.html" id="navDashboardBtn" class="btn-order" style="display:none; background:var(--purple); color:#000;">لوحة التحكم</a>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose"><i class="fas fa-times"></i></button>
+    <a href="index.html">الرئيسية</a>
+    <a href="services.html">الخدمات</a>
+    <a href="events.html">الفعاليات 🔥</a>
+    <a href="contact.html">تواصل معنا</a>
+    <a href="auth.html" id="mobileAuthLink">تسجيل الدخول / حسابي</a>
+    <a href="services.html" id="mobileDashboardLink" style="display:none">لوحة التحكم ⚙️</a>
+    <a href="services.html" class="btn-primary">اطلب الآن</a>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-badge">
+      <span class="pulse"></span>
+      <span>خدمات Brawl Stars الاحترافية 🎮</span>
+    </div>
+    <h1 class="hero-title">
+      ارفع مستوى حسابك في<br/>
+      <span class="highlight-yellow">Brawl Stars</span>
+      <span>مع </span>
+      <span class="highlight-purple">Adsa Game</span>
+    </h1>
+    <p class="hero-subtitle">رفع كؤوس، رانك، وبرستيج — فوز مضمون وأمان تام لحسابك</p>
+    <div class="hero-actions">
+      <a href="services.html" class="btn-primary" id="heroBtn">
+        <i class="fas fa-rocket"></i>
+        <span>تصفح الخدمات</span>
+      </a>
+      <a href="events.html" class="btn-yellow" id="heroBtn2">
+        <i class="fas fa-bolt"></i>
+        <span>الفعاليات 🔥</span>
+      </a>
+      <a href="contact.html" class="btn-secondary" id="heroContactBtn">
+        <i class="fab fa-discord"></i>
+        <span>تواصل معنا</span>
+      </a>
+    </div>
+
+    <!-- Hero Brawl Banner Showcase -->
+    <div class="hero-banner-wrap reveal animate-delay-4">
+      <img src="brawl_banner.png" alt="Brawl Stars Arena">
+      <div class="hero-banner-overlay">
+        <span class="hero-banner-badge">البطولة الكبرى</span>
+        <h3>خدمات رفع احترافية لكافة شخصيات Brawl Stars</h3>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STATS ===== -->
+  <div class="stats-bar reveal">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value purple" id="statOrders">+٢,٥٠٠</div>
+        <div class="stat-label">طلب مكتمل</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value yellow">١٠٣</div>
+        <div class="stat-label">بطل متاح للرفع</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value white">٢٤/٧</div>
+        <div class="stat-label">دعم فني متواصل</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value blue">٤.٩ ⭐</div>
+        <div class="stat-label">تقييم العملاء</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SERVICES PREVIEW ===== -->
+  <section class="services-section">
+    <div class="section-header reveal">
+      <span class="section-tag">الخدمات</span>
+      <h2 class="section-title">خدمات الرفع والترقية</h2>
+      <p class="section-subtitle">ارفع مستواك في Brawl Stars — كؤوس، رانك، برستيج وأكثر</p>
+    </div>
+
+    <div class="services-grid">
+      <!-- Trophy -->
+      <div class="service-card trophy reveal animate-delay-1" onclick="location.href='services.html#trophy'" id="homeTrophyCard">
+        <span class="card-badge badge-popular">الأكثر شعبية</span>
+        <div class="card-icon-wrap"><img src="trophy.png" alt="🏆" style="width: 48px; height: 48px; object-fit: contain;"></div>
+        <div>
+          <div class="card-title">رفع الكؤوس (Trophy Boost)</div>
+          <div class="card-desc">رفع كؤوس حسابك من 0 إلى 200,000 كأس مع حاسبة ذكية للأسعار حسب المدى</div>
+        </div>
+        <div class="card-price-row">
+          <div><div class="price-from">تبدأ من</div><div class="price-val">$3.00</div></div>
+          <div class="card-arrow"><i class="fas fa-arrow-left"></i></div>
+        </div>
+      </div>
+
+      <!-- Ranked -->
+      <div class="service-card ranked reveal animate-delay-2" onclick="location.href='services.html#ranked'" id="homeRankedCard">
+        <span class="card-badge badge-hot">موصى به</span>
+        <div class="card-icon-wrap">📊</div>
+        <div>
+          <div class="card-title">رفع الرانك (Ranked Push)</div>
+          <div class="card-desc">رفع تصنيفك من البرونزي حتى الماسترز مع خيارات سرعة متعددة وسعر لكل رتبة</div>
+        </div>
+        <div class="card-price-row">
+          <div><div class="price-from">تبدأ من</div><div class="price-val">$0.25</div></div>
+          <div class="card-arrow"><i class="fas fa-arrow-left"></i></div>
+        </div>
+      </div>
+
+      <!-- Prestige -->
+      <div class="service-card prestige reveal animate-delay-3" onclick="location.href='services.html#prestige'" id="homePrestigeCard">
+        <span class="card-badge badge-new">جديد</span>
+        <div class="card-icon-wrap">👑</div>
+        <div>
+          <div class="card-title">رفع البرستيج (Prestige Boost)</div>
+          <div class="card-desc">ترقية مستوى البرستيج لجميع أبطال حسابك (برستيج 1، 2، 3) بأسعار تنافسية</div>
+        </div>
+        <div class="card-price-row">
+          <div><div class="price-from">تبدأ من</div><div class="price-val">$3.00</div></div>
+          <div class="card-arrow"><i class="fas fa-arrow-left"></i></div>
+        </div>
+      </div>
+
+      <!-- Events -->
+      <div class="service-card events reveal animate-delay-1" onclick="location.href='events.html'" id="homeCard">
+        <span class="card-badge badge-new">جديد</span>
+        <div class="card-icon-wrap">⚡</div>
+        <div>
+          <div class="card-title">الفعاليات الحية (Live Events)</div>
+          <div class="card-desc">ضمان الفوز في أحداث لعبة Brawl Stars الجديدة والبطولات الخاصة مثل حدث Bolt</div>
+        </div>
+        <div class="card-price-row">
+          <div><div class="price-from">تبدأ من</div><div class="price-val">$4.00</div></div>
+          <div class="card-arrow"><i class="fas fa-arrow-left"></i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DETAILED TROPHY BOOST EXPLANATION ===== -->
+  <section class="trophy-details-section">
+    <div class="section-header reveal">
+      <span class="section-tag">تفاصيل الكؤوس</span>
+      <h2 class="section-title">ماذا يحدث لحسابك أثناء خدمة رفع الكؤوس؟</h2>
+      <p class="section-subtitle">شرح كامل وتفصيلي لكافة الإجراءات والأمان المتبع أثناء تقدم الطلب</p>
+    </div>
+    
+    <div class="trophy-details-grid">
+      <!-- Card 1: Win Streaks -->
+      <div class="trophy-detail-card reveal animate-delay-1">
+        <div class="td-icon-wrap"><i class="fas fa-fire"></i></div>
+        <h3 class="td-title">مضاعفة سلسلة الانتصارات (Win Streaks)</h3>
+        <p class="td-desc">بواسترز موقعنا لا يلعبون عشوائياً؛ فهم يركزون على الحفاظ على سلسلة الانتصارات المتتالية. هذه الميزة تمنح حسابك كؤوساً إضافية مجانية مع كل فوز متتالي، مما يقلل الوقت اللازم لإتمام طلبك بمعدل النصف!</p>
+      </div>
+
+      <!-- Card 2: VPN Matching -->
+      <div class="trophy-detail-card reveal animate-delay-2">
+        <div class="td-icon-wrap"><i class="fas fa-shield-halved"></i></div>
+        <h3 class="td-title">تطابق الموقع الجغرافي المشفّر (VPN)</h3>
+        <p class="td-desc">أمان حسابك هو أهم ما نملك. قبل أن يسجل البوستر الدخول، يتم تشغيل اتصال VPN مشفّر يتطابق بدقة مع دولتك ومدينتك الحالية. هذا الإجراء يمنع اكتشاف أي نشاط مريب ويحمي الحساب تماماً من الحظر.</p>
+      </div>
+
+      <!-- Card 3: Event & Map Choice -->
+      <div class="trophy-detail-card reveal animate-delay-3">
+        <div class="td-icon-wrap"><i class="fas fa-map-marked-alt"></i></div>
+        <h3 class="td-title">انتقاء الأطوار والخرائط النشطة</h3>
+        <p class="td-desc">يتم تحليل الخرائط والأطوار المتاحة (مثل Brawl Ball أو Showdown) بشكل مستمر. يختار البوستر البطل المثالي لكل خريطة بناءً على الميتا الحالية، مما يضمن نسبة فوز تفوق 90% وسرعة تقدم استثنائية.</p>
+      </div>
+
+      <!-- Card 4: Loss Protection -->
+      <div class="trophy-detail-card reveal animate-delay-1">
+        <div class="td-icon-wrap"><i class="fas fa-rotate-left"></i></div>
+        <h3 class="td-title">نظام التعويض الكامل والحماية ضد الهبوط</h3>
+        <p class="td-desc">نحن ملتزمون بنتيجة الكؤوس النهائية المتفق عليها. إذا واجه البوستر أي خسارة غير متوقعة (وهو أمر نادر الحدوث)، فإن موقعنا يتحمل كافة التكاليف ويلتزم البوستر بتعويض الكؤوس المفقودة فوراً واللعب حتى بلوغ الهدف مجاناً.</p>
+      </div>
+    </div>
+  </section>
+  <!-- ===== WHY ADSA GAME ===== -->
+  <section class="why-section">
+    <div class="section-header reveal">
+      <span class="section-tag">لماذا نحن؟</span>
+      <h2 class="section-title">لماذا تختار منصة Adsa Game؟</h2>
+      <p class="section-subtitle">نقدم أفضل خدمات الرفع والترقية للعبة Brawl Stars بالوطن العربي</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal animate-delay-1" id="featureSpec">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">تخصص كامل في Brawl Stars</div>
+        <div class="feature-desc">تخصص 100% في Brawl Stars مما يضمن لك احترافية أعلى وأسعاراً أفضل بكثير.</div>
+      </div>
+      <div class="feature-card reveal animate-delay-2" id="feature">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-title">تنفيذ سريع جداً</div>
+        <div class="feature-desc">يبدأ البوسترات بالعمل على حسابك فور دفع قيمة الطلب مباشرة لضمان أسرع تسليم.</div>
+      </div>
+      <div class="feature-card reveal animate-delay-3" id="featureSpeed">
+        <div class="feature-icon">🚀</div>
+        <div class="feature-title">3 خيارات لسرعة التنفيذ</div>
+        <div class="feature-desc">اختر بين السرعة العادية، أو الفائقة (+20% من السعر)، أو القصوى (+40% من السعر).</div>
+      </div>
+      <div class="feature-card reveal animate-delay-1" id="featurePrice">
+        <div class="feature-icon">💰</div>
+        <div class="feature-title">أسعار شفافة وواضحة</div>
+        <div class="feature-desc">حاسبتنا الذكية تعطيك السعر الإجمالي بدقة قبل الدفع والطلب دون أي رسوم مفاجئة.</div>
+      </div>
+      <div class="feature-card reveal animate-delay-2" id="featureSupport">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">دعم فني متواصل 24/7</div>
+        <div class="feature-desc">فريق الدعم الفني متواجد لمساعدتك عبر شات الموقع وحل مشكلاتك على مدار الساعة.</div>
+      </div>
+      <div class="feature-card reveal animate-delay-3" id="featureSafe">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-title">سرية وأمان تام لحسابك</div>
+        <div class="feature-desc">نستخدم شبكات VPN آمنة لحفظ البيانات ولن يعرف أحد أنك استعنت بخدمات الرفع.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section class="testimonials-section">
+    <div class="section-header reveal">
+      <span class="section-tag">التقييمات</span>
+      <h2 class="section-title">تقييمات وآراء العملاء</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal animate-delay-1" id="testi1">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"رفع كؤوس من 35 ألف إلى 50 ألف في وقت قياسي. جودة لا تصدق واحترافية حقيقية! ❤️"</div>
+        <div class="testi-user">
+          <div class="testi-avatar"></div>
+          <div><div class="testi-name">أحمد ك.</div><div class="testi-rank">أسطوري III</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal animate-delay-2" id="testi2">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"أفضل خدمة لرفع البرستيج، البوستر محترف جداً ولم يستخدم أي موارد في حسابي. شكراً Adsa Game 🔥"</div>
+        <div class="testi-user">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#FFD700,#F59E0B);color:#000"></div>
+          <div><div class="testi-name">سارة م.</div><div class="testi-rank">ميثك II</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal animate-delay-3" id="testi3">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-text">"الفوز في حدث Bolt مضمون 100%! خدمة مذهلة وسأكرر التجربة بالتأكيد."</div>
+        <div class="testi-user">
+          <div class="testi-avatar" style="background:linear-gradient(135deg,#F97316,#EF4444)"></div>
+          <div><div class="testi-name">عمر ت.</div><div class="testi-rank">دايموند I</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FAQ ACCORDION ===== -->
+  <section class="faq-section">
+    <div class="section-header reveal">
+      <span class="section-tag">الأسئلة الشائعة</span>
+      <h2 class="section-title">أجوبة على استفساراتك الشائعة</h2>
+      <p class="section-subtitle">إليك كل ما تحتاج معرفته عن خدمات الرفع والأمان وطرق الدفع</p>
+    </div>
+
+    <div class="faq-accordion">
+      <!-- FAQ 1 -->
+      <div class="faq-item active">
+        <button class="faq-header">
+          <span>هل خدمات رفع الكؤوس والرانك آمنة من الباند؟</span>
+          <i class="fas fa-chevron-down faq-icon-toggle"></i>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-content">
+            نعم، آمنة بنسبة 100%. جميع لاعبينا (البواسترز) يستخدمون اتصالات VPN مشفرة مطابقة لموقعك الجغرافي تماماً قبل تسجيل الدخول إلى حسابك. كما نلعب بشكل طبيعي من أجهزة حقيقية تماماً بدون استخدام أي محاكيات أو برامج غش، مما يجعل السوبر سيل تعتقد أنك أنت من تلعب من تليفونك.
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ 2 -->
+      <div class="faq-item">
+        <button class="faq-header">
+          <span>كيف يمكنني مراقبة تقدم الطلب والتحدث مع البوستر؟</span>
+          <i class="fas fa-chevron-down faq-icon-toggle"></i>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-content">
+            بمجرد إتمام الدفع وتأكيد الطلب، ستحصل على إمكانية الوصول إلى لوحة تحكم العميل الخاصة بك. هناك، ستتمكن من رؤية تقدم الرفع بشكل حي ومباشر، والتحدث مباشرة مع اللاعب المخصص لحسابك لتنسيق المواعيد والأبطال.
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ 3 -->
+      <div class="faq-item">
+        <button class="faq-header">
+          <span>ما هي ميزة روبوت الدردشة للتمويه (Chatbot)؟</span>
+          <i class="fas fa-chevron-down faq-icon-toggle"></i>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-content">
+            هي ميزة حصرية ومبتكرة تتيح للاعبنا أثناء تواجده في حسابك استخدام نظام رد آلي ذكي للغاية للرد على أصدقائك في اللعبة إذا قاموا بمراسلتك. يقوم البوت بالرد عليهم بذكاء وتبرير عدم قدرتك على اللعب معهم حالياً لكي لا يشك أي صديق بأن شخصاً آخر يلعب بحسابك.
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ 4 -->
+      <div class="faq-item">
+        <button class="faq-header">
+          <span>هل يمكنني فتح حسابي واللعب أثناء فترة الرفع؟</span>
+          <i class="fas fa-chevron-down faq-icon-toggle"></i>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-content">
+            يُفضل عدم فتح الحساب منعاً لحدوث تسجيل دخول مزدوج قد يثير شكوك إدارة اللعبة. ولكن إذا كنت ترغب بشدة في اللعب، يمكنك التنسيق مع البوستر عبر شات الطلب لتحديد ساعات معينة تلعب فيها بحرية وساعات أخرى يكمل فيها الرفع.
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ 5 -->
+      <div class="faq-item">
+        <button class="faq-header">
+          <span>كيف يتم احتساب الكاش باك واستخدامه؟</span>
+          <i class="fas fa-chevron-down faq-icon-toggle"></i>
+        </button>
+        <div class="faq-body">
+          <div class="faq-body-content">
+            تحصل على 5% كاش باك من قيمة كل طلب مكتمل على موقعنا. تضاف هذه القيمة تلقائياً إلى محفظتك الإلكترونية في لوحة التحكم، ويمكنك استخدام هذا الرصيد كخصم مباشر أو للدفع بالكامل لطلباتك القادمة بكل سهولة.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-section reveal">
+    <div class="cta-box">
+      <h2 class="cta-title">جاهز لترقية حسابك الآن؟</h2>
+      <p class="cta-subtitle">انضم لآلاف اللاعبين الذين يثقون في خدمات Adsa Game الحصرية</p>
+      <div class="cta-actions">
+        <a href="services.html" class="btn-primary" id="ctaBtn">
+          <i class="fas fa-bolt"></i>
+          <span>اطلب الرفع الآن</span>
+        </a>
+        <a href="contact.html" class="btn-secondary" id="ctaContactBtn">
+          <span>تواصل معنا</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="index.html" class="logo">
+            <span class="logo-vexa">ADSA</span>
+            <span class="logo-zone">GAME</span>
+            <span class="logo-dot">.</span>
+          </a>
+          <p>الموقع الأول المتخصص في خدمات لعبة Brawl Stars — كؤوس، رانك، برستيج، وفعاليات جديدة.</p>
+          <div class="social-links">
+            <a href="#" class="social-btn" id="discordLink" title="Discord"><i class="fab fa-discord"></i></a>
+            <a href="#" class="social-btn" id="whatsappLink" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" class="social-btn" id="twitterLink" title="Twitter/X"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="social-btn" id="instagramLink" title="Instagram"><i class="fab fa-instagram"></i></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>الخدمات</h4>
+          <ul class="footer-links">
+            <li><a href="services.html#trophy">رفع الكؤوس</a></li>
+            <li><a href="services.html#ranked">رفع الرانك</a></li>
+            <li><a href="services.html#prestige">رفع البرستيج</a></li>
+            <li><a href="events.html">الفعاليات</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>الموقع</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="services.html">الخدمات</a></li>
+            <li><a href="events.html">الفعاليات</a></li>
+            <li><a href="contact.html">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>الدعم والعمل</h4>
+          <ul class="footer-links">
+            <li><a href="contact.html">تواصل معنا</a></li>
+            <li><a href="booster_rules.html">قوانين وقواعد العمل</a></li>
+            <li><a href="auth.html?join=booster">انضم كلاعب محترف للعمل معنا</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 Adsa Game. جميع الحقوق محفوظة.</span>
+        <span style="color:var(--purple);font-weight:700;font-family:var(--font-en)">adsagame.com</span>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- page-wrapper -->
+
+<div id="globalToast" class="toast"></div>
+
+<script src="js/brawlers.js"></script>
+<script src="js/main.js"></script>
+<script>
+  // Animated counter
+  function animateCounter(el, target, suffix = '') {
+    let start = 0;
+    const duration = 1800;
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const val = Math.floor(progress * target);
+      el.textContent = val.toLocaleString() + suffix;
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const statsObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const orderStat = document.querySelector('#statOrders');
+        if (orderStat) {
+          orderStat.textContent = '';
+          animateCounter(orderStat, 2500, '+');
+        }
+        statsObs.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+  const statsEl = document.querySelector('.stats-grid');
+  if (statsEl) statsObs.observe(statsEl);
+
+  // FAQ Accordion Toggle
+  document.querySelectorAll('.faq-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const item = header.parentElement;
+      const isActive = item.classList.contains('active');
+      
+      // Close all items
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+      
+      // Open clicked item if it wasn't active
+      if (!isActive) {
+        item.classList.add('active');
+      }
+    });
+  });
+
+
+</script>
+</body>
+</html>
