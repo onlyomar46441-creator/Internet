@@ -1,0 +1,376 @@
+{
+  "users": [
+    {
+      "id": "admin-user",
+      "username": "admin",
+      "email": "admin@adsagame.com",
+      "password": "adminpassword",
+      "balance": 0,
+      "cashback": 0,
+      "rating": 5,
+      "completed_tasks": 0,
+      "role": "admin",
+      "created_at": "2026-06-14T00:00:00.000Z"
+    },
+    {
+      "id": "client-user",
+      "username": "client",
+      "email": "client@gmail.com",
+      "password": "clientpassword",
+      "balance": 150,
+      "cashback": 0,
+      "rating": 5,
+      "completed_tasks": 0,
+      "role": "client",
+      "created_at": "2026-06-14T00:00:00.000Z"
+    },
+    {
+      "id": "booster-user",
+      "username": "booster",
+      "email": "booster@gmail.com",
+      "password": "boosterpassword",
+      "balance": 0,
+      "cashback": 0.204,
+      "rating": 5,
+      "completed_tasks": 0,
+      "role": "booster",
+      "created_at": "2026-06-14T00:00:00.000Z"
+    },
+    {
+      "username": "mina",
+      "email": "leviflash00@gmail.com",
+      "password": "2277967MM",
+      "balance": 55.799999999999955,
+      "cashback": 21.624000000000002,
+      "rating": 5,
+      "completed_tasks": 0,
+      "role": "client",
+      "id": "mqdirmfx7ofo8",
+      "created_at": "2026-06-14T08:25:33.021Z",
+      "linkedWallets": [
+        {
+          "id": "wlt-mqdkwmba",
+          "walletType": "orange",
+          "walletNumber": "01206510088",
+          "walletName": "?????? ????????",
+          "linkedAt": "2026-06-14T09:25:25.366Z"
+        }
+      ]
+    }
+  ],
+  "orders": [
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "deposit",
+      "price": 20,
+      "status": "pending_deposit",
+      "txHash": "2121235",
+      "details": {
+        "method": "binance"
+      },
+      "id": "vx-71870274",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-14T08:28:38.703Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "deposit",
+      "price": 20,
+      "status": "pending_deposit",
+      "txHash": "4537836873453273",
+      "details": {
+        "method": "binance"
+      },
+      "id": "vx-72187354",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-14T08:28:41.873Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "trophy",
+      "price": 12.24,
+      "tip": 0,
+      "cashbackEarned": 0.24480000000000002,
+      "details": {
+        "fromCups": 0,
+        "toCups": 4000,
+        "brawler": "All",
+        "speed": "normal",
+        "payMethod": "wallet",
+        "txHash": "",
+        "senderInfo": ""
+      },
+      "status": "auction",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "vx-55978677",
+      "bids": [
+        {
+          "boosterId": "booster-user",
+          "boosterUsername": "booster",
+          "rating": 5,
+          "completed": 0,
+          "price": 0.24,
+          "timestamp": "2026-06-15T13:35:28.222Z"
+        }
+      ],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-14T09:32:39.786Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "deposit",
+      "price": 20,
+      "status": "pending_deposit",
+      "txHash": "6+5665",
+      "details": {
+        "method": "orange",
+        "senderInfo": "35665+5656"
+      },
+      "id": "vx-8718737",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-15T03:07:51.873Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "trophy",
+      "price": 48.96,
+      "tip": 0,
+      "cashbackEarned": 0.9792000000000001,
+      "details": {
+        "fromCups": 42000,
+        "toCups": 50000,
+        "brawler": "Sam",
+        "speed": "normal",
+        "payMethod": "wallet",
+        "txHash": "",
+        "senderInfo": ""
+      },
+      "status": "auction",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "vx-89769923",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-15T03:08:17.699Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "prestige",
+      "price": 15.3,
+      "tip": 0,
+      "cashbackEarned": 0,
+      "details": {
+        "brawler": "Najia",
+        "rangeFrom": 1000,
+        "rangeTo": 2000,
+        "timeDuration": "24 Hours (1 Day - Default)",
+        "additionalInfo": "",
+        "speed": "24h"
+      },
+      "status": "pending_payment",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "vx-11847053",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-15T12:55:18.470Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "prestige",
+      "price": 8.16,
+      "tip": 0,
+      "cashbackEarned": 0,
+      "details": {
+        "brawler": "Clancy",
+        "rangeFrom": 0,
+        "rangeTo": 1000,
+        "timeDuration": "2 Hours",
+        "additionalInfo": "",
+        "speed": "2h"
+      },
+      "status": "pending_payment",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "vx-64238515",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-15T13:04:02.385Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "trophy",
+      "price": 220.32,
+      "tip": 0,
+      "cashbackEarned": 4.4064,
+      "details": {
+        "fromCups": 0,
+        "toCups": 50000,
+        "brawlerCount": 85,
+        "preferredBrawlers": [],
+        "speed": "normal",
+        "payMethod": "wallet",
+        "txHash": "",
+        "senderInfo": ""
+      },
+      "status": "auction",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "vx-91831355",
+      "bids": [
+        {
+          "boosterId": "booster-user",
+          "boosterUsername": "booster",
+          "rating": 5,
+          "completed": 0,
+          "price": 210.82,
+          "timestamp": "2026-06-15T13:35:35.211Z"
+        }
+      ],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-15T13:25:18.313Z"
+    },
+    {
+      "clientId": "mqdirmfx7ofo8",
+      "clientUsername": "mina",
+      "serviceType": "trophy",
+      "price": 799.6800000000001,
+      "tip": 0,
+      "cashbackEarned": 15.993600000000002,
+      "details": {
+        "fromCups": 0,
+        "toCups": 101000,
+        "brawlerCount": 105,
+        "preferredBrawlers": [],
+        "speed": "normal",
+        "payMethod": "wallet",
+        "txHash": "",
+        "senderInfo": ""
+      },
+      "status": "auction",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "vx-47012299",
+      "bids": [
+        {
+          "boosterId": "booster-user",
+          "boosterUsername": "booster",
+          "rating": 5,
+          "completed": 0,
+          "price": 798.18,
+          "timestamp": "2026-06-15T13:35:36.007Z"
+        }
+      ],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-15T13:34:30.123Z"
+    },
+    {
+      "clientId": "booster-user",
+      "clientUsername": "booster",
+      "serviceType": "prestige",
+      "price": 10.2,
+      "tip": 0,
+      "cashbackEarned": 0.204,
+      "details": {
+        "brawler": "Angelo",
+        "rangeFrom": 1000,
+        "rangeTo": 2000,
+        "timeDuration": "2 hours",
+        "additionalInfo": "",
+        "speed": "2h",
+        "payMethod": "pending",
+        "txHash": "",
+        "senderInfo": ""
+      },
+      "status": "pending_deposit",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "adsa-5495715",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-16T06:32:29.571Z",
+      "txHash": ""
+    },
+    {
+      "clientId": "booster-user",
+      "clientUsername": "booster",
+      "serviceType": "ranked",
+      "price": 2.55,
+      "tip": 0,
+      "cashbackEarned": 0,
+      "details": {
+        "fromRank": "Mythic III",
+        "toRank": "Legendary I",
+        "speed": "normal",
+        "payMethod": "pending",
+        "txHash": "",
+        "senderInfo": ""
+      },
+      "status": "pending_payment",
+      "boosterId": null,
+      "boosterUsername": null,
+      "id": "adsa-83495431",
+      "bids": [],
+      "deadline": null,
+      "rating": null,
+      "review": null,
+      "created_at": "2026-06-16T07:10:34.954Z"
+    }
+  ],
+  "applications": [],
+  "chats": {
+    "support-adsa-5495715": [
+      {
+        "sender": "booster",
+        "message": "خخ",
+        "timestamp": "2026-06-17T09:35:52.391Z"
+      },
+      {
+        "sender": "booster",
+        "message": "خخخخخخخخخخخخخخخ",
+        "timestamp": "2026-06-17T09:35:56.262Z"
+      }
+    ]
+  },
+  "siteConfig": {
+    "mainWallet": {
+      "orange": "01206510088",
+      "vodafone": "01206510088",
+      "etisalat": "01206510088",
+      "instapay": "adsagame@instapay",
+      "binance": "adsagame_pay_id"
+    }
+  }
+}
